@@ -11,6 +11,8 @@ import org.iotcity.iot.framework.core.util.helper.StringHelper;
  */
 public class AnnotationPackages {
 
+	// --------------------------- Private fields ----------------------------
+
 	/**
 	 * Packages to parse
 	 */
@@ -19,12 +21,12 @@ public class AnnotationPackages {
 	 * Packages to ignore
 	 */
 	private Set<String> ignorePackages = new HashSet<>();
-
 	/**
-	 * Constructor for annotation packages
+	 * Ignore packages array
 	 */
-	public AnnotationPackages() {
-	}
+	private String[] ignores = new String[0];
+
+	// --------------------------- Public methods ----------------------------
 
 	/**
 	 * Get all packages that need to be parsed
@@ -36,11 +38,17 @@ public class AnnotationPackages {
 
 	/**
 	 * Determine whether the package set to be ignored
-	 * @param pkgName The package full name (e.g. org.iotcity.iot.framework.core.annotation)
+	 * @param pkgName The package name or class file name (e.g. "org.iotcity.iot.framework.actor.test")
 	 * @return boolean If returns true, the package is ignored, otherwise will be parsed
 	 */
 	public boolean isIgnoredPackage(String pkgName) {
-		return (this.ignorePackages.contains(pkgName));
+		if (pkgName == null || pkgName.length() == 0 || this.ignorePackages.size() == 0) return false;
+		if (this.ignorePackages.contains(pkgName)) return true;
+		String[] pkgs = this.ignores;
+		for (String pkg : pkgs) {
+			if (pkgName.startsWith(pkg + ".")) return true;
+		}
+		return false;
 	}
 
 	/**
@@ -60,12 +68,13 @@ public class AnnotationPackages {
 				if (StringHelper.isEmpty(pkg)) continue;
 				this.ignorePackages.add(pkg);
 			}
+			this.ignores = this.ignorePackages.toArray(new String[this.ignorePackages.size()]);
 		}
 	}
 
 	/**
 	 * Add a package that need to be parsed
-	 * @param pkgName The package full name (e.g. org.iotcity.iot.framework.core.annotation)
+	 * @param pkgName The package full name (e.g. "org.iotcity.iot.framework.actor.test")
 	 */
 	public void addParsePackage(String pkgName) {
 		this.parsePackages.add(pkgName);
@@ -73,7 +82,7 @@ public class AnnotationPackages {
 
 	/**
 	 * Remove a package that has been added to parse
-	 * @param pkgName The package full name (e.g. org.iotcity.iot.framework.core.annotation)
+	 * @param pkgName The package full name (e.g. "org.iotcity.iot.framework.actor.test")
 	 */
 	public void removeParsePackage(String pkgName) {
 		this.parsePackages.remove(pkgName);
@@ -88,18 +97,20 @@ public class AnnotationPackages {
 
 	/**
 	 * Add a ignore package, analyzer will skip parse this package
-	 * @param pkgName The package full name (e.g. org.iotcity.iot.framework.core.annotation)
+	 * @param pkgName The package full name (e.g. "org.iotcity.iot.framework.actor.test")
 	 */
 	public void addIgnorePackage(String pkgName) {
 		this.ignorePackages.add(pkgName);
+		this.ignores = this.ignorePackages.toArray(new String[this.ignorePackages.size()]);
 	}
 
 	/**
 	 * Remove a ignore package
-	 * @param pkgName The package full name (e.g. org.iotcity.iot.framework.core.annotation)
+	 * @param pkgName The package full name (e.g. "org.iotcity.iot.framework.actor.test")
 	 */
 	public void removeIgnorePackage(String pkgName) {
 		this.ignorePackages.remove(pkgName);
+		this.ignores = this.ignorePackages.toArray(new String[this.ignorePackages.size()]);
 	}
 
 	/**
@@ -107,6 +118,7 @@ public class AnnotationPackages {
 	 */
 	public void clearIgnorePackage() {
 		this.ignorePackages.clear();
+		this.ignores = this.ignorePackages.toArray(new String[this.ignorePackages.size()]);
 	}
 
 }

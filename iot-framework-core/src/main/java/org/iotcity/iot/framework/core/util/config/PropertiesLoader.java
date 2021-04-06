@@ -105,7 +105,7 @@ public final class PropertiesLoader {
 		field.setAccessible(true);
 		if (type.isPrimitive() || type == String.class || type == Date.class) {
 			if (!props.containsKey(key)) return;
-			field.set(bean, getFieldValue(type, props.get(key), field.get(bean)));
+			field.set(bean, getFieldValue(type, props.getProperty(key), field.get(bean)));
 		} else if (type.isArray()) {
 			if (!props.containsKey(key)) return;
 			Class<?> subType = type.getComponentType();
@@ -133,7 +133,8 @@ public final class PropertiesLoader {
 		}
 	}
 
-	private static Object getFieldValue(Class<?> type, Object value, Object defaultValue) {
+	private static Object getFieldValue(Class<?> type, String value, Object defaultValue) {
+		if (value != null) value = value.trim();
 		if (type.isPrimitive()) {
 			if (type == boolean.class || type == Boolean.class) {
 				return ConvertHelper.toBoolean(value, (boolean) defaultValue);
@@ -155,8 +156,7 @@ public final class PropertiesLoader {
 				return value == null ? defaultValue : value;
 			}
 		} else if (type == String.class) {
-			String str = String.valueOf(value == null ? defaultValue : value);
-			return str == null ? null : str.trim();
+			return value == null ? defaultValue : value;
 		} else if (type == Date.class) {
 			return ConvertHelper.toDate(value, (Date) defaultValue);
 		} else {
