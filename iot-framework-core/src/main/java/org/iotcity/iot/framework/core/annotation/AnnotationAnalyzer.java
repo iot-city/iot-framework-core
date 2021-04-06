@@ -167,8 +167,13 @@ public class AnnotationAnalyzer extends AnnotationPackages {
 		if (this.isIgnoredPackage(className)) return;
 		if (this.parseFiles.contains(className)) return;
 		this.parseFiles.add(className);
-		Class<?> clazz = Class.forName(className);
-		if (clazz.isInterface() || clazz.getConstructors().length == 0) return;
+		Class<?> clazz = null;
+		try {
+			clazz = Class.forName(className);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (clazz == null || clazz.isInterface() || clazz.getConstructors().length == 0) return;
 		for (AnnotationParser parser : this.parsers) {
 			parser.parse(clazz);
 		}
