@@ -8,7 +8,7 @@ import java.util.Enumeration;
  * System information util
  * @author Ardon
  */
-public class SystemHelper {
+public final class SystemHelper {
 
 	/**
 	 * Local IP address

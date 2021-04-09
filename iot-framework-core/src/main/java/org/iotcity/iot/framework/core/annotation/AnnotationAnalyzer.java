@@ -17,7 +17,7 @@ import java.util.jar.JarFile;
  * Analyze annotations of the specified scope
  * @author Ardon
  */
-public class AnnotationAnalyzer extends AnnotationPackages {
+public final class AnnotationAnalyzer extends AnnotationPackages {
 
 	// --------------------------- Private fields ----------------------------
 
@@ -36,11 +36,11 @@ public class AnnotationAnalyzer extends AnnotationPackages {
 	/**
 	 * The parsers in analyzer
 	 */
-	private List<AnnotationParser> parsers = new ArrayList<>();
+	private final List<AnnotationParser> parsers = new ArrayList<>();
 	/**
 	 * The files parsed
 	 */
-	private Set<String> parseFiles = new HashSet<>();
+	private final Set<String> parseFiles = new HashSet<>();
 
 	// --------------------------- Public methods ----------------------------
 

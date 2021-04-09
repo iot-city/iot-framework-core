@@ -16,11 +16,11 @@ public class AnnotationPackages {
 	/**
 	 * Packages to parse
 	 */
-	private Set<String> parsePackages = new HashSet<>();
+	private final Set<String> parsePackages = new HashSet<>();
 	/**
 	 * Packages to ignore
 	 */
-	private Set<String> ignorePackages = new HashSet<>();
+	private final Set<String> ignorePackages = new HashSet<>();
 	/**
 	 * Ignore packages array
 	 */

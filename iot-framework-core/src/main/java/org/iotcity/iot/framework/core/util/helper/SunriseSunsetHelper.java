@@ -6,7 +6,7 @@ import java.util.TimeZone;
  * Sunrise and sunset util
  * @author Ardon
  */
-public class SunriseSunsetHelper {
+public final class SunriseSunsetHelper {
 
 	// --------------------------- Public fields ----------------------------
 
@@ -269,7 +269,7 @@ public class SunriseSunsetHelper {
 	 * The sunrise and sunset data
 	 * @author Ardon
 	 */
-	public class SunriseSunset {
+	public final class SunriseSunset {
 
 		/**
 		 * (Readonly) Sunrise time (relative to 0:00, - 1 means that the sun never rise)
