@@ -3,6 +3,7 @@ package org.iotcity.iot.framework.core.util.helper;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.Locale;
 
 /**
  * System information util
@@ -18,6 +19,15 @@ public final class SystemHelper {
 	 * The lock for IP
 	 */
 	private static Object lock = new Object();
+
+	/**
+	 * Gets the operating system default language key
+	 * @return String Language key (e.g. "en_US")
+	 */
+	public static String getSystemLang() {
+		Locale local = Locale.getDefault();
+		return local.getLanguage() + "_" + local.getCountry();
+	}
 
 	/**
 	 * Test whether the string is local address (return true if IP is null)
@@ -37,8 +47,9 @@ public final class SystemHelper {
 	 * Gets the local IP address from OS
 	 * @param force Whether force re acquisition
 	 * @return String The local IP address
+	 * @throws Exception Throw an exception when an error is encountered
 	 */
-	public static String getLocalIP(boolean force) {
+	public static String getLocalIP(boolean force) throws Exception {
 		if (localIP == null || force) {
 			synchronized (lock) {
 				if (localIP == null || force) {
@@ -53,28 +64,24 @@ public final class SystemHelper {
 	/**
 	 * Get the local IP address at the current time
 	 * @return InetAddress IP address object
+	 * @throws Exception Throw an exception when an error is encountered
 	 */
-	public static InetAddress getLocalAddress() {
-		try {
-			InetAddress iadd = null;
-			for (Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces(); ifaces.hasMoreElements();) {
-				NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
-				for (Enumeration<InetAddress> inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
-					InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
-					if (inetAddr.isLoopbackAddress()) continue;
-					if (inetAddr.isSiteLocalAddress()) {
-						return inetAddr;
-					} else if (iadd == null) {
-						iadd = inetAddr;
-					}
+	public static InetAddress getLocalAddress() throws Exception {
+		InetAddress iadd = null;
+		for (Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces(); ifaces.hasMoreElements();) {
+			NetworkInterface iface = (NetworkInterface) ifaces.nextElement();
+			for (Enumeration<InetAddress> inetAddrs = iface.getInetAddresses(); inetAddrs.hasMoreElements();) {
+				InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
+				if (inetAddr.isLoopbackAddress()) continue;
+				if (inetAddr.isSiteLocalAddress()) {
+					return inetAddr;
+				} else if (iadd == null) {
+					iadd = inetAddr;
 				}
 			}
-			if (iadd != null) return iadd;
-			return InetAddress.getLocalHost();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
-		return null;
+		if (iadd != null) return iadd;
+		return InetAddress.getLocalHost();
 	}
 
 }
