@@ -154,8 +154,8 @@ public class DefaultLogger implements Logger {
 			StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 			if (traces.length > this.callerDepth) {
 				StackTraceElement ele = traces[this.callerDepth];
-				sb.append(" [FROM: ").append(this.getSimpleClassName(ele.getClassName())).append(".").append(ele.getMethodName()).append("(...) -");
-				this.getSourceFileLink(sb, sbColor, ele.getFileName(), ele.getLineNumber());
+				sb.append(" [FROM: ").append(getSimpleClassName(ele.getClassName())).append(".").append(ele.getMethodName()).append("(...) -");
+				getSourceFileLink(sb, sbColor, ele.getFileName(), ele.getLineNumber());
 				sb.append("]");
 			}
 		} else if (levelConfig.classTracking) {
@@ -164,13 +164,13 @@ public class DefaultLogger implements Logger {
 				StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 				if (traces.length > this.callerDepth) {
 					StackTraceElement ele = traces[this.callerDepth];
-					sb.append(" [FROM: ").append(this.getSimpleClassName(ele.getClassName())).append(".class -");
-					this.getSourceFileLink(sb, sbColor, ele.getFileName(), ele.getLineNumber());
+					sb.append(" [FROM: ").append(getSimpleClassName(ele.getClassName())).append(".class -");
+					getSourceFileLink(sb, sbColor, ele.getFileName(), ele.getLineNumber());
 					sb.append("]");
 				}
 			} else {
 				sb.append(" [FROM: ").append(this.clazz.getSimpleName()).append(".class -");
-				this.getSourceFileLink(sb, sbColor, this.clazz.getSimpleName() + ".java", 0);
+				getSourceFileLink(sb, sbColor, this.clazz.getSimpleName() + ".java", 0);
 				sb.append("]");
 			}
 		}
@@ -183,10 +183,12 @@ public class DefaultLogger implements Logger {
 		if (e != null) e.printStackTrace();
 	}
 
+	// --------------------------- Private static methods ----------------------------
+
 	/**
 	 * Get simple name of class path name
 	 */
-	private String getSimpleClassName(String className) {
+	private static String getSimpleClassName(String className) {
 		int pos = className.lastIndexOf(".");
 		return pos == -1 ? className : className.substring(pos + 1);
 	}
@@ -194,7 +196,7 @@ public class DefaultLogger implements Logger {
 	/**
 	 * Get java source file link
 	 */
-	private void getSourceFileLink(StringBuilder sb, StringBuilder sbColor, String fileName, int lineNumber) {
+	private static void getSourceFileLink(StringBuilder sb, StringBuilder sbColor, String fileName, int lineNumber) {
 		if (fileName != null && lineNumber >= 0) {
 			sb.append("\033[94;4m (");
 			sb.append(fileName).append(":").append(lineNumber).append(") \033[0m");

@@ -59,6 +59,7 @@ public final class PropertiesLoader {
 			T bean = beanClass.newInstance();
 			return loadConfigBean(bean, filePathName, encoding, prefix, fromPackage);
 		} catch (Exception e) {
+			System.err.println("Load config to bean error: " + filePathName);
 			e.printStackTrace();
 			return null;
 		}
@@ -82,6 +83,7 @@ public final class PropertiesLoader {
 		try {
 			fillConfigBean(bean.getClass(), bean, props, prefix);
 		} catch (Exception e) {
+			System.err.println("Load config to bean error: " + filePathName);
 			e.printStackTrace();
 			return null;
 		}

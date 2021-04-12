@@ -171,6 +171,7 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 		try {
 			clazz = Class.forName(className);
 		} catch (Exception e) {
+			System.err.println("Class for name error: " + className);
 			e.printStackTrace();
 		}
 		if (clazz == null || clazz.isInterface() || clazz.getConstructors().length == 0) return;

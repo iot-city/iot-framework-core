@@ -118,6 +118,7 @@ public final class FileHelper {
 			File f = new File(path);
 			return f.exists();
 		} catch (Exception e) {
+			System.err.println("File exists error: " + path);
 			e.printStackTrace();
 			return false;
 		}
@@ -139,6 +140,7 @@ public final class FileHelper {
 			}
 			return true;
 		} catch (Exception e) {
+			System.err.println("Create folder error: " + dir);
 			e.printStackTrace();
 			return false;
 		}
@@ -162,6 +164,7 @@ public final class FileHelper {
 			myFile.print(fileContent);
 			return true;
 		} catch (Exception e) {
+			System.err.println("Create/write file error: " + filePathAndName);
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -197,16 +200,13 @@ public final class FileHelper {
 			}
 			isr = getUnicodeReader(fs, encoding);
 			br = new BufferedReader(isr);
-			try {
-				String data = "";
-				while ((data = br.readLine()) != null) {
-					sb.append(data + "\r\n");
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+			String data = "";
+			while ((data = br.readLine()) != null) {
+				sb.append(data + "\r\n");
 			}
 			st = sb.toString();
 		} catch (IOException es) {
+			System.err.println("Read text file error: " + filePathAndName);
 			es.printStackTrace();
 			st = "";
 		} finally {
@@ -255,6 +255,7 @@ public final class FileHelper {
 			props.load(isr);
 			return true;
 		} catch (Exception e) {
+			System.err.println("Load properties file error: " + filePathAndName);
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -362,6 +363,7 @@ public final class FileHelper {
 			File f = new File(filePathAndName);
 			return f.delete();
 		} catch (Exception e) {
+			System.err.println("Delete file error: " + filePathAndName);
 			e.printStackTrace();
 			return false;
 		}
@@ -402,6 +404,7 @@ public final class FileHelper {
 				}
 			}
 		} catch (Exception e) {
+			System.err.println("Copy folder from \"" + fromDir + "\" to \"" + toDir + "\" error!");
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -443,6 +446,7 @@ public final class FileHelper {
 				return true;
 			}
 		} catch (Exception e) {
+			System.err.println("Copy file from \"" + fromFile + "\" to \"" + toFile + "\" error!");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -481,6 +485,7 @@ public final class FileHelper {
 			BigInteger bi = new BigInteger(1, md5.digest());
 			value = bi.toString(16).toUpperCase();
 		} catch (Exception e) {
+			System.err.println("Get file MD5 error: " + filePathAndName);
 			e.printStackTrace();
 		} finally {
 			if (null != in) {

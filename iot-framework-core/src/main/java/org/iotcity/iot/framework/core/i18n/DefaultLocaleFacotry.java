@@ -57,7 +57,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	 * @param lang Locale text language key (required, not null or empty, e.g. "en_US", "zh_CN")
 	 * @return String The map key
 	 */
-	private String getKey(String name, String lang) {
+	private static String getKey(String name, String lang) {
 		return name.toUpperCase() + "|" + lang.toUpperCase();
 	}
 
@@ -85,16 +85,16 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 		// Traverse all locale configurations
 		for (int i = 0, c = keys.length; i < c; i++) {
 			// (e.g. "core", "actor")
-			String localeKey = keys[i].trim();
-			if (localeKey.length() == 0) continue;
+			String locale = keys[i].trim();
+			if (locale.length() == 0) continue;
 
 			// iot.framework.core.i18n.core
-			localeKey = "iot.framework.core.i18n." + localeKey;
+			String localeKey = "iot.framework.core.i18n." + locale;
 			// iot.framework.core.i18n.core.enabled=true
 			boolean enabled = ConvertHelper.toBoolean(props.getProperty(localeKey + ".enabled"), true);
 			if (!enabled) continue;
 			// iot.framework.core.i18n.core.name=CORE
-			String name = props.getProperty(localeKey + ".name");
+			String name = props.getProperty(localeKey + ".name", locale);
 			// iot.framework.core.i18n.core.langs=en_US, zh_CN
 			String langs = props.getProperty(localeKey + ".langs");
 			if (langs == null || langs.length() == 0) continue;
@@ -111,6 +111,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 				String file = props.getProperty(localeKey + ".langs." + lang + ".file");
 				if (file == null) continue;
 				file = file.trim();
+				if (file.length() == 0) continue;
 				// Load text properties file
 				Properties textProps = PropertiesLoader.loadProperties(file, "UTF-8", frompkg);
 				// Add text to factory
@@ -122,6 +123,14 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	}
 
 	/**
+	 * Gets locale configures size
+	 * @return int Size
+	 */
+	public int size() {
+		return this.texts.size();
+	}
+
+	/**
 	 * Add locale text map to factory
 	 * @param name The locale name (required, not null or empty, e.g. "CORE")
 	 * @param lang Locale text language key (required, not null or empty, e.g. "en_US", "zh_CN")
@@ -129,7 +138,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	 */
 	public void addLocale(String name, String lang, LocaleText locale) {
 		if (StringHelper.isEmpty(name) || StringHelper.isEmpty(lang) || locale == null) return;
-		String key = this.getKey(name, lang);
+		String key = getKey(name, lang);
 		synchronized (texts) {
 			this.texts.put(key, locale);
 		}
@@ -165,7 +174,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	 */
 	public LocaleText removeLocale(String name, String lang) {
 		if (StringHelper.isEmpty(name) || StringHelper.isEmpty(lang)) return null;
-		String key = this.getKey(name, lang);
+		String key = getKey(name, lang);
 		synchronized (texts) {
 			return this.texts.remove(key);
 		}
@@ -196,7 +205,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	@Override
 	public LocaleText getDefaultLocale(String name) {
 		if (StringHelper.isEmpty(name)) return new DefaultLocaleText(null, defaultLang, null);
-		LocaleText text = this.texts.get(this.getKey(name, defaultLang));
+		LocaleText text = this.texts.get(getKey(name, defaultLang));
 		return text == null ? new DefaultLocaleText(name, defaultLang, null) : text;
 	}
 
@@ -205,8 +214,8 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 		if (StringHelper.isEmpty(name) || StringHelper.isEmpty(lang)) {
 			return new DefaultLocaleText(name, lang, null);
 		}
-		LocaleText text = this.texts.get(this.getKey(name, lang));
-		if (text == null) text = this.texts.get(this.getKey(name, defaultLang));
+		LocaleText text = this.texts.get(getKey(name, lang));
+		if (text == null) text = this.texts.get(getKey(name, defaultLang));
 		return text == null ? new DefaultLocaleText(name, lang, null) : text;
 	}
 
