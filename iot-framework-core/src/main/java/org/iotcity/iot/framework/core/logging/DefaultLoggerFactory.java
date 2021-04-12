@@ -58,9 +58,10 @@ public class DefaultLoggerFactory implements LoggerFactory {
 		// Clear levels
 		config.clearLevels();
 		// Traverse all levels
-		for (String level : LogLevel.ALL) {
+		for (String level : LogLevel.ALL_LOWER_CASE) {
 			// Add level to configure
-			config.addLevel(level, true, true);
+			boolean tracking = this.getTrackingDefault(level);
+			config.addLevel(level, tracking, tracking, this.getLevelDefaultColor(level, true), this.getLevelDefaultColor(level, false));
 		}
 	}
 
@@ -80,15 +81,15 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	 * @param props Properties object
 	 * @param fkey The front key (e.g. "iot.framework.core.logging." or ""iot.framework.core.logging.core."")
 	 * @param defaultName Default configure name (not null)
-	 * @return DefaultLoggerConfig Configure object (not null)
+	 * @return DefaultLoggerConfig Configure object
 	 */
 	private DefaultLoggerConfig createConfig(Properties props, String fkey, String defaultName) {
 		// iot.framework.core.logging.name=GLOBAL
-		String name = props.getProperty(fkey + "name", defaultName);
+		String name = props.getProperty(fkey + "name", defaultName).trim();
+		if (StringHelper.isEmpty(name)) name = defaultName;
 		DefaultLoggerConfig config = new DefaultLoggerConfig(name);
 
-		// iot.framework.core.logging.levels=trace, debug, info, warn, error, fatal
-		// # Available logger levels: all, trace, debug, info, warn, error, fatal (all by default)
+		// iot.framework.core.logging.levels=all, trace, debug, info, warn, error, fatal
 		String levels = props.getProperty(fkey + "levels");
 		if (levels == null || levels.trim().length() == 0) return config;
 
@@ -106,23 +107,124 @@ public class DefaultLoggerFactory implements LoggerFactory {
 			if ("all".equals(levelKey)) {
 				// Traverse all levels
 				for (String level : LogLevel.ALL_LOWER_CASE) {
-					// iot.framework.core.logging.trace.classTracking=true
-					// iot.framework.core.logging.trace.methodTracking=true
-					boolean classTracking = ConvertHelper.toBoolean(props.getProperty(fkey + level + ".classTracking"), true);
-					boolean methodTracking = ConvertHelper.toBoolean(props.getProperty(fkey + level + ".methodTracking"), true);
-					config.addLevel(level, classTracking, methodTracking);
+					// Get level config
+					boolean classTracking = this.getBooleanConfig(props.getProperty(fkey + level + ".classTracking"), this.getTrackingDefault(level), false);
+					boolean methodTracking = this.getBooleanConfig(props.getProperty(fkey + level + ".methodTracking"), this.getTrackingDefault(level), false);
+					boolean fontHighlight = this.getBooleanConfig(props.getProperty(fkey + level + ".fontHighlight"), false, false);
+					boolean bgHighlight = this.getBooleanConfig(props.getProperty(fkey + level + ".bgHighlight"), false, false);
+					int fontColor = this.getColorFromString(level, props.getProperty(fkey + level + ".fontColor"), true, fontHighlight);
+					int bgColor = this.getColorFromString(level, props.getProperty(fkey + level + ".bgColor"), false, bgHighlight);
+					config.addLevel(level, classTracking, methodTracking, fontColor, bgColor);
 				}
 				return config;
 			} else {
 				// Get level config
-				boolean classTracking = ConvertHelper.toBoolean(props.getProperty(fkey + levelKey + ".classTracking"), true);
-				boolean methodTracking = ConvertHelper.toBoolean(props.getProperty(fkey + levelKey + ".methodTracking"), true);
-				config.addLevel(levelKey, classTracking, methodTracking);
+				boolean classTracking = this.getBooleanConfig(props.getProperty(fkey + levelKey + ".classTracking"), this.getTrackingDefault(levelKey), false);
+				boolean methodTracking = this.getBooleanConfig(props.getProperty(fkey + levelKey + ".methodTracking"), this.getTrackingDefault(levelKey), false);
+				boolean fontHighlight = this.getBooleanConfig(props.getProperty(fkey + levelKey + ".fontHighlight"), false, false);
+				boolean bgHighlight = this.getBooleanConfig(props.getProperty(fkey + levelKey + ".bgHighlight"), false, false);
+				int fontColor = this.getColorFromString(levelKey, props.getProperty(fkey + levelKey + ".fontColor"), true, fontHighlight);
+				int bgColor = this.getColorFromString(levelKey, props.getProperty(fkey + levelKey + ".bgColor"), false, bgHighlight);
+				config.addLevel(levelKey, classTracking, methodTracking, fontColor, bgColor);
 			}
 
 		}
 
 		return config;
+	}
+
+	/**
+	 * Get tracking default value
+	 */
+	private boolean getTrackingDefault(String level) {
+		return !("trace".equals(level) || "info".equals(level));
+	}
+
+	/**
+	 * Get configure boolean value
+	 */
+	private boolean getBooleanConfig(String value, boolean nullValue, boolean defaultValue) {
+		if (value == null) return nullValue;
+		return ConvertHelper.toBoolean(value, defaultValue);
+	}
+
+	/**
+	 * Get a color number from color string
+	 */
+	private int getColorFromString(String level, String color, boolean isFontColor, boolean highLight) {
+		// Set as default color if no config
+		if (color == null) return this.getLevelDefaultColor(level, isFontColor);
+		color = color.trim().toLowerCase();
+		if (color.length() == 0 || "default".equals(color)) {
+			return isFontColor ? LogLevelColor.FONT_DEFAULT : LogLevelColor.BG_DEFAULT;
+		} else {
+			// Available font/background colors: black, red, green, yellow, blue, purple, cyan, white, default
+			int colorNum;
+			switch (color) {
+			case "black":
+				colorNum = isFontColor ? LogLevelColor.FONT_BLACK : LogLevelColor.BG_BLACK;
+				break;
+			case "red":
+				colorNum = isFontColor ? LogLevelColor.FONT_RED : LogLevelColor.BG_RED;
+				break;
+			case "green":
+				colorNum = isFontColor ? LogLevelColor.FONT_GREEN : LogLevelColor.BG_GREEN;
+				break;
+			case "yellow":
+				colorNum = isFontColor ? LogLevelColor.FONT_YELLOW : LogLevelColor.BG_YELLOW;
+				break;
+			case "blue":
+				colorNum = isFontColor ? LogLevelColor.FONT_BLUE : LogLevelColor.BG_BLUE;
+				break;
+			case "purple":
+				colorNum = isFontColor ? LogLevelColor.FONT_PURPLE : LogLevelColor.BG_PURPLE;
+				break;
+			case "cyan":
+				colorNum = isFontColor ? LogLevelColor.FONT_CYAN : LogLevelColor.BG_CYAN;
+				break;
+			case "white":
+				colorNum = isFontColor ? LogLevelColor.FONT_WHITE : LogLevelColor.BG_WHITE;
+				break;
+			default:
+				colorNum = isFontColor ? LogLevelColor.FONT_DEFAULT : LogLevelColor.BG_DEFAULT;
+				break;
+			}
+			// Set highlight color
+			if (highLight && colorNum > 0) colorNum += 60;
+			return colorNum;
+		}
+	}
+
+	/**
+	 * Get the default color of current level
+	 */
+	private int getLevelDefaultColor(String level, boolean isFontColor) {
+		// Available logger levels: trace, debug, info, warn, error, fatal
+		int color;
+		switch (level) {
+		case "trace":
+			color = isFontColor ? LogLevelColor.FONT_BLACK + 60 : LogLevelColor.BG_DEFAULT;
+			break;
+		case "debug":
+			color = isFontColor ? LogLevelColor.FONT_DEFAULT : LogLevelColor.BG_DEFAULT;
+			break;
+		case "info":
+			color = isFontColor ? LogLevelColor.FONT_GREEN : LogLevelColor.BG_DEFAULT;
+			break;
+		case "warn":
+			color = isFontColor ? LogLevelColor.FONT_PURPLE + 60 : LogLevelColor.BG_DEFAULT;
+			break;
+		case "error":
+			color = isFontColor ? LogLevelColor.FONT_RED + 60 : LogLevelColor.BG_DEFAULT;
+			break;
+		case "fatal":
+			color = isFontColor ? LogLevelColor.FONT_WHITE + 60 : LogLevelColor.BG_RED + 60;
+			break;
+		default:
+			color = isFontColor ? LogLevelColor.FONT_DEFAULT : LogLevelColor.BG_DEFAULT;
+			break;
+		}
+		return color;
 	}
 
 	// --------------------------- Config methods ----------------------------
@@ -143,6 +245,7 @@ public class DefaultLoggerFactory implements LoggerFactory {
 
 		// Get global configure
 		this.globalConfig = this.createConfig(props, "iot.framework.core.logging.", "GLOBAL");
+		if (this.globalConfig.size() == 0) this.initAllLevels(this.globalConfig);
 
 		// iot.framework.core.logging=core, actor
 		String loggers = props.getProperty("iot.framework.core.logging");
@@ -159,7 +262,7 @@ public class DefaultLoggerFactory implements LoggerFactory {
 			// iot.framework.core.logging.core.
 			String fkey = "iot.framework.core.logging." + loggerKey + ".";
 			DefaultLoggerConfig config = this.createConfig(props, fkey, loggerKey);
-			this.configs.put(loggerKey.toUpperCase(), config);
+			this.configs.put(config.getName().toUpperCase(), config);
 
 		}
 		return true;
@@ -185,14 +288,21 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	}
 
 	/**
+	 * Gets logger configures size
+	 * @return int Size
+	 */
+	public int size() {
+		return this.configs.size();
+	}
+
+	/**
 	 * Add a logger configure to factory
-	 * @param name Logger name (required, not null or empty)
 	 * @param config Logger configure object (required, not null)
 	 */
-	public void addLoggerConfig(String name, DefaultLoggerConfig config) {
-		if (StringHelper.isEmpty(name) || config == null) return;
+	public void addLoggerConfig(DefaultLoggerConfig config) {
+		if (config == null || StringHelper.isEmpty(config.getName())) return;
 		synchronized (configs) {
-			this.configs.put(name.toUpperCase(), config);
+			this.configs.put(config.getName().toUpperCase(), config);
 		}
 	}
 
@@ -228,6 +338,11 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	}
 
 	// --------------------------- Override methods ----------------------------
+
+	@Override
+	public Logger getLogger() {
+		return new DefaultLogger("", null, 0, this.globalConfig);
+	}
 
 	@Override
 	public Logger getLogger(String name) {

@@ -22,7 +22,7 @@ public class DefaultLogger implements Logger {
 	/**
 	 * Date format object
 	 */
-	private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private final DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	/**
 	 * The Class whose name should be used in message. If null it will default to the calling class.
 	 */
@@ -40,13 +40,13 @@ public class DefaultLogger implements Logger {
 
 	/**
 	 * Constructor for default logger
-	 * @param name Logger name (required, not null or empty)
+	 * @param name Logger name
 	 * @param clazz The Class whose name should be used in message. If null it will default to the calling class.
 	 * @param callerDepth The depth from get logger method to the logging message method (0 by default)
 	 * @param config Logger configure object (required, not null)
 	 */
 	public DefaultLogger(String name, Class<?> clazz, int callerDepth, DefaultLoggerConfig config) {
-		this.name = name;
+		this.name = name == null ? "" : name;
 		this.clazz = clazz;
 		this.callerDepth = (callerDepth < 0 ? 0 : callerDepth) + 3;
 		this.config = config;
@@ -127,14 +127,36 @@ public class DefaultLogger implements Logger {
 		if (levelConfig == null) return;
 
 		StringBuilder sb = new StringBuilder();
+		StringBuilder sbColor = new StringBuilder();
+
+		// Set color
+		if (levelConfig.fontColor != LogLevelColor.FONT_DEFAULT || levelConfig.bgColor != LogLevelColor.BG_DEFAULT) {
+			// Font color format: \033[XX;XX;XXm
+			sbColor.append("\033[");
+			// Add font color
+			if (levelConfig.fontColor != LogLevelColor.FONT_DEFAULT) {
+				sbColor.append(levelConfig.fontColor).append(";");
+			}
+			if (levelConfig.bgColor != LogLevelColor.BG_DEFAULT) {
+				sbColor.append(levelConfig.bgColor).append(";");
+			}
+			sbColor.append("m");
+		}
+		sb.append(sbColor);
+
 		// Append messages
-		sb.append("[").append(format.format(new Date())).append("] ").append(level).append(": (").append(name).append(") ").append(message);
+		sb.append("[").append(format.format(new Date())).append("] ").append(level).append(": ");
+		if (this.name.length() > 0) sb.append("(").append(name).append(") ");
+		sb.append(message);
+
 		// Append method info
 		if (levelConfig.methodTracking) {
 			StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 			if (traces.length > this.callerDepth) {
 				StackTraceElement ele = traces[this.callerDepth];
-				sb.append(" [FROM: ").append(ele.toString()).append("]");
+				sb.append(" [FROM: ").append(this.getSimpleClassName(ele.getClassName())).append(".").append(ele.getMethodName()).append("(...) -");
+				this.getSourceFileLink(sb, sbColor, ele.getFileName(), ele.getLineNumber());
+				sb.append("]");
 			}
 		} else if (levelConfig.classTracking) {
 			// Append class info
@@ -142,18 +164,48 @@ public class DefaultLogger implements Logger {
 				StackTraceElement[] traces = Thread.currentThread().getStackTrace();
 				if (traces.length > this.callerDepth) {
 					StackTraceElement ele = traces[this.callerDepth];
-					sb.append(" [CLASS: (").append(ele.getClassName()).append(".java:").append(ele.getLineNumber()).append(")]");
+					sb.append(" [FROM: ").append(this.getSimpleClassName(ele.getClassName())).append(".class -");
+					this.getSourceFileLink(sb, sbColor, ele.getFileName(), ele.getLineNumber());
+					sb.append("]");
 				}
 			} else {
-				sb.append(" [CLASS: (").append(this.clazz.getName()).append(".java:0)]");
+				sb.append(" [FROM: ").append(this.clazz.getSimpleName()).append(".class -");
+				this.getSourceFileLink(sb, sbColor, this.clazz.getSimpleName() + ".java", 0);
+				sb.append("]");
 			}
 		}
-		if (level.equals(LogLevel.ERROR) || level.equals(LogLevel.FATAL)) {
-			System.err.println(sb.toString());
-		} else {
-			System.out.println(sb.toString());
+		// End of color
+		if (sbColor.length() > 0) {
+			sb.append("\033[0m");
 		}
+		// Output info
+		System.out.println(sb.toString());
 		if (e != null) e.printStackTrace();
+	}
+
+	/**
+	 * Get simple name of class path name
+	 */
+	private String getSimpleClassName(String className) {
+		int pos = className.lastIndexOf(".");
+		return pos == -1 ? className : className.substring(pos + 1);
+	}
+
+	/**
+	 * Get java source file link
+	 */
+	private void getSourceFileLink(StringBuilder sb, StringBuilder sbColor, String fileName, int lineNumber) {
+		if (fileName != null && lineNumber >= 0) {
+			sb.append("\033[94;4m (");
+			sb.append(fileName).append(":").append(lineNumber).append(") \033[0m");
+			if (sbColor.length() > 0) sb.append(sbColor);
+		} else {
+			if (fileName == null) {
+				sb.append(" (Unknown Source) ");
+			} else {
+				sb.append(" (").append(fileName).append(") ");
+			}
+		}
 	}
 
 }

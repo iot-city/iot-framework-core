@@ -26,7 +26,7 @@ public final class DefaultLoggerConfig {
 
 	/**
 	 * Constructor for default logger configure object
-	 * @param name The configure name
+	 * @param name The configure name (required, not null or empty)
 	 */
 	public DefaultLoggerConfig(String name) {
 		this.name = name;
@@ -43,15 +43,25 @@ public final class DefaultLoggerConfig {
 	}
 
 	/**
+	 * Gets level configures size
+	 * @return int Size
+	 */
+	public int size() {
+		return this.levelConfig.size();
+	}
+
+	/**
 	 * Add a level configure to logger configure (returns null if invalid)
 	 * @param level The logger level (reference: LogLevel.XXXX)
 	 * @param classTracking Whether enable class tracking
 	 * @param methodTracking Whether enable method tracking
+	 * @param fontClor Font color of console output (reference: LogLevelColor.FONT_XXXX)
+	 * @param bgColor Background color of console output (reference: LogLevelColor.BG_XXXX)
 	 * @return LevelConfig The configure be created
 	 */
-	public LevelConfig addLevel(String level, boolean classTracking, boolean methodTracking) {
+	public LevelConfig addLevel(String level, boolean classTracking, boolean methodTracking, int fontClor, int bgColor) {
 		if (StringHelper.isEmpty(level)) return null;
-		LevelConfig config = new LevelConfig(classTracking, methodTracking);
+		LevelConfig config = new LevelConfig(classTracking, methodTracking, fontClor, bgColor);
 		this.levelConfig.put(level.toUpperCase(), config);
 		return config;
 	}
@@ -110,15 +120,27 @@ public final class DefaultLoggerConfig {
 		 * Whether enable method tracking
 		 */
 		public boolean methodTracking;
+		/**
+		 * Font color of console output (reference: LogLevelColor.FONT_XXXX)
+		 */
+		public int fontColor;
+		/**
+		 * Background color of console output (reference: LogLevelColor.BG_XXXX)
+		 */
+		public int bgColor;
 
 		/**
 		 * Constructor for level configure
 		 * @param classTracking Whether enable class tracking
 		 * @param methodTracking Whether enable method tracking
+		 * @param fontClor Font color of console output (reference: LogLevelColor.FONT_XXXX)
+		 * @param bgColor Background color of console output (reference: LogLevelColor.BG_XXXX)
 		 */
-		LevelConfig(boolean classTracking, boolean methodTracking) {
+		LevelConfig(boolean classTracking, boolean methodTracking, int fontClor, int bgColor) {
 			this.classTracking = classTracking;
 			this.methodTracking = methodTracking;
+			this.fontColor = fontClor;
+			this.bgColor = bgColor;
 		}
 
 	}

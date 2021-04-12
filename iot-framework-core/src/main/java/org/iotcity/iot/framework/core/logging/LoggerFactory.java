@@ -7,6 +7,13 @@ package org.iotcity.iot.framework.core.logging;
 public interface LoggerFactory {
 
 	/**
+	 * Get a logger to log message (returns not null)<br/>
+	 * This logger object will use global configuration
+	 * @return Logger A logger to log message (not null)
+	 */
+	Logger getLogger();
+
+	/**
 	 * Get a logger to log message (returns not null)
 	 * @param name Logger name (required, not null or empty)
 	 * @return Logger A logger to log message (not null)
