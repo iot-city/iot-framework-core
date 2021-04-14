@@ -8,6 +8,82 @@ import junit.framework.TestCase;
 public class DefaultLoggerTest extends TestCase {
 
 	/**
+	 * Run logger test
+	 */
+	public void testLogger() {
+
+		System.out.println("-------------------- TEST DEFAULT LOGGER ------------------");
+
+		System.out.println("-------------------------- (DEFAULT) ------------------------");
+
+		DefaultLoggerFactory factory = new DefaultLoggerFactory();
+		Logger logger = factory.getLogger();
+		logger.trace("Test debugger for default constructor");
+		logger.debug("Test debugger for default constructor");
+		logger.info("Test debugger for default constructor");
+		logger.warn("Test debugger for default constructor");
+		logger.error("Test debugger for default constructor");
+		logger.fatal("Test debugger for default constructor");
+
+		System.out.println("-------------------- TEST TEMPLATE CONFIG ------------------");
+
+		new DefaultLoggerConfigure().config(factory, "org/iotcity/iot/framework/core/logging/iot-logger-template.properties", true);
+
+		System.out.println("-------------------------- (GLOBAL) ------------------------");
+
+		logger = factory.getLogger("GLOBAL");
+		logger.trace("Test debugger for template constructor");
+		logger.debug("Test debugger for template constructor");
+		logger.info("Test debugger for template constructor");
+		logger.warn("Test debugger for template constructor");
+		logger.error("Test debugger for template constructor");
+		logger.fatal("Test debugger for template constructor");
+
+		System.out.println("-------------------------- (CORE) ------------------------");
+
+		logger = factory.getLogger("CORE");
+		logger.trace("Test debugger for template constructor");
+		logger.debug("Test debugger for template constructor");
+		logger.info("Test debugger for template constructor");
+		logger.warn("Test debugger for template constructor");
+		logger.error("Test debugger for template constructor");
+		logger.fatal("Test debugger for template constructor");
+
+		System.out.println("-------------------------- (ACTOR) ------------------------");
+
+		logger = factory.getLogger("ACTOR");
+		logger.trace("Test debugger for template constructor");
+		logger.debug("Test debugger for template constructor");
+		logger.info("Test debugger for template constructor");
+		logger.warn("Test debugger for template constructor");
+		logger.error("Test debugger for template constructor");
+		logger.fatal("Test debugger for template constructor", new Throwable("FATAL TEST"));
+
+		System.out.println("-------------------------- (CLASS) ------------------------");
+
+		logger = factory.getLogger("CORE", this.getClass());
+		logger.trace("Test debugger for class");
+		logger.debug("Test debugger for class");
+		logger.info("Test debugger for class");
+		logger = factory.getLogger("CORE", this.getClass(), 1);
+		logger.warn("Test debugger for depth");
+		logger.error("Test debugger for depth");
+		logger.fatal("Test debugger for depth");
+
+		System.out.println("-------------------------- (NO NAME) ------------------------");
+
+		logger = factory.getLogger();
+		logger.trace("Test debugger for no name");
+		logger.debug("Test debugger for no name");
+		logger.info("Test debugger for no name");
+		logger.warn("Test debugger for no name");
+		logger.error("Test debugger for no name");
+		logger.fatal("Test debugger for no name");
+
+		assertTrue(true);
+	}
+
+	/**
 	 * Test color effect
 	 */
 	public void testColor() {
@@ -53,71 +129,6 @@ public class DefaultLoggerTest extends TestCase {
 
 		assertTrue(true);
 
-	}
-
-	/**
-	 * Run logger test
-	 */
-	public void testLogger() {
-
-		System.out.println("-------------------- TEST GLOBAL CONFIG ------------------");
-
-		System.out.println("-------------------------- (DEFAULT) ------------------------");
-
-		DefaultLoggerFactory factor = new DefaultLoggerFactory();
-		Logger logger = factor.getLogger();
-		logger.trace("Test debugger for default constructor");
-		logger.debug("Test debugger for default constructor");
-		logger.info("Test debugger for default constructor");
-		logger.warn("Test debugger for default constructor");
-		logger.error("Test debugger for default constructor");
-		logger.fatal("Test debugger for default constructor");
-
-		System.out.println("-------------------- TEST TEMPLATE CONFIG ------------------");
-
-		System.out.println("-------------------------- (GLOBAL) ------------------------");
-
-		factor = new DefaultLoggerFactory("org/iotcity/iot/framework/core/logging/iot-logger-template.properties", true);
-		logger = factor.getLogger("GLOBAL");
-		logger.trace("Test debugger for template constructor");
-		logger.debug("Test debugger for template constructor");
-		logger.info("Test debugger for template constructor");
-		logger.warn("Test debugger for template constructor");
-		logger.error("Test debugger for template constructor");
-		logger.fatal("Test debugger for template constructor");
-
-		System.out.println("-------------------------- (CORE) ------------------------");
-
-		logger = factor.getLogger("CORE");
-		logger.trace("Test debugger for template constructor");
-		logger.debug("Test debugger for template constructor");
-		logger.info("Test debugger for template constructor");
-		logger.warn("Test debugger for template constructor");
-		logger.error("Test debugger for template constructor");
-		logger.fatal("Test debugger for template constructor");
-
-		System.out.println("-------------------------- (ACTOR) ------------------------");
-
-		logger = factor.getLogger("ACTOR");
-		logger.trace("Test debugger for template constructor");
-		logger.debug("Test debugger for template constructor");
-		logger.info("Test debugger for template constructor");
-		logger.warn("Test debugger for template constructor");
-		logger.error("Test debugger for template constructor");
-		logger.fatal("Test debugger for template constructor", new Throwable("FATAL TEST"));
-
-		System.out.println("-------------------------- (CLASS) ------------------------");
-
-		logger = factor.getLogger("CORE", this.getClass());
-		logger.trace("Test debugger for class");
-		logger.debug("Test debugger for class");
-		logger.info("Test debugger for class");
-		logger = factor.getLogger("CORE", this.getClass(), 1);
-		logger.warn("Test debugger for depth");
-		logger.error("Test debugger for depth");
-		logger.fatal("Test debugger for depth");
-
-		assertTrue(true);
 	}
 
 }

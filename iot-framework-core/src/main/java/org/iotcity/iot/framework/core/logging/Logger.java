@@ -7,10 +7,13 @@ package org.iotcity.iot.framework.core.logging;
 public interface Logger {
 
 	/**
-	 * Gets the logger name
-	 * @return String Logger name
+	 * Create a new logger instance to log message (returns not null)
+	 * @param name Logger name (required, not null or empty)
+	 * @param clazz The Class whose name should be used in message. If null it will default to the calling class.
+	 * @param callerDepth The depth from get logger method to the logging message method (0 by default)
+	 * @return Logger A logger to log message (not null)
 	 */
-	String getName();
+	Logger newInstance(String name, Class<?> clazz, int callerDepth);
 
 	/**
 	 * Logs a message with the <b>TRACE</b> level.
