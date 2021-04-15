@@ -39,14 +39,21 @@ public final class DefaultLocaleConfigure implements PropertiesConfigure<Default
 			String locale = keys[i].trim();
 			if (locale.length() == 0) continue;
 
-			// iot.framework.core.i18n.core
+			// iot.framework.core.i18n.xxxx
 			String localeKey = "iot.framework.core.i18n." + locale;
 			// iot.framework.core.i18n.core.enabled=true
 			boolean enabled = ConvertHelper.toBoolean(props.getProperty(localeKey + ".enabled"), true);
 			if (!enabled) continue;
-			// iot.framework.core.i18n.core.name=CORE
+
+			// iot.framework.core.i18n.xxxx.name=CORE
 			String name = props.getProperty(localeKey + ".name", locale);
-			// iot.framework.core.i18n.core.langs=en_US, zh_CN
+			if (StringHelper.isEmpty(name)) name = locale;
+			// Get default language key: iot.framework.core.i18n.xxxx.default
+			String defaultLang = props.getProperty(localeKey + ".default", null);
+			// Set default language key
+			configurable.setDefaultLangKey(name, defaultLang);
+
+			// iot.framework.core.i18n.xxxx.langs=en_US, zh_CN
 			String langs = props.getProperty(localeKey + ".langs");
 			if (langs == null || langs.length() == 0) continue;
 			String[] langAry = langs.split("[,;]");
@@ -56,9 +63,9 @@ public final class DefaultLocaleConfigure implements PropertiesConfigure<Default
 				// en_US
 				String lang = langAry[x].trim();
 				if (lang.length() == 0) continue;
-				// iot.framework.core.i18n.core.langs.en_US.fromPackage=true
+				// iot.framework.core.i18n.xxxx.langs.en_US.fromPackage=true
 				boolean frompkg = ConvertHelper.toBoolean(props.getProperty(localeKey + ".langs." + lang + ".fromPackage"), true);
-				// iot.framework.core.i18n.core.langs.en_US.file=org/iotcity/iot/framework/core/i18n/i18n-core-en-us.properties
+				// iot.framework.core.i18n.xxxx.langs.en_US.file=org/iotcity/iot/framework/core/i18n/i18n-core-en-us.properties
 				String file = props.getProperty(localeKey + ".langs." + lang + ".file");
 				if (file == null) continue;
 				file = file.trim();

@@ -7,10 +7,13 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.iotcity.iot.framework.IoTFramework;
+
 /**
+ * Task handler objects supporting thread pool to execute tasks and timer tasks.
  * @author Ardon
  */
-public class TaskHandler {
+public final class TaskHandler {
 
 	// --------------------------- Private fields ----------------------------
 
@@ -58,7 +61,7 @@ public class TaskHandler {
 	 * @param corePoolSize The number of threads to keep in the pool.
 	 * @param maximumPoolSize The maximum number of threads to allow in the pool.
 	 * @param keepAliveTime The maximum seconds that excess idle threads will wait for new tasks before terminating.
-	 * @param capacity The capacity of blocking queue to cache tasks when reaches the maximum of threads in the pool.
+	 * @param capacity The capacity of blocking queue to cache tasks when reaches the maximum of threads in the pool (0 by default).
 	 */
 	public TaskHandler(String name, int corePoolSize, int maximumPoolSize, long keepAliveTime, int capacity) {
 		// Create task queue and timer loop thread
@@ -74,6 +77,7 @@ public class TaskHandler {
 	/**
 	 * Use the thread pool to execute tasks immediately.
 	 * @param task Task to be execute.
+	 * @return If the task cannot be submitted for execution, it returns false; otherwise, it returns true.
 	 */
 	public boolean run(Runnable task) {
 		if (task == null || destroyed) return false;
@@ -91,7 +95,7 @@ public class TaskHandler {
 
 	/**
 	 * Add a task to be executed at a specified time, the task will be executed only once.
-	 * @param task Task to be execute.
+	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param time Time at which task is to be executed.
 	 * @return long Returns a task ID (sequence number), and -1 if it fails.
 	 */
@@ -101,7 +105,7 @@ public class TaskHandler {
 
 	/**
 	 * Add a task to be executed at the start time, and then execute according to each specified period.
-	 * @param task Task to be execute.
+	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param startTime Start time at which task is to be executed.
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @return long Returns a task ID (sequence number), and -1 if it fails.
@@ -113,7 +117,7 @@ public class TaskHandler {
 	/**
 	 * Add a task to be executed at the start time, and then execute according to each specified period.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
-	 * @param task Task to be execute.
+	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param startTime Start time at which task is to be executed.
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
@@ -139,8 +143,8 @@ public class TaskHandler {
 
 	/**
 	 * Add a task to be executed after the specified delay time, the task will be executed only once.
-	 * @param task Task to be execute.
-	 * @param delay Delay in milliseconds before task is to be executed.
+	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @return long Returns a task ID (sequence number), and -1 if it fails.
 	 */
 	public long add(Runnable task, long delay) {
@@ -149,8 +153,8 @@ public class TaskHandler {
 
 	/**
 	 * Add a task to be executed after the specified delay time, and then execute according to each specified period.
-	 * @param task Task to be execute.
-	 * @param delay Delay in milliseconds before task is to be executed.
+	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @return long Returns a task ID (sequence number), and -1 if it fails.
 	 */
@@ -161,19 +165,19 @@ public class TaskHandler {
 	/**
 	 * Add a task to be executed after the specified delay time, and then execute according to each specified period.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
-	 * @param task Task to be execute.
-	 * @param delay Delay in milliseconds before task is to be executed.
+	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
 	 * @return long Returns a task ID (sequence number), and -1 if it fails.
 	 */
 	public long add(Runnable task, long delay, long period, long executions) {
 		// Parameter verification (-1 means no restriction)
-		if (destroyed || task == null || period == 0 || period < -1 || executions == 0 || executions < -1) return -1;
+		if (destroyed || task == null || delay < 0 || period == 0 || period < -1 || executions == 0 || executions < -1) return -1;
 		// Start timer thread
-		this.thread.startLoop();
+		thread.startLoop();
 		// Add a task to queue
-		return this.queue.add(new TimerTask(task, delay, period, executions));
+		return queue.add(task, delay, period, executions);
 	}
 
 	/**
@@ -182,7 +186,7 @@ public class TaskHandler {
 	 * @return boolean whether the task exists.
 	 */
 	public boolean contains(long taskID) {
-		return this.queue.contains(taskID);
+		return queue.contains(taskID);
 	}
 
 	/**
@@ -191,28 +195,14 @@ public class TaskHandler {
 	 * @return The task that has been removed, returns null when it does not exist.
 	 */
 	public Runnable remove(long taskID) {
-		return this.queue.remove(taskID);
+		return queue.remove(taskID);
 	}
 
 	/**
 	 * Remove all timer tasks
 	 */
 	public void clear() {
-		this.queue.clear();
-	}
-
-	/**
-	 * Pause all timer tasks
-	 */
-	public void pause() {
-		this.thread.pauseLoop();
-	}
-
-	/**
-	 * Resume all timer tasks
-	 */
-	public void resume() {
-		this.thread.resumeLoop();
+		queue.clear();
 	}
 
 	/**
@@ -225,17 +215,17 @@ public class TaskHandler {
 			if (destroyed) return;
 			destroyed = true;
 		}
-		// Stop thread loop
-		this.thread.stopLoop();
-		// Clear all tasks
-		this.queue.clear();
+		// Stop thread loop, the queue will be cleared
+		thread.stopLoop();
 		try {
 			// Shutdown thread pool
-			this.pool.shutdown();
+			pool.shutdown();
 		} catch (Exception e) {
 			System.err.println("Shutdown thread pool in task handler error: " + e.getMessage());
 			e.printStackTrace();
 		}
+		// Log destroy message
+		IoTFramework.getLoggerFactory().getLogger().info("");
 	}
 
 }

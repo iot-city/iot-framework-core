@@ -18,11 +18,15 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	// --------------------------- Private fields ----------------------------
 
 	/**
-	 * Default language key (e.g. "en_US")
+	 * Global language key (e.g. "en_US").
 	 */
-	private String defaultLang;
+	private String globalLang;
 	/**
-	 * The text map of current factory, the key is name and language key, the value is the locale text object
+	 * The language keys map of current factory.
+	 */
+	private final Map<String, String> langs = new HashMap<>();
+	/**
+	 * The text map of current factory, the key is name and language key, the value is the locale text object.
 	 */
 	private final Map<String, LocaleText> texts = new HashMap<>();
 
@@ -32,7 +36,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	 * Constructor for default locale factory
 	 */
 	public DefaultLocaleFacotry() {
-		this.defaultLang = SystemHelper.getSystemLang();
+		this.globalLang = SystemHelper.getSystemLang();
 	}
 
 	// --------------------------- Public methods ----------------------------
@@ -136,21 +140,38 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	// --------------------------- Override methods ----------------------------
 
 	@Override
-	public void setDefaultLang(String lang) {
+	public String getGlobalLangKey() {
+		return this.globalLang;
+	}
+
+	@Override
+	public void setGlobalLangKey(String lang) {
 		if (StringHelper.isEmpty(lang)) return;
-		this.defaultLang = lang;
+		this.globalLang = lang;
 	}
 
 	@Override
-	public String getDefaultLang() {
-		return defaultLang;
+	public String getDefaultLangKey(String name) {
+		if (StringHelper.isEmpty(name)) return this.globalLang;
+		String lang = this.langs.get(name.toUpperCase());
+		return StringHelper.isEmpty(lang) ? this.globalLang : lang;
 	}
 
 	@Override
-	public LocaleText getDefaultLocale(String name) {
-		if (StringHelper.isEmpty(name)) return new DefaultLocaleText(null, defaultLang, null);
-		LocaleText text = this.texts.get(getKey(name, defaultLang));
-		return text == null ? new DefaultLocaleText(name, defaultLang, null) : text;
+	public void setDefaultLangKey(String name, String lang) {
+		if (StringHelper.isEmpty(name)) return;
+		if (StringHelper.isEmpty(lang)) {
+			this.langs.remove(name.toUpperCase());
+		} else {
+			this.langs.put(name.toUpperCase(), lang);
+		}
+	}
+
+	@Override
+	public LocaleText getLocale(String name) {
+		if (StringHelper.isEmpty(name)) return new DefaultLocaleText(null, this.getDefaultLangKey(name), null);
+		LocaleText text = this.texts.get(getKey(name, this.getDefaultLangKey(name)));
+		return text == null ? new DefaultLocaleText(name, this.getDefaultLangKey(name), null) : text;
 	}
 
 	@Override
@@ -159,7 +180,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 			return new DefaultLocaleText(name, lang, null);
 		}
 		LocaleText text = this.texts.get(getKey(name, lang));
-		if (text == null) text = this.texts.get(getKey(name, defaultLang));
+		if (text == null) text = this.texts.get(getKey(name, this.getDefaultLangKey(name)));
 		return text == null ? new DefaultLocaleText(name, lang, null) : text;
 	}
 

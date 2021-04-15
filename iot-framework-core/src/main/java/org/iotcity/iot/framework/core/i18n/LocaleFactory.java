@@ -7,29 +7,43 @@ package org.iotcity.iot.framework.core.i18n;
 public interface LocaleFactory {
 
 	/**
-	 * Set default language key
-	 * @param lang Language key (required, not null or empty, e.g. "en_US")
+	 * Gets a global default language key (returns not null, e.g. "en_US").
+	 * @return Language key (not null or empty).
 	 */
-	void setDefaultLang(String lang);
+	String getGlobalLangKey();
 
 	/**
-	 * Gets a default language key (returns not null, e.g. "en_US")
-	 * @return String Language key (not null or empty)
+	 * Set a global default language key.
+	 * @param lang Language key (required, not null or empty, e.g. "en_US").
 	 */
-	String getDefaultLang();
+	void setGlobalLangKey(String lang);
 
 	/**
-	 * Gets a default language locale text object (returns not null)
-	 * @param name The locale name (required, not null or empty, e.g. "CORE")
-	 * @return LocaleText Locale text object (not null)
+	 * Gets a default language key for specified locale name (returns not null, e.g. "en_US").
+	 * @param name The locale name (required, not null or empty, e.g. "CORE").
+	 * @return Language key (not null or empty).
 	 */
-	LocaleText getDefaultLocale(String name);
+	String getDefaultLangKey(String name);
 
 	/**
-	 * Gets a locale text object by specified name and language key (returns not null)
-	 * @param name The locale name (required, not null or empty, e.g. "CORE")
-	 * @param lang Locale text language key (required, not null or empty, e.g. "en_US", "zh_CN")
-	 * @return LocaleText Locale text object (not null)
+	 * Set a default language key for specified locale name.
+	 * @param name The locale name (required, not null or empty, e.g. "CORE").
+	 * @param lang Default language key for locale name (set a null value to use global language key by default, e.g. "en_US").
+	 */
+	void setDefaultLangKey(String name, String lang);
+
+	/**
+	 * Gets a default language locale text object (returns not null).
+	 * @param name The locale name (required, not null or empty, e.g. "CORE").
+	 * @return Locale text object (not null).
+	 */
+	LocaleText getLocale(String name);
+
+	/**
+	 * Gets a locale text object by specified name and language key (returns not null).
+	 * @param name The locale name (required, not null or empty, e.g. "CORE").
+	 * @param lang Locale text language key (required, not null or empty, e.g. "en_US", "zh_CN").
+	 * @return Locale text object (not null).
 	 */
 	LocaleText getLocale(String name, String lang);
 

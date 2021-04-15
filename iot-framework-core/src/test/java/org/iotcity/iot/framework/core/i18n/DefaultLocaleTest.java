@@ -20,18 +20,16 @@ public class DefaultLocaleTest extends TestCase {
 		logger.info("------------------------- DEFAULT LOCALE TEST -------------------------");
 
 		DefaultLocaleFacotry factory = new DefaultLocaleFacotry();
-		LocaleText locale = factory.getDefaultLocale("CORE");
-		logger.info(locale.text("core.test.locale1", "core.test.locale1", ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")));
-		logger.info(locale.text("core.test.locale2", "core.test.locale2", ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")));
+		logger.info("Global language: " + factory.getGlobalLangKey());
 
 		logger.info("------------------------- TEST TEMPLATE CONFIGURE -------------------------");
 
 		new DefaultLocaleConfigure().config(factory, "org/iotcity/iot/framework/core/i18n/iot-i18n-template.properties", true);
 
-		logger.info("------------------------- LOCALE TEST: DEFAULT LANG -------------------------");
+		logger.info("------------------------- LOCALE TEST: CORE -------------------------");
 
-		locale = factory.getDefaultLocale("CORE");
-		logger.info("Default language: " + factory.getDefaultLang());
+		LocaleText locale = factory.getLocale("CORE");
+		logger.info("Default language: " + factory.getDefaultLangKey("CORE"));
 		logger.info(locale.text("core.test.locale1", "core.test.locale1", ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")));
 		logger.info(locale.text("core.test.locale2", "core.test.locale2", ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")));
 
@@ -46,6 +44,13 @@ public class DefaultLocaleTest extends TestCase {
 
 		locale = factory.getLocale("CORE", "zh_CN");
 		logger.info("zh_CN:");
+		logger.info(locale.text("core.test.locale1", "core.test.locale1", ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")));
+		logger.info(locale.text("core.test.locale2", "core.test.locale2", ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")));
+
+		logger.info("------------------------- LOCALE TEST: ACTORS -------------------------");
+
+		locale = factory.getLocale("ACTORS");
+		logger.info("Default language: " + factory.getDefaultLangKey("ACTORS"));
 		logger.info(locale.text("core.test.locale1", "core.test.locale1", ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")));
 		logger.info(locale.text("core.test.locale2", "core.test.locale2", ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS")));
 
