@@ -7,7 +7,7 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.iotcity.iot.framework.IoTFramework;
+import org.iotcity.iot.framework.core.util.helper.StringHelper;
 
 /**
  * Task handler objects supporting thread pool to execute tasks and timer tasks.
@@ -17,6 +17,10 @@ public final class TaskHandler {
 
 	// --------------------------- Private fields ----------------------------
 
+	/**
+	 * The task handler name.
+	 */
+	private final String name;
 	/**
 	 * The timer task queue
 	 */
@@ -64,15 +68,27 @@ public final class TaskHandler {
 	 * @param capacity The capacity of blocking queue to cache tasks when reaches the maximum of threads in the pool (0 by default).
 	 */
 	public TaskHandler(String name, int corePoolSize, int maximumPoolSize, long keepAliveTime, int capacity) {
+		// Set handler name
+		this.name = StringHelper.isEmpty(name) ? "TaskHandler" : name;
 		// Create task queue and timer loop thread
-		this.queue = new TimerTaskQueue();
-		this.thread = new TimerTaskThread(name, this, this.queue);
+		queue = new TimerTaskQueue(this.name);
+		thread = new TimerTaskThread(this.name, this, queue);
 		// Create thread pool
 		BlockingQueue<Runnable> blockingQueue = capacity <= 0 ? new SynchronousQueue<Runnable>() : new ArrayBlockingQueue<Runnable>(capacity);
-		this.pool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, blockingQueue, new ThreadPoolExecutor.AbortPolicy());
+		pool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, blockingQueue, new ThreadPoolExecutor.AbortPolicy());
+		// Logs message
+		thread.logger.info(thread.locale.text("core.util.task.start", this.name, corePoolSize, maximumPoolSize, keepAliveTime, capacity));
 	}
 
 	// --------------------------- Public methods ----------------------------
+
+	/**
+	 * Gets the task handler name.
+	 * @return Task handler name.
+	 */
+	public String getName() {
+		return name;
+	}
 
 	/**
 	 * Use the thread pool to execute tasks immediately.
@@ -88,7 +104,8 @@ public final class TaskHandler {
 			}
 			return true;
 		} catch (Exception e) {
-			System.err.println("Failed to execute task using thread pool in task handler: " + e.getMessage());
+			// Logs error
+			thread.logger.warn(thread.locale.text("core.util.task.pool.err", this.thread.getName(), e.getMessage()));
 			return false;
 		}
 	}
@@ -221,11 +238,11 @@ public final class TaskHandler {
 			// Shutdown thread pool
 			pool.shutdown();
 		} catch (Exception e) {
-			System.err.println("Shutdown thread pool in task handler error: " + e.getMessage());
-			e.printStackTrace();
+			// Logs error
+			thread.logger.error(thread.locale.text("core.util.task.shutdown.err", this.thread.getName(), e.getMessage()), e);
 		}
-		// Log destroy message
-		IoTFramework.getLoggerFactory().getLogger().info("");
+		// Logs destroy message
+		thread.logger.info(thread.locale.text("core.util.task.destory", this.thread.getName()));
 	}
 
 }

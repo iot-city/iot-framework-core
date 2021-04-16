@@ -5,12 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import org.iotcity.iot.framework.core.util.helper.StringHelper;
+
 /**
  * The default logger using console to output information.<br/>
  * Use System.out.println() and System.err.println() to log messages
  * @author Ardon
  */
-public class DefaultLogger<T extends DefaultLoggerLevel> implements Logger {
+public class DefaultLogger implements Logger {
 
 	// --------------------------- Private fields ----------------------------
 
@@ -29,7 +31,7 @@ public class DefaultLogger<T extends DefaultLoggerLevel> implements Logger {
 	/**
 	 * The configure map for all levels, the key is level name with upper case, the value is level configure (not null).
 	 */
-	protected final Map<String, T> levels;
+	protected final Map<String, LoggerConfigLevel> levels;
 	/**
 	 * Date format object.
 	 */
@@ -44,7 +46,7 @@ public class DefaultLogger<T extends DefaultLoggerLevel> implements Logger {
 	 * @param callerDepth The depth from get logger method to the logging message method (0 by default).
 	 * @param levels The configure map for all levels, the key is level name with upper case, the value is level configure (required, not null).
 	 */
-	public DefaultLogger(String name, Class<?> clazz, int callerDepth, Map<String, T> levels) {
+	public DefaultLogger(String name, Class<?> clazz, int callerDepth, Map<String, LoggerConfigLevel> levels) {
 		this.name = name == null ? "" : name;
 		this.clazz = clazz;
 		this.callerDepth = (callerDepth < 0 ? 0 : callerDepth) + 3;
@@ -54,8 +56,19 @@ public class DefaultLogger<T extends DefaultLoggerLevel> implements Logger {
 	// --------------------------- Override methods ----------------------------
 
 	@Override
+	public boolean config(LoggerConfigLevel[] data, boolean reset) {
+		if (data == null) return false;
+		if (reset) this.levels.clear();
+		for (LoggerConfigLevel config : data) {
+			if (config == null || StringHelper.isEmpty(config.name)) continue;
+			this.levels.put(config.name.toUpperCase(), config);
+		}
+		return true;
+	}
+
+	@Override
 	public Logger newInstance(String name, Class<?> clazz, int callerDepth) {
-		return new DefaultLogger<T>(name, clazz, callerDepth, levels);
+		return new DefaultLogger(name, clazz, callerDepth, levels);
 	}
 
 	@Override
@@ -126,7 +139,7 @@ public class DefaultLogger<T extends DefaultLoggerLevel> implements Logger {
 	 */
 	protected void outputMessage(String level, Object message, Throwable e) {
 		// Get level config
-		DefaultLoggerLevel config = this.levels.get(level);
+		LoggerConfigLevel config = this.levels.get(level);
 		if (config == null) return;
 
 		StringBuilder sb = new StringBuilder();

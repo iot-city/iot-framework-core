@@ -24,9 +24,10 @@ public final class PropertiesLoader {
 
 	/**
 	 * Gets a properties object
-	 * @param filePathName Properties file directory and the file name (e.g. "org/iotcity/iot/framework/actor/iot-actor.properties")
-	 * @param fromPackage Whether load file from package
-	 * @return Properties Properties object result (not null)
+	 * @param filePathName Properties file directory and the file name (e.g. "org/iotcity/iot/framework/actor/iot-actor.properties").
+	 * @param encoding Text encoding (optional, if it is set to null, it will be judged automatically).
+	 * @param fromPackage Whether load file from package.
+	 * @return Properties Properties object result (not null).
 	 */
 	public static Properties loadProperties(String filePathName, String encoding, boolean fromPackage) {
 		if (filePathName == null || filePathName.length() == 0) return null;

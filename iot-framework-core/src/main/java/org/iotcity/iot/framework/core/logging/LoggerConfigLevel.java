@@ -1,10 +1,10 @@
 package org.iotcity.iot.framework.core.logging;
 
 /**
- * Default level configure data
+ * Logger level configure data
  * @author Ardon
  */
-public class DefaultLoggerLevel {
+public class LoggerConfigLevel {
 
 	/**
 	 * The level name

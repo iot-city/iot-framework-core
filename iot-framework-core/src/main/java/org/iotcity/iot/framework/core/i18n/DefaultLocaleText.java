@@ -1,7 +1,9 @@
 package org.iotcity.iot.framework.core.i18n;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.iotcity.iot.framework.core.util.helper.JavaHelper;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
 
 /**
@@ -15,15 +17,15 @@ public class DefaultLocaleText implements LocaleText {
 	/**
 	 * The locale text name (e.g. "CORE").
 	 */
-	private final String name;
+	final String name;
 	/**
 	 * The locale text language key (e.g. "en_US", "zh_CN").
 	 */
-	private final String lang;
+	final String lang;
 	/**
 	 * The text map with key and text value.
 	 */
-	private final Map<Object, Object> texts;
+	final Map<Object, Object> texts;
 
 	// --------------------------- Constructor ----------------------------
 
@@ -36,7 +38,7 @@ public class DefaultLocaleText implements LocaleText {
 	public DefaultLocaleText(String name, String lang, Map<Object, Object> texts) {
 		this.name = name == null ? "" : name;
 		this.lang = lang == null ? "" : lang;
-		this.texts = texts;
+		this.texts = texts == null ? new HashMap<>(JavaHelper.getMapInitialCapacity(1)) : texts;
 	}
 
 	// --------------------------- Private methods ----------------------------
@@ -48,11 +50,19 @@ public class DefaultLocaleText implements LocaleText {
 	 */
 	private final String getDefaultText(String key) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("[TEXT: ").append(name).append(" - ").append(lang).append(": \"").append(key).append("\" NOT EXISTS]");
+		sb.append("XXX [TEXT: ").append(name).append(" - ").append(lang).append(": \"").append(key).append("\" NOT EXISTS]");
 		return sb.toString();
 	}
 
 	// --------------------------- Override methods ----------------------------
+
+	@Override
+	public boolean config(LocaleConfigText data, boolean reset) {
+		if (data == null || data.texts == null) return false;
+		if (reset) this.texts.clear();
+		this.texts.putAll(data.texts);
+		return true;
+	}
 
 	@Override
 	public final String getName() {
@@ -66,7 +76,7 @@ public class DefaultLocaleText implements LocaleText {
 
 	@Override
 	public String text(String key, Object... params) {
-		if (texts == null || key == null) return getDefaultText(key);
+		if (key == null) return getDefaultText(key);
 		String text = (String) texts.get(key);
 		if (text == null) return getDefaultText(key);
 		if (params != null && params.length > 0) {

@@ -140,6 +140,43 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	// --------------------------- Override methods ----------------------------
 
 	@Override
+	public boolean config(LocaleConfig[] data, boolean reset) {
+		if (data == null) return false;
+		if (reset) {
+			this.clearLocales();
+			this.langs.clear();
+		}
+		for (LocaleConfig config : data) {
+			if (config == null || StringHelper.isEmpty(config.name)) continue;
+			// Set language key
+			String name = config.name;
+			// Remove disable locale
+			if (!reset && !config.enabled) {
+				this.removeLocales(name);
+				this.setDefaultLangKey(name, null);
+				continue;
+			}
+			// Set default language
+			this.setDefaultLangKey(name, config.defaultLang);
+			LocaleConfigText[] langs = config.langs;
+			if (langs == null || langs.length == 0) continue;
+			// Set locale text configure
+			for (LocaleConfigText textConfig : langs) {
+				if (textConfig == null || StringHelper.isEmpty(textConfig.lang)) continue;
+				String lang = textConfig.lang;
+				LocaleText locale = this.texts.get(getKey(name, lang));
+				if (locale == null) {
+					locale = new DefaultLocaleText(config.name, textConfig.lang, textConfig.texts);
+					this.addLocale(name, lang, locale);
+				} else {
+					locale.config(textConfig, reset);
+				}
+			}
+		}
+		return true;
+	}
+
+	@Override
 	public String getGlobalLangKey() {
 		return this.globalLang;
 	}

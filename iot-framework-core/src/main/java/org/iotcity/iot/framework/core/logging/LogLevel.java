@@ -6,6 +6,8 @@ package org.iotcity.iot.framework.core.logging;
  */
 public final class LogLevel {
 
+	// --------------------------- Public static fields ----------------------------
+
 	/**
 	 * A fine-grained debug message, typically capturing the flow through the application.
 	 */
@@ -32,9 +34,9 @@ public final class LogLevel {
 	public static final String FATAL = "FATAL";
 
 	/**
-	 * All logger levels
+	 * All logger levels in upper case.
 	 */
-	public static final String[] ALL = new String[] {
+	public static final String[] ALL_IN_UPPER_CASE = new String[] {
 		TRACE,
 		DEBUG,
 		INFO,
@@ -44,9 +46,9 @@ public final class LogLevel {
 	};
 
 	/**
-	 * All logger levels
+	 * All logger levels in lower case.
 	 */
-	public static final String[] ALL_LOWER_CASE = new String[] {
+	public static final String[] ALL_IN_LOWER_CASE = new String[] {
 		"trace",
 		"debug",
 		"info",

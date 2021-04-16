@@ -27,7 +27,7 @@ public class DefaultLoggerTest extends TestCase {
 
 		System.out.println("-------------------- TEST TEMPLATE CONFIG ------------------");
 
-		new DefaultLoggerConfigure().config(factory, "org/iotcity/iot/framework/core/logging/iot-logger-template.properties", true);
+		new LoggerConfigure("org/iotcity/iot/framework/core/logging/iot-logger-template.properties", true).config(factory, true);
 
 		System.out.println("-------------------------- (GLOBAL) ------------------------");
 

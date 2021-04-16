@@ -1,10 +1,12 @@
 package org.iotcity.iot.framework.core.logging;
 
+import org.iotcity.iot.framework.core.config.Configurable;
+
 /**
- * Logger
+ * The logger object interface.
  * @author Ardon
  */
-public interface Logger {
+public interface Logger extends Configurable<LoggerConfigLevel[]> {
 
 	/**
 	 * Create a new logger instance to log message (returns not null)

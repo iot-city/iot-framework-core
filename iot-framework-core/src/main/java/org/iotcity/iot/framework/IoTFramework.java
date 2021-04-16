@@ -1,6 +1,5 @@
 package org.iotcity.iot.framework;
 
-import org.iotcity.iot.framework.core.i18n.DefaultLocaleConfigure;
 import org.iotcity.iot.framework.core.i18n.DefaultLocaleFacotry;
 import org.iotcity.iot.framework.core.i18n.LocaleFactory;
 import org.iotcity.iot.framework.core.logging.DefaultLoggerFactory;
@@ -33,12 +32,6 @@ public final class IoTFramework {
 	 * Default locale factory in framework.
 	 */
 	private static LocaleFactory localeFactory = new DefaultLocaleFacotry();
-
-	// Initialize configure
-	static {
-		// Initialize locale factory for multiple language configuration
-		new DefaultLocaleConfigure().config((DefaultLocaleFacotry) localeFactory, "org/iotcity/iot/framework/core/i18n/i18n-core-config.properties", true);
-	}
 
 	// --------------------------- Public static methods ----------------------------
 

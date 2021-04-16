@@ -2,6 +2,7 @@ package org.iotcity.iot.framework.core.util.helper;
 
 import java.util.Random;
 import java.util.UUID;
+import java.util.regex.Matcher;
 
 /**
  * String util
@@ -100,9 +101,9 @@ public final class StringHelper {
 			Object obj = values[i];
 			String param = "";
 			if (obj != null) {
-				param = obj.toString();
+				param = String.valueOf(obj);
 			}
-			param = param.replaceAll("\\\\", "\\\\\\\\");
+			param = Matcher.quoteReplacement(param);
 			result = result.replaceAll("\\{\\s*" + i + "\\s*\\}", param);
 		}
 		return result;

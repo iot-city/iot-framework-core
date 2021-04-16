@@ -1,18 +1,51 @@
 package org.iotcity.iot.framework.core.config;
 
+import java.util.Properties;
+
+import org.iotcity.iot.framework.core.util.config.PropertiesLoader;
+import org.iotcity.iot.framework.core.util.helper.StringHelper;
+
 /**
  * Automatic properties configuration object.
+ * @param <T> The configure data type.
  * @author Ardon
  */
-public interface PropertiesConfigure<T> extends AutoConfigure {
+public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 
 	/**
-	 * Load the properties file and configure the configuration data to the configurable object.
-	 * @param configurable Configurable object that need to be configured (required, not null).
+	 * Properties configure data (not null).
+	 */
+	protected final Properties props;
+
+	/**
+	 * Constructor for automatic properties configuration object.
 	 * @param configFile The configure properties file to load (required, not null or empty).
 	 * @param fromPackage Whether load the file from package.
-	 * @return Whether configuration is successful
+	 * @throws IllegalArgumentException An error is thrown when the parameter is null
 	 */
-	boolean config(T configurable, String configFile, boolean fromPackage);
+	public PropertiesConfigure(String configFile, boolean fromPackage) {
+		// Parameters verification
+		if (StringHelper.isEmpty(configFile)) {
+			throw new IllegalArgumentException("Parameter configFile can not be null or empty!");
+		}
+		// Load properties file
+		props = PropertiesLoader.loadProperties(configFile, "UTF-8", fromPackage);
+	}
+
+	/**
+	 * Constructor for automatic properties configuration object.
+	 * @param configFile The configure properties file to load (required, not null or empty).
+	 * @param encoding Text encoding (optional, if it is set to null, it will be judged automatically).
+	 * @param fromPackage Whether load the file from package.
+	 * @throws IllegalArgumentException An error is thrown when the parameter is null
+	 */
+	public PropertiesConfigure(String configFile, String encoding, boolean fromPackage) {
+		// Parameters verification
+		if (StringHelper.isEmpty(configFile)) {
+			throw new IllegalArgumentException("Parameter configFile can not be null or empty!");
+		}
+		// Load properties file
+		props = PropertiesLoader.loadProperties(configFile, encoding, fromPackage);
+	}
 
 }

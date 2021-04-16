@@ -1,5 +1,7 @@
 package org.iotcity.iot.framework.core.util.task;
 
+import org.iotcity.iot.framework.core.FrameworkCore;
+
 /**
  * The timer task<br/>
  * This task will be executed in single thread mode within the thread pool.
@@ -178,8 +180,8 @@ final class TimerTask implements Runnable {
 			// Run task
 			task.run();
 		} catch (Exception e) {
-			System.err.println("Timer task execution error: " + e.getMessage());
-			e.printStackTrace();
+			// Logs error
+			FrameworkCore.getLogger().error(FrameworkCore.getLocale().text("core.util.task.task.err", queue.getName(), task.getClass(), e.getMessage()), e);
 		}
 		// Set running status (No need to consider thread safety, it's safe in main loop).
 		running = false;

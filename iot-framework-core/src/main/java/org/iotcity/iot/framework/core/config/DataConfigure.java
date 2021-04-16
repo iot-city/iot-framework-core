@@ -4,13 +4,33 @@ package org.iotcity.iot.framework.core.config;
  * Automatic data configuration object.
  * @author Ardon
  */
-public interface DataConfigure<T> extends AutoConfigure {
+public abstract class DataConfigure<T> implements AutoConfigure<T> {
 
 	/**
-	 * Execute data configuration for configurable object.
-	 * @param configurable Configurable object that need to be configured (required, not null).
-	 * @return Whether configuration is successful.
+	 * Configuration data (not null).
 	 */
-	boolean config(T configurable);
+	protected final T data;
+
+	/**
+	 * Constructor for automatic data configuration object.
+	 * @param <T> The configure data type.
+	 * @param data Configuration data (required, not null).
+	 * @throws IllegalArgumentException An error is thrown when the parameter is null
+	 */
+	public DataConfigure(T data) {
+		// Parameters verification
+		if (data == null) {
+			throw new IllegalArgumentException("Parameter data can not be null!");
+		}
+		this.data = data;
+	}
+
+	/**
+	 * Gets the configure data (not null).
+	 * @return Configuration data.
+	 */
+	public T getConfigureData() {
+		return this.data;
+	}
 
 }

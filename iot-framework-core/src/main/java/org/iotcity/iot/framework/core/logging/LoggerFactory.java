@@ -1,10 +1,12 @@
 package org.iotcity.iot.framework.core.logging;
 
+import org.iotcity.iot.framework.core.config.Configurable;
+
 /**
  * Use the logger factory to create logging objects
  * @author Ardon
  */
-public interface LoggerFactory {
+public interface LoggerFactory extends Configurable<LoggerConfig[]> {
 
 	/**
 	 * Get a logger to log message (returns not null)<br/>

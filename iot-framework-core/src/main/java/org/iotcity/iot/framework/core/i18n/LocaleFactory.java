@@ -1,10 +1,12 @@
 package org.iotcity.iot.framework.core.i18n;
 
+import org.iotcity.iot.framework.core.config.Configurable;
+
 /**
  * Use the locale factory to get locale text objects
  * @author Ardon
  */
-public interface LocaleFactory {
+public interface LocaleFactory extends Configurable<LocaleConfig[]> {
 
 	/**
 	 * Gets a global default language key (returns not null, e.g. "en_US").

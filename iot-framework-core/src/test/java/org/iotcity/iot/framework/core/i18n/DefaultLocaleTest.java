@@ -2,7 +2,7 @@ package org.iotcity.iot.framework.core.i18n;
 
 import java.util.Date;
 
-import org.iotcity.iot.framework.core.logging.DefaultLoggerFactory;
+import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.logging.Logger;
 import org.iotcity.iot.framework.core.util.helper.ConvertHelper;
 
@@ -13,7 +13,7 @@ import junit.framework.TestCase;
  */
 public class DefaultLocaleTest extends TestCase {
 
-	private final Logger logger = new DefaultLoggerFactory().getLogger();
+	private final Logger logger = FrameworkCore.getLogger();
 
 	public void testLocaleText() {
 
@@ -24,7 +24,7 @@ public class DefaultLocaleTest extends TestCase {
 
 		logger.info("------------------------- TEST TEMPLATE CONFIGURE -------------------------");
 
-		new DefaultLocaleConfigure().config(factory, "org/iotcity/iot/framework/core/i18n/iot-i18n-template.properties", true);
+		new LocaleConfigure("org/iotcity/iot/framework/core/i18n/iot-i18n-template.properties", true).config(factory, true);
 
 		logger.info("------------------------- LOCALE TEST: CORE -------------------------");
 

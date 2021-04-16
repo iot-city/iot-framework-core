@@ -8,25 +8,6 @@ import java.util.TimeZone;
  */
 public final class SunriseSunsetHelper {
 
-	// --------------------------- Public fields ----------------------------
-
-	/**
-	 * Milliseconds per minute
-	 */
-	public static final long MINUTE_MS = 60 * 1000;
-	/**
-	 * Milliseconds per hour
-	 */
-	public static final long HOUR_MS = 60 * MINUTE_MS;
-	/**
-	 * Milliseconds per day
-	 */
-	public static final long DAY_MS = 24 * HOUR_MS;
-	/**
-	 * Milliseconds per month (31 days)
-	 */
-	public static final long MONTH_MS = 31 * DAY_MS;
-
 	// --------------------------- Public methods ----------------------------
 
 	/**
@@ -63,7 +44,7 @@ public final class SunriseSunsetHelper {
 		}
 		a = 365.0 * year - 679004.0;
 		double mjday = (a + b + Math.floor(30.6001 * (month + 1)) + day);
-		double tzh = tz.getRawOffset() / HOUR_MS;
+		double tzh = tz.getRawOffset() / SystemHelper.HOUR_MS;
 		return _calRiseSet(mjday, tzh, lng, lat);
 	}
 

@@ -500,6 +500,23 @@ public final class ConvertHelper {
 	// --------------------------- Public methods for formating ----------------------------
 
 	/**
+	 * Convert data from date to formated string (return null by default).<br/>
+	 * <b>Current datetime format: "yyyy-MM-dd HH:mm:ss".</b>
+	 * @param date Data value
+	 * @return String result
+	 */
+	public static String formatDate(Date date) {
+		try {
+			if (date != null) {
+				DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+				return df.format(date);
+			}
+		} catch (Exception e) {
+		}
+		return null;
+	}
+
+	/**
 	 * Convert data from date to formated string (return null by default)
 	 * @param date Data value
 	 * @param format Output string format (e.g. "yyyy-MM-dd HH:mm:ss.SSS")

@@ -1,31 +1,48 @@
 package org.iotcity.iot.framework.core.i18n;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
+import org.iotcity.iot.framework.core.config.Configurable;
 import org.iotcity.iot.framework.core.config.PropertiesConfigure;
 import org.iotcity.iot.framework.core.util.config.PropertiesLoader;
 import org.iotcity.iot.framework.core.util.helper.ConvertHelper;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
 
 /**
- * Use this configuration loader to load the default localization configuration.<br/>
+ * Use this configuration loader to load the localization configuration.<br/>
  * <b>(Default locale factory template file: "org/iotcity/iot/framework/core/i18n/iot-i18n-template.properties")</b>
  * @author Ardon
  */
-public final class DefaultLocaleConfigure implements PropertiesConfigure<DefaultLocaleFacotry> {
+public final class LocaleConfigure extends PropertiesConfigure<LocaleConfig[]> {
 
 	/**
-	 * Load locale text resource to locale factory.<br/>
+	 * Constructor for automatic properties configuration object.<br/>
 	 * <b>(Default locale factory template file: "org/iotcity/iot/framework/core/i18n/iot-i18n-template.properties")</b>
+	 * @param configFile The configure properties file to load (required, not null or empty).
+	 * @param fromPackage Whether load the file from package.
+	 * @throws IllegalArgumentException An error is thrown when the parameter is null
 	 */
-	@Override
-	public boolean config(DefaultLocaleFacotry configurable, String configFile, boolean fromPackage) {
-		// Parameters verification
-		if (configurable == null || StringHelper.isEmpty(configFile)) return false;
+	public LocaleConfigure(String configFile, boolean fromPackage) {
+		super(configFile, fromPackage);
+	}
 
-		// Load file properties
-		Properties props = PropertiesLoader.loadProperties(configFile, "UTF-8", fromPackage);
-		if (props == null) return false;
+	/**
+	 * Constructor for automatic properties configuration object.<br/>
+	 * <b>(Default locale factory template file: "org/iotcity/iot/framework/core/i18n/iot-i18n-template.properties")</b>
+	 * @param configFile The configure properties file to load (required, not null or empty).
+	 * @param encoding Text encoding (optional, if it is set to null, it will be judged automatically).
+	 * @param fromPackage Whether load the file from package.
+	 * @throws IllegalArgumentException An error is thrown when the parameter is null
+	 */
+	public LocaleConfigure(String configFile, String encoding, boolean fromPackage) {
+		super(configFile, encoding, fromPackage);
+	}
+
+	@Override
+	public boolean config(Configurable<LocaleConfig[]> configurable, boolean reset) {
+		if (configurable == null) return false;
 
 		// Get i18n configure keys (e.g. "core", "actor")
 		String locales = props.getProperty("iot.framework.core.i18n");
@@ -33,6 +50,8 @@ public final class DefaultLocaleConfigure implements PropertiesConfigure<Default
 		String[] keys = locales.split("[,;]");
 		if (keys == null || keys.length == 0) return false;
 
+		// Create list
+		List<LocaleConfig> list = new ArrayList<>();
 		// Traverse all locale configurations
 		for (int i = 0, c = keys.length; i < c; i++) {
 			// (e.g. "core", "actor")
@@ -41,23 +60,33 @@ public final class DefaultLocaleConfigure implements PropertiesConfigure<Default
 
 			// iot.framework.core.i18n.xxxx
 			String localeKey = "iot.framework.core.i18n." + locale;
-			// iot.framework.core.i18n.core.enabled=true
-			boolean enabled = ConvertHelper.toBoolean(props.getProperty(localeKey + ".enabled"), true);
-			if (!enabled) continue;
 
 			// iot.framework.core.i18n.xxxx.name=CORE
 			String name = props.getProperty(localeKey + ".name", locale);
 			if (StringHelper.isEmpty(name)) name = locale;
+			// iot.framework.core.i18n.core.enabled=true
+			boolean enabled = ConvertHelper.toBoolean(props.getProperty(localeKey + ".enabled"), true);
 			// Get default language key: iot.framework.core.i18n.xxxx.default
 			String defaultLang = props.getProperty(localeKey + ".default", null);
-			// Set default language key
-			configurable.setDefaultLangKey(name, defaultLang);
+
+			// Create configure data
+			LocaleConfig config = new LocaleConfig();
+			config.name = name;
+			config.enabled = enabled;
+			config.defaultLang = defaultLang;
+			// Add to list
+			list.add(config);
+
+			// Skip disable locale
+			if (!enabled) continue;
 
 			// iot.framework.core.i18n.xxxx.langs=en_US, zh_CN
 			String langs = props.getProperty(localeKey + ".langs");
 			if (langs == null || langs.length() == 0) continue;
 			String[] langAry = langs.split("[,;]");
 			if (langAry == null || langAry.length == 0) continue;
+			// Create text list
+			List<LocaleConfigText> textList = new ArrayList<>();
 			// Get each language key
 			for (int x = 0, y = langAry.length; x < y; x++) {
 				// en_US
@@ -72,12 +101,18 @@ public final class DefaultLocaleConfigure implements PropertiesConfigure<Default
 				if (file.length() == 0) continue;
 				// Load text properties file
 				Properties texts = PropertiesLoader.loadProperties(file, "UTF-8", frompkg);
-				// Add text to factory
-				configurable.addLocale(name, lang, new DefaultLocaleText(name, lang, texts));
+				// Create text configure
+				LocaleConfigText configText = new LocaleConfigText();
+				configText.lang = lang;
+				configText.texts = texts;
+				// Add to list
+				textList.add(configText);
 			}
+			// Set to locale languages
+			config.langs = textList.toArray(new LocaleConfigText[textList.size()]);
 		}
-		// Returns status
-		return true;
+		// Returns config status
+		return configurable.config(list.toArray(new LocaleConfig[list.size()]), reset);
 	}
 
 }

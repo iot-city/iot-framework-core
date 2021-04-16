@@ -11,6 +11,27 @@ import java.util.Locale;
  */
 public final class SystemHelper {
 
+	// --------------------------- Public fields ----------------------------
+
+	/**
+	 * Milliseconds per minute
+	 */
+	public static final long MINUTE_MS = 60 * 1000;
+	/**
+	 * Milliseconds per hour
+	 */
+	public static final long HOUR_MS = 60 * MINUTE_MS;
+	/**
+	 * Milliseconds per day
+	 */
+	public static final long DAY_MS = 24 * HOUR_MS;
+	/**
+	 * Milliseconds per month (31 days)
+	 */
+	public static final long MONTH_MS = 31 * DAY_MS;
+
+	// --------------------------- Private fields ----------------------------
+
 	/**
 	 * Local IP address
 	 */
@@ -19,6 +40,8 @@ public final class SystemHelper {
 	 * The lock for IP
 	 */
 	private static Object lock = new Object();
+
+	// --------------------------- Public methods ----------------------------
 
 	/**
 	 * Gets the operating system default language key

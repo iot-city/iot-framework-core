@@ -12,13 +12,17 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 final class TimerTaskQueue {
 
+	// --------------------------- Private fields ----------------------------
+
 	/**
 	 * The maximum waiting time for main loop
 	 */
-	private final static long MAX_WAIT_TIME = 60 * 60 * 1000;
+	private final static long MAX_WAIT_TIME = 1 * 60 * 1000;
 
-	// --------------------------- Private fields ----------------------------
-
+	/**
+	 * The task handler name
+	 */
+	private final String name;
 	/**
 	 * The task atomic id.
 	 */
@@ -43,6 +47,16 @@ final class TimerTaskQueue {
 	 * The next execution time for new task.
 	 */
 	private long nextTimeForAdding = Long.MAX_VALUE;
+
+	// ------------------------------ Constructor -------------------------------
+
+	/**
+	 * Constructor for timer task queue object.
+	 * @param name The task handler name.
+	 */
+	TimerTaskQueue(String name) {
+		this.name = name;
+	}
 
 	// --------------------------- Ready tasks methods ----------------------------
 
@@ -109,23 +123,20 @@ final class TimerTaskQueue {
 	}
 
 	/**
-	 * The next execution time of all tasks.
+	 * The next execution time of all tasks (greater then 0).
 	 * @param currentTime Current system time.
 	 * @return Wait time for the lock.
 	 */
-	long getWaitTime() {
+	long getWaitTime(long currentTime) {
 		// Lock for add task method
 		synchronized (tasks) {
 			// Set schedule time to new task time
 			if (nextTimeForAdding < scheduleTime) {
+				// Set to adding time
 				scheduleTime = nextTimeForAdding;
 			}
 		}
 		// Wait for notify if no task
-		if (scheduleTime == Long.MAX_VALUE) return 0;
-		// Get current time
-		long currentTime = System.currentTimeMillis();
-		// Returns the waiting time
 		if (scheduleTime > currentTime) {
 			// Get waiting time
 			long schedule = scheduleTime - currentTime;
@@ -137,7 +148,37 @@ final class TimerTaskQueue {
 		}
 	}
 
+	/**
+	 * Update task execution time after system time update
+	 * @param currentTime Current system time.
+	 */
+	void systemTimeUpdate(long currentTime) {
+		// Lock for update
+		synchronized (tasks) {
+			// Update task status using system time
+			for (TimerTask task : this.tasks.values()) {
+				task.systemTimeUpdate(currentTime);
+			}
+		}
+	}
+
 	// --------------------------- Task management methods ----------------------------
+
+	/**
+	 * Gets the task handler name.
+	 * @return Task handler name.
+	 */
+	String getName() {
+		return name;
+	}
+
+	/**
+	 * Get total tasks size.
+	 * @return Task size.
+	 */
+	int size() {
+		return tasks.size();
+	}
 
 	/**
 	 * Add a task to be executed after the specified delay time, and then execute according to each specified period.<br/>

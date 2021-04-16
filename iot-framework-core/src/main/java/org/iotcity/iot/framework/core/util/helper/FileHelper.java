@@ -16,6 +16,7 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
+import java.util.Date;
 import java.util.Properties;
 
 /**
@@ -245,6 +246,8 @@ public final class FileHelper {
 		InputStream fis = null;
 		BufferedInputStream bis = null;
 		InputStreamReader isr = null;
+		// Print message
+		System.out.println("[" + ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + "] Load properties file: " + filePathAndName);
 		try {
 			if (fromPackage) {
 				fis = FileHelper.class.getClassLoader().getResourceAsStream(filePathAndName);

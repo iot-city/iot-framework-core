@@ -1,10 +1,12 @@
 package org.iotcity.iot.framework.core.i18n;
 
+import org.iotcity.iot.framework.core.config.Configurable;
+
 /**
  * Locale text object
  * @author Ardon
  */
-public interface LocaleText {
+public interface LocaleText extends Configurable<LocaleConfigText> {
 
 	/**
 	 * Gets the locale text name (returns not null)

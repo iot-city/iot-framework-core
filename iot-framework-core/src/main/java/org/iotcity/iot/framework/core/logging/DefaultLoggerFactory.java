@@ -38,9 +38,13 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	 */
 	public DefaultLoggerFactory(boolean createRoot) {
 		if (!createRoot) return;
-		DefaultLogger<DefaultLoggerLevel> logger = new DefaultLogger<>("GLOBAL", null, 0, new HashMap<>());
-		DefaultLoggerConfigure.initDefaultLevels(DefaultLoggerLevel.class, logger.levels);
-		this.root = logger;
+		LoggerConfig config = new LoggerConfig();
+		config.name = "GLOBAL";
+		config.forRoot = true;
+		config.levels = LoggerConfigure.getDefaultLevels();
+		this.config(new LoggerConfig[] {
+			config
+		}, false);
 	}
 
 	// --------------------------- Public methods ----------------------------
@@ -114,6 +118,23 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	}
 
 	// --------------------------- Override methods ----------------------------
+
+	@Override
+	public boolean config(LoggerConfig[] data, boolean reset) {
+		if (data == null) return false;
+		if (reset) this.clearLoggers();
+		for (LoggerConfig config : data) {
+			if (config == null || StringHelper.isEmpty(config.name)) continue;
+			DefaultLogger logger = new DefaultLogger(config.name, null, 0, new HashMap<>());
+			logger.config(config.levels, false);
+			if (config.forRoot) {
+				this.setRootLogger(logger);
+			} else {
+				this.addLogger(config.name, logger);
+			}
+		}
+		return true;
+	}
 
 	@Override
 	public Logger getLogger() {
