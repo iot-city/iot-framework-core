@@ -15,6 +15,15 @@ import org.iotcity.iot.framework.core.util.helper.StringHelper;
  */
 public final class TaskHandler {
 
+	// --------------------------- Public fields ----------------------------
+
+	/**
+	 * Default global task handler instance object.<br/>
+	 * Use parameters below:<br/>
+	 * <b>corePoolSize: 0, maximumPoolSize: 10, keepAliveTime: 60s, capacity: 0</b>
+	 */
+	public static final TaskHandler instance = new TaskHandler("DefaultTaskHandler");
+
 	// --------------------------- Private fields ----------------------------
 
 	/**
@@ -42,7 +51,7 @@ public final class TaskHandler {
 
 	/**
 	 * Constructor for task handler.<br/>
-	 * It will use parameters below:<br/>
+	 * Use parameters below:<br/>
 	 * <b>corePoolSize: 0, maximumPoolSize: 10, keepAliveTime: 60s, capacity: 0</b>
 	 */
 	public TaskHandler() {
@@ -51,7 +60,7 @@ public final class TaskHandler {
 
 	/**
 	 * Constructor for task handler.<br/>
-	 * It will use parameters below:<br/>
+	 * Use parameters below:<br/>
 	 * <b>corePoolSize: 0, maximumPoolSize: 10, keepAliveTime: 60s, capacity: 0</b>
 	 * @param name The handler name used for the loop thread.
 	 */

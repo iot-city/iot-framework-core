@@ -22,7 +22,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	 */
 	private String globalLang;
 	/**
-	 * The language keys map of current factory.
+	 * The language keys map of current factory, the key is upper case name, the value is language key.
 	 */
 	private final Map<String, String> langs = new HashMap<>();
 	/**
@@ -70,6 +70,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	 */
 	public boolean containsLocale(String name) {
 		if (StringHelper.isEmpty(name)) return false;
+		if (this.langs.containsKey(name.toUpperCase())) return true;
 		synchronized (texts) {
 			for (LocaleText text : this.texts.values()) {
 				if (name.equalsIgnoreCase(text.getName())) {
@@ -197,18 +198,17 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	@Override
 	public void setDefaultLangKey(String name, String lang) {
 		if (StringHelper.isEmpty(name)) return;
-		if (StringHelper.isEmpty(lang)) {
-			this.langs.remove(name.toUpperCase());
-		} else {
-			this.langs.put(name.toUpperCase(), lang);
-		}
+		this.langs.put(name.toUpperCase(), lang);
 	}
 
 	@Override
 	public LocaleText getLocale(String name) {
-		if (StringHelper.isEmpty(name)) return new DefaultLocaleText(null, this.getDefaultLangKey(name), null);
-		LocaleText text = this.texts.get(getKey(name, this.getDefaultLangKey(name)));
-		return text == null ? new DefaultLocaleText(name, this.getDefaultLangKey(name), null) : text;
+		String defaultLang = this.getDefaultLangKey(name);
+		if (StringHelper.isEmpty(name)) return new DefaultLocaleText(null, defaultLang, null);
+		LocaleText text = this.texts.get(getKey(name, defaultLang));
+		if (text != null) return text;
+		text = this.texts.get(getKey(name, "en_US"));
+		return text != null ? text : new DefaultLocaleText(name, defaultLang, null);
 	}
 
 	@Override
@@ -217,8 +217,11 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 			return new DefaultLocaleText(name, lang, null);
 		}
 		LocaleText text = this.texts.get(getKey(name, lang));
-		if (text == null) text = this.texts.get(getKey(name, this.getDefaultLangKey(name)));
-		return text == null ? new DefaultLocaleText(name, lang, null) : text;
+		if (text != null) return text;
+		text = this.texts.get(getKey(name, this.getDefaultLangKey(name)));
+		if (text != null) return text;
+		text = this.texts.get(getKey(name, "en_US"));
+		return text != null ? text : new DefaultLocaleText(name, lang, null);
 	}
 
 	// --------------------------- Private methods ----------------------------
