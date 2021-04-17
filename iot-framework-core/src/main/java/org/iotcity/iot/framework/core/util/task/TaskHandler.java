@@ -112,16 +112,16 @@ public final class TaskHandler {
 	}
 
 	/**
-	 * Use the thread pool to execute tasks immediately.
-	 * @param task Task to be execute.
-	 * @return If the task cannot be submitted for execution, it returns false; otherwise, it returns true.
+	 * Use the thread pool to execute runnable object immediately.
+	 * @param runnable Runnable object to be execute.
+	 * @return If runnable object cannot be submitted for execution, it returns false; otherwise, it returns true.
 	 */
-	public boolean run(Runnable task) {
-		if (task == null || destroyed) return false;
+	public boolean run(Runnable runnable) {
+		if (runnable == null || destroyed) return false;
 		try {
 			synchronized (pool) {
 				if (destroyed) return false;
-				pool.execute(task);
+				pool.execute(runnable);
 			}
 			return true;
 		} catch (Exception e) {
@@ -132,7 +132,7 @@ public final class TaskHandler {
 	}
 
 	/**
-	 * Remove all timer tasks and release the current handler resources
+	 * Remove all timer tasks and release the current handler resources.
 	 */
 	public void destroy() {
 		// Ensure that destroyed only once
@@ -280,6 +280,14 @@ public final class TaskHandler {
 	}
 
 	/**
+	 * Gets the size of tasks in handler.
+	 * @return Task size.
+	 */
+	public long size() {
+		return queue.size();
+	}
+
+	/**
 	 * Gets the task ID of the last added task.
 	 * @return The task ID.
 	 */
@@ -320,6 +328,14 @@ public final class TaskHandler {
 	 */
 	public void outputStatistic() {
 		thread.outputStatistic();
+	}
+
+	/**
+	 * Get the status data of all tasks (the returned data is not null).
+	 * @return Tasks status data array.
+	 */
+	public TimerTaskStatus[] getTaskStatus() {
+		return queue.getTaskStatus();
 	}
 
 	/**

@@ -232,6 +232,25 @@ final class TimerTaskQueue {
 	}
 
 	/**
+	 * Get the status data of all tasks (the returned data is not null).
+	 * @return Tasks status data array.
+	 */
+	TimerTaskStatus[] getTaskStatus() {
+		// Create list
+		List<TimerTaskStatus> list = new ArrayList<>();
+		// Lock for traversal
+		synchronized (tasks) {
+			// Traversal all tasks
+			for (TimerTask task : this.tasks.values()) {
+				// Get task status
+				list.add(task.getStatus());
+			}
+		}
+		// Return array data
+		return list.toArray(new TimerTaskStatus[0]);
+	}
+
+	/**
 	 * Busiest tasks status data (the returned data is not null).
 	 * @param amount Maximum number of data returned.
 	 * @return Tasks status data array.
