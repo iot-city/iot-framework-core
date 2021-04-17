@@ -280,6 +280,14 @@ public final class TaskHandler {
 	}
 
 	/**
+	 * Gets the task ID of the last added task.
+	 * @return The task ID.
+	 */
+	public long getLastTaskID() {
+		return queue.getLastTaskID();
+	}
+
+	/**
 	 * Gets a task runnable object from handler, returns null when it does not exist.
 	 * @param taskID The timer task sequence number returned when adding.
 	 * @return The task runnable object, returns null when it does not exist.

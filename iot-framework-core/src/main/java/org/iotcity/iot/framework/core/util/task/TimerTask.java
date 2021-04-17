@@ -180,8 +180,6 @@ final class TimerTask implements Runnable {
 		if (executions != -1 && executeCount >= executions) {
 			// Set execution complete
 			finished = true;
-			// Increase total finished
-			queue.totalFinished.incrementAndGet();
 		} else {
 			// Determine execution cycle
 			if (period > 0) {
@@ -192,8 +190,6 @@ final class TimerTask implements Runnable {
 			} else {
 				// Set execution complete
 				finished = true;
-				// Increase total finished
-				queue.totalFinished.incrementAndGet();
 			}
 		}
 	}
@@ -256,6 +252,8 @@ final class TimerTask implements Runnable {
 		if (finished) {
 			// Set task finished
 			runFinished = true;
+			// Increase total finished
+			queue.totalFinished.incrementAndGet();
 			// Remove from queue
 			queue.remove(id);
 		}

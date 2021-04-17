@@ -314,6 +314,14 @@ final class TimerTaskQueue {
 	}
 
 	/**
+	 * Gets the task ID of the last added task.
+	 * @return The task ID.
+	 */
+	long getLastTaskID() {
+		return atoID.get();
+	}
+
+	/**
 	 * Gets a task by ID.
 	 * @param taskID The timer task sequence number returned when adding.
 	 * @return Task in queue.
