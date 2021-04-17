@@ -17,9 +17,13 @@ final class TimerTaskThread extends Thread {
 	// --------------------------- Static fields ----------------------------
 
 	/**
-	 * Logs statistic message time
+	 * Logs statistic message time.
 	 */
 	private final static long STATISTIC_TIME = SystemHelper.HOUR_MS;
+	/**
+	 * The time format to log message.
+	 */
+	private final static String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
 
 	// --------------------------- Friendly fields ----------------------------
 
@@ -144,8 +148,7 @@ final class TimerTaskThread extends Thread {
 				// Set to current time
 				statisticTime = endTime;
 				// Logs message
-				logger.info(locale.text("core.util.task.task.stat"));
-				logger.info(locale.text("core.util.task.task.stat.info", this.getName(), queue.size(), recorder.loopCount, recorder.size(), recorder.maxExecTime, recorder.minExecTime, recorder.avgExecTime, recorder.avgWaitTime));
+				outputStatistic();
 			}
 
 			try {
@@ -163,26 +166,44 @@ final class TimerTaskThread extends Thread {
 				System.out.println("Timer task queue lock interrupted.");
 			}
 
-			// ---------------------- CHECK FOR SYSTEM TIME UPDATE -----------------
+			// ---------------------- RECORD TASK RUNNING STATUS -----------------
 
 			// Get current system time
 			long currentTime = System.currentTimeMillis();
+			// Get the wait time after notify or timeout
+			long waitTimeOnNotify = currentTime - endTime;
+			// Check for notify
+			if (waitTimeOnNotify >= 0 && waitTimeOnNotify < waitTime) {
+				// Has been notified
+				String end = ConvertHelper.formatDate(new Date(endTime), TIME_FORMAT);
+				String now = ConvertHelper.formatDate(new Date(currentTime), TIME_FORMAT);
+				// Logs message
+				// core.util.task.task.notify=The execution waiting lock has been released in the task handler: "{0}", time before waiting: {1}, current time: {2}, previous wait time: {3} ms, current wait time: {4} ms.
+				logger.trace(locale.text("core.util.task.task.notify", this.getName(), end, now, waitTime, waitTimeOnNotify));
+				// Set actual wait time
+				waitTime = waitTimeOnNotify;
+			}
 			// Record to the time's recorder
 			recorder.record(startTime, endTime, waitTime, currentTime);
+
+			// ---------------------- CHECK FOR SYSTEM TIME UPDATE -----------------
 
 			// Skip stopped
 			if (!stopped) {
 				// Check for system time update
 				if (recorder.systemTimeChanged(startTime, waitTime, currentTime)) {
+					// Get milliseconds that have changed
+					long changes = currentTime - waitTime - recorder.avgExecTime - startTime;
 					// Update task execution time when system time changed
-					queue.systemTimeUpdate(currentTime);
+					queue.systemTimeUpdate(changes, currentTime);
 
 					// Logs change message
-					String start = ConvertHelper.formatDate(new Date(startTime));
-					String end = ConvertHelper.formatDate(new Date(endTime));
-					String now = ConvertHelper.formatDate(new Date(currentTime));
+					String start = ConvertHelper.formatDate(new Date(startTime), TIME_FORMAT);
+					String end = ConvertHelper.formatDate(new Date(endTime), TIME_FORMAT);
+					String now = ConvertHelper.formatDate(new Date(currentTime), TIME_FORMAT);
 					// Logs message
-					logger.warn(locale.text("core.util.task.time.changed", this.getName(), now, start, end, waitTime));
+					// core.util.task.time.changed=The system time has changed, task handler: "{0}", current time: {1}, execution start time: {2}, execution end time: {3}, wait time: {4} ms, time changes: {5} ms.
+					logger.warn(locale.text("core.util.task.time.changed", this.getName(), now, start, end, waitTime, changes));
 
 				}
 			}
@@ -190,9 +211,32 @@ final class TimerTaskThread extends Thread {
 		}
 
 		// Logs message before exiting
-		logger.info(locale.text("core.util.task.task.stat"));
-		logger.info(locale.text("core.util.task.task.stat.info", this.getName(), queue.size(), recorder.loopCount, recorder.size(), recorder.maxExecTime, recorder.minExecTime, recorder.avgExecTime, recorder.avgWaitTime));
+		outputStatistic();
 
+	}
+
+	/**
+	 * Logs statistic message.
+	 */
+	void outputStatistic() {
+		// Logs message
+		// core.util.task.task.stat=------------------ TIMER TASK EXECUTION STATISTIC INFORMATION ------------------
+		logger.info(locale.text("core.util.task.task.stat"));
+		// core.util.task.task.stat.info=Task handler "{0}" statistic of main loop, current tasks: {1}; loop count: {2}; latest records: {3}; execution time: {4} ms(max), {5} ms(min), {6} ms(avg); wait time: {7} ms(avg).
+		logger.info(locale.text("core.util.task.task.stat.info", this.getName(), queue.size(), recorder.loopCount, recorder.size(), recorder.maxExecTime, recorder.minExecTime, recorder.avgExecTime, recorder.avgWaitTime));
+		// Logs statistic message
+		TimerTaskStatistic stat = queue.getStatistic();
+		// core.util.task.task.stat.run=Task handler "{0}" statistic of all tasks, total executions: {1}; total run times: {2}; running tasks: {3}; total finished: {4}; total elapsed time: {5} ms; elapsed time per run: {6} ms.
+		logger.info(locale.text("core.util.task.task.stat.run", this.getName(), stat.totalExecuteCount, stat.totalRunTimes, stat.runningTasks, stat.totalFinished, stat.totalElapsedTime, stat.avgElapsedTImePerRun));
+		// Get busy tasks
+		TimerTaskStatus[] busies = queue.getBusyTaskStatus(3);
+		// Logs task status
+		for (TimerTaskStatus status : busies) {
+			// core.util.task.task.stat.task=Busy task status of handler "{0}", task id: {1}; name: {2}; execution times: {3}; run times: {4}; running: {5}; finished: {6}; total elapsed time: {7} ms; elapsed time per run: {8} ms; next execution time: {9}.
+			logger.info(locale.text("core.util.task.task.stat.task", this.getName(), status.id, status.name, status.executeCount, status.runTimes, status.running, status.finished, status.runElapsedTime, status.avgElapsedTImePerRun, ConvertHelper.formatDate(new Date(status.nextRunTime), TIME_FORMAT)));
+		}
+		// core.util.task.task.stat.end=------------------------------------------------------------------------------------
+		logger.info(locale.text("core.util.task.task.stat.end"));
 	}
 
 	// --------------------------- Friendly methods ----------------------------

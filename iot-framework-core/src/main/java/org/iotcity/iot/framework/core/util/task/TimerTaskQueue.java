@@ -1,10 +1,13 @@
 package org.iotcity.iot.framework.core.util.task;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.iotcity.iot.framework.core.util.helper.StringHelper;
 
 /**
  * Timer task queue object.
@@ -47,6 +50,43 @@ final class TimerTaskQueue {
 	 * The next execution time for new task.
 	 */
 	private long nextTimeForAdding = Long.MAX_VALUE;
+
+	// --------------------------- Statistic fields ----------------------------
+
+	/**
+	 * Number of running tasks at current time.
+	 */
+	final AtomicLong runningTasks = new AtomicLong(0);
+	/**
+	 * Total execution times of all tasks.
+	 */
+	final AtomicLong totalExecuteCount = new AtomicLong(0);
+	/**
+	 * Total number of tasks finished.
+	 */
+	final AtomicLong totalFinished = new AtomicLong(0);
+	/**
+	 * Total number of times all tasks were run.
+	 */
+	final AtomicLong totalRunTimes = new AtomicLong(0);
+	/**
+	 * Total elapsed time of all tasks in milliseconds.
+	 */
+	final AtomicLong totalElapsedTime = new AtomicLong(0);
+
+	// --------------------------- Comparator method ----------------------------
+
+	/**
+	 * The statistic comparator for sort.
+	 */
+	private final static Comparator<TimerTaskStatus> STATISTIC_COMPARATOR = new Comparator<TimerTaskStatus>() {
+
+		@Override
+		public int compare(TimerTaskStatus o1, TimerTaskStatus o2) {
+			return o1.avgElapsedTImePerRun > o2.avgElapsedTImePerRun ? -1 : (o1.avgElapsedTImePerRun < o2.avgElapsedTImePerRun ? 1 : 0);
+		}
+
+	};
 
 	// ------------------------------ Constructor -------------------------------
 
@@ -143,26 +183,28 @@ final class TimerTaskQueue {
 			// Return the fix time using maximum time
 			return schedule > MAX_WAIT_TIME ? MAX_WAIT_TIME : schedule;
 		} else {
-			// Lock for 1 milliseconds
-			return 1;
+			// Lock for 10 milliseconds
+			return 10;
 		}
 	}
 
 	/**
 	 * Update task execution time after system time update
+	 * @param changeMilliseconds Milliseconds that have changed.
 	 * @param currentTime Current system time.
 	 */
-	void systemTimeUpdate(long currentTime) {
+	void systemTimeUpdate(long changeMilliseconds, long currentTime) {
 		// Lock for update
 		synchronized (tasks) {
-			// Update task status using system time
+			// Traversal all tasks
 			for (TimerTask task : this.tasks.values()) {
-				task.systemTimeUpdate(currentTime);
+				// Update task execution time
+				task.systemTimeUpdate(changeMilliseconds, currentTime);
 			}
 		}
 	}
 
-	// --------------------------- Task management methods ----------------------------
+	// --------------------------- Friendly methods ----------------------------
 
 	/**
 	 * Gets the task handler name.
@@ -181,21 +223,62 @@ final class TimerTaskQueue {
 	}
 
 	/**
+	 * Gets timer task statistic data of all tasks (the returned data is not null).
+	 * @return Timer task statistic data.
+	 */
+	TimerTaskStatistic getStatistic() {
+		// Return statistic data
+		return new TimerTaskStatistic(runningTasks.get(), totalExecuteCount.get(), totalFinished.get(), totalRunTimes.get(), totalElapsedTime.get());
+	}
+
+	/**
+	 * Busiest tasks status data (the returned data is not null).
+	 * @param amount Maximum number of data returned.
+	 * @return Tasks status data array.
+	 */
+	TimerTaskStatus[] getBusyTaskStatus(int amount) {
+		// Create list
+		List<TimerTaskStatus> list = new ArrayList<>();
+		// Lock for traversal
+		synchronized (tasks) {
+			// Traversal all tasks
+			for (TimerTask task : this.tasks.values()) {
+				// Get task status
+				list.add(task.getStatus());
+			}
+		}
+		// Get list size and return data array
+		int length = list.size();
+		if (length > 0) {
+			// Sort by average elapsed time
+			list.sort(STATISTIC_COMPARATOR);
+			// Return array
+			return list.subList(0, length < amount ? length : amount).toArray(new TimerTaskStatus[0]);
+		} else {
+			return new TimerTaskStatus[0];
+		}
+	}
+
+	// --------------------------- Task management methods ----------------------------
+
+	/**
 	 * Add a task to be executed after the specified delay time, and then execute according to each specified period.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
+	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
 	 * @return long Returns a task ID (sequence number).
 	 */
-	long add(Runnable task, long delay, long period, long executions) {
+	long add(String name, Runnable task, long delay, long period, long executions) {
 
 		// Get next task id
 		long id = atoID.incrementAndGet();
+		if (StringHelper.isEmpty(name)) name = "TASK-" + id;
 		long currentTime = System.currentTimeMillis();
 		// Create the timer task object
-		TimerTask ttask = new TimerTask(this, id, task, delay, period, executions, currentTime);
+		TimerTask ttask = new TimerTask(this, id, name, task, delay, period, executions, currentTime);
 
 		// Whether need to notify main loop
 		boolean notify = false;
@@ -228,6 +311,15 @@ final class TimerTaskQueue {
 
 		// Return id
 		return id;
+	}
+
+	/**
+	 * Gets a task by ID.
+	 * @param taskID The timer task sequence number returned when adding.
+	 * @return Task in queue.
+	 */
+	TimerTask get(long taskID) {
+		return tasks.get(taskID);
 	}
 
 	/**

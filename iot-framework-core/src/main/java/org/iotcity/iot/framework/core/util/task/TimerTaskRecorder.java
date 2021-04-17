@@ -147,12 +147,12 @@ final class TimerTaskRecorder {
 				sumExecTime += record.execTime;
 				sumWaitTime += record.waitTime;
 			}
-			// Get max execution time
+			// Get maximum execution time
 			if (record.execTime > maxExecTime) maxExecTime = record.execTime;
-			// Get min execution time
+			// Get minimum execution time
 			if (record.execTime < minExecTime) minExecTime = record.execTime;
 		}
-		// Fix min execution time
+		// Fix minimum execution time
 		if (minExecTime == Long.MAX_VALUE) minExecTime = 0;
 		// Get average time
 		avgExecTime = sumExecTime / (max - min);

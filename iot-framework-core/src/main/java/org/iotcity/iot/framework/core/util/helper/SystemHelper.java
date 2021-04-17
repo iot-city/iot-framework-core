@@ -14,9 +14,13 @@ public final class SystemHelper {
 	// --------------------------- Public fields ----------------------------
 
 	/**
+	 * Milliseconds per second
+	 */
+	public static final long SECOND_MS = 1000;
+	/**
 	 * Milliseconds per minute
 	 */
-	public static final long MINUTE_MS = 60 * 1000;
+	public static final long MINUTE_MS = 60 * SECOND_MS;
 	/**
 	 * Milliseconds per hour
 	 */
