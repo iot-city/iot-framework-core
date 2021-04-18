@@ -90,8 +90,11 @@ final class TimerTaskRecorder {
 		// Increase the number of times
 		loopCount++;
 		// Check time, if end time less then start time, system time has changed
-		if (endTime < startTime || currentTime < endTime || currentTime < startTime) {
+		if (endTime < startTime || currentTime < endTime) {
 			// Set changed
+			timeChanged = true;
+		} else if (endTime - startTime > TIME_CHANGED_LIMITED || currentTime - startTime - waitTime > TIME_CHANGED_LIMITED) {
+			// If the elapse time more than TIME_CHANGED_LIMITED, system time has changed
 			timeChanged = true;
 		} else {
 			// Limit the max records
@@ -112,6 +115,7 @@ final class TimerTaskRecorder {
 	 * @return Whether the system time has changed.
 	 */
 	boolean systemTimeChanged(long startTime, long waitTime, long currentTime) {
+
 		// Check changed state
 		if (timeChanged) {
 			// Reset state
@@ -138,6 +142,7 @@ final class TimerTaskRecorder {
 		// Reset data
 		maxExecTime = 0;
 		minExecTime = Long.MAX_VALUE;
+
 		// Traversal records
 		for (int i = 0; i < length; i++) {
 			// Get record data
@@ -152,15 +157,16 @@ final class TimerTaskRecorder {
 			// Get minimum execution time
 			if (record.execTime < minExecTime) minExecTime = record.execTime;
 		}
+
 		// Fix minimum execution time
 		if (minExecTime == Long.MAX_VALUE) minExecTime = 0;
 		// Get average time
 		avgExecTime = sumExecTime / (max - min);
 		avgWaitTime = sumWaitTime / (max - min);
 
-		// Get the actual usage time
+		// Get the actual usage time of last loop
 		long actual = currentTime - startTime;
-		// Get normal usage time
+		// Get normal usage time of record's loop
 		long normal = avgExecTime + waitTime;
 		// Return true if it's mutation time
 		return Math.abs(actual - normal) > TIME_CHANGED_LIMITED;

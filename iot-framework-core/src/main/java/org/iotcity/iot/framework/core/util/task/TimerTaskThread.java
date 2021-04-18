@@ -108,16 +108,15 @@ final class TimerTaskThread extends Thread {
 	 */
 	private void mainLoop() {
 
+		// Get start time of task execution
+		long startTime = System.currentTimeMillis();
 		// Loop execution while not stopped
 		while (!stopped) {
 
 			// ---------------------- EXECUTE TASKS -----------------
 
-			// Get start time of task execution
-			long startTime = System.currentTimeMillis();
 			// Get tasks that ready to be executed
 			TimerTask[] tasks = queue.getReadyTasks(startTime);
-
 			// Traverse data to perform tasks
 			for (TimerTask task : tasks) {
 
@@ -142,15 +141,6 @@ final class TimerTaskThread extends Thread {
 			long endTime = System.currentTimeMillis();
 			// Get wait time for next execution (greater then 0)
 			long waitTime = queue.getWaitTime(endTime);
-
-			// Logs statistic message every specified time
-			if (endTime - statisticTime > STATISTIC_TIME) {
-				// Set to current time
-				statisticTime = endTime;
-				// Logs message
-				outputStatistic();
-			}
-
 			try {
 				// Synchronize queue to get a lock
 				synchronized (queue) {
@@ -174,14 +164,17 @@ final class TimerTaskThread extends Thread {
 			long waitTimeOnNotify = currentTime - endTime;
 			// Check for notify
 			if (waitTimeOnNotify >= 0 && waitTimeOnNotify < waitTime) {
+
 				// Has been notified
 				String end = ConvertHelper.formatDate(new Date(endTime), TIME_FORMAT);
 				String now = ConvertHelper.formatDate(new Date(currentTime), TIME_FORMAT);
 				// Logs message
 				// core.util.task.task.notify=The execution waiting lock has been released in the task handler: "{0}", time before waiting: {1}, current time: {2}, previous wait time: {3} ms, current wait time: {4} ms.
 				logger.trace(locale.text("core.util.task.task.notify", this.getName(), end, now, waitTime, waitTimeOnNotify));
+
 				// Set actual wait time
 				waitTime = waitTimeOnNotify;
+
 			}
 			// Record to the time's recorder
 			recorder.record(startTime, endTime, waitTime, currentTime);
@@ -189,24 +182,47 @@ final class TimerTaskThread extends Thread {
 			// ---------------------- CHECK FOR SYSTEM TIME UPDATE -----------------
 
 			// Skip stopped
-			if (!stopped) {
-				// Check for system time update
-				if (recorder.systemTimeChanged(startTime, waitTime, currentTime)) {
-					// Get milliseconds that have changed
-					long changes = currentTime - waitTime - recorder.avgExecTime - startTime;
-					// Update task execution time when system time changed
-					queue.systemTimeUpdate(changes, currentTime);
+			if (stopped) break;
 
-					// Logs change message
-					String start = ConvertHelper.formatDate(new Date(startTime), TIME_FORMAT);
-					String end = ConvertHelper.formatDate(new Date(endTime), TIME_FORMAT);
-					String now = ConvertHelper.formatDate(new Date(currentTime), TIME_FORMAT);
-					// Logs message
-					// core.util.task.time.changed=The system time has changed, task handler: "{0}", current time: {1}, execution start time: {2}, execution end time: {3}, wait time: {4} ms, time changes: {5} ms.
-					logger.warn(locale.text("core.util.task.time.changed", this.getName(), now, start, end, waitTime, changes));
+			// Check for system time update
+			if (recorder.systemTimeChanged(startTime, waitTime, currentTime)) {
 
-				}
+				// The system time has changed, get expected milliseconds that have changed
+				long execTime = endTime - startTime;
+				if (execTime > recorder.avgExecTime) execTime = recorder.avgExecTime;
+				// The maximum deviation time of the change time is within the set maximum waiting time
+				long changes = currentTime - waitTime - execTime - startTime;
+
+				// Set new statistic time
+				statisticTime += changes;
+				// Update task execution time when system time changed
+				queue.systemTimeUpdate(changes, currentTime);
+
+				// Logs change message
+				String start = ConvertHelper.formatDate(new Date(startTime), TIME_FORMAT);
+				String end = ConvertHelper.formatDate(new Date(endTime), TIME_FORMAT);
+				String now = ConvertHelper.formatDate(new Date(currentTime), TIME_FORMAT);
+				// Logs message
+				// core.util.task.time.changed=The system time has changed, task handler: "{0}"; execution start time: {1}; execution end (waiting) time: {2}; current time: {3}; wait time: {4} ms; time changes: {5} ({6} ms).
+				logger.warn(locale.text("core.util.task.time.changed", this.getName(), start, end, now, waitTime, ConvertHelper.formatMilliseconds(changes, true), changes));
+
 			}
+
+			// ---------------------- OUTPUT STATISTIC -----------------
+
+			// Logs statistic message every specified time
+			if (currentTime - statisticTime > STATISTIC_TIME) {
+				// Set to current time
+				statisticTime = currentTime;
+				// Logs message
+				outputStatistic();
+			}
+
+			// ---------------------- SET START TIME --------------------
+
+			// Set start time to current for next loop
+			// Important: This step will ensure the correctness of all times in the loop
+			startTime = currentTime;
 
 		}
 
@@ -226,14 +242,14 @@ final class TimerTaskThread extends Thread {
 		logger.info(locale.text("core.util.task.task.stat.info", this.getName(), queue.size(), recorder.loopCount, recorder.size(), recorder.maxExecTime, recorder.minExecTime, recorder.avgExecTime, recorder.avgWaitTime));
 		// Logs statistic message
 		TimerTaskStatistic stat = queue.getStatistic();
-		// core.util.task.task.stat.run=Task handler "{0}" statistic of all tasks, total executions: {1}; total run times: {2}; running tasks: {3}; total finished: {4}; total elapsed time: {5} ms; elapsed time per run: {6} ms.
-		logger.info(locale.text("core.util.task.task.stat.run", this.getName(), stat.totalExecuteCount, stat.totalRunTimes, stat.runningTasks, stat.totalFinished, stat.totalElapsedTime, stat.avgElapsedTImePerRun));
+		// core.util.task.task.stat.run=Task handler "{0}" statistic of all tasks, accumulative total tasks: {1}, total execution times: {2}; total run times: {3}; task running: {4}; task finished: {5}; total elapsed time: {6} ({7} ms); elapsed time per run: {8} ({9} ms).
+		logger.info(locale.text("core.util.task.task.stat.run", this.getName(), queue.getLastTaskID(), stat.totalExecuteCount, stat.totalRunTimes, stat.runningTasks, stat.totalFinished, ConvertHelper.formatMilliseconds(stat.totalElapsedTime, true), stat.totalElapsedTime, ConvertHelper.formatMilliseconds(stat.avgElapsedTImePerRun, true), stat.avgElapsedTImePerRun));
 		// Get busy tasks
 		TimerTaskStatus[] busies = queue.getBusyTaskStatus(3);
 		// Logs task status
 		for (TimerTaskStatus status : busies) {
-			// core.util.task.task.stat.task=Busy task status of handler "{0}", task id: {1}; name: {2}; execution times: {3}; run times: {4}; running: {5}; finished: {6}; total elapsed time: {7} ms; elapsed time per run: {8} ms; next execution time: {9}.
-			logger.info(locale.text("core.util.task.task.stat.task", this.getName(), status.id, status.name, status.executeCount, status.runTimes, status.running, status.finished, status.runElapsedTime, status.avgElapsedTImePerRun, ConvertHelper.formatDate(new Date(status.nextRunTime), TIME_FORMAT)));
+			// core.util.task.task.stat.task=Current take a long time task of handler "{0}", task id: {1}; name: {2}; execution times: {3}; run times: {4}; running: {5}; finished: {6}; total elapsed time: {7} ({8} ms); elapsed time per run: {9} ({10} ms); next execution time: {11}.
+			logger.info(locale.text("core.util.task.task.stat.task", this.getName(), status.id, status.name, status.executeCount, status.runTimes, status.running, status.finished, ConvertHelper.formatMilliseconds(status.runElapsedTime, true), status.runElapsedTime, ConvertHelper.formatMilliseconds(status.avgElapsedTImePerRun, true), status.avgElapsedTImePerRun, ConvertHelper.formatDate(new Date(status.nextRunTime), TIME_FORMAT)));
 		}
 		// core.util.task.task.stat.end=------------------------------------------------------------------------------------
 		logger.info(locale.text("core.util.task.task.stat.end"));

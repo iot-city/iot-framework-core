@@ -1,5 +1,7 @@
 package org.iotcity.iot.framework.core.util.task;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.iotcity.iot.framework.core.FrameworkCore;
 
 /**
@@ -78,6 +80,10 @@ final class TimerTask implements Runnable {
 	 * Elapsed time of task running in milliseconds.
 	 */
 	private long runElapsedTime;
+	/**
+	 * System time be changed within running.
+	 */
+	private AtomicLong systemTimeChanged = new AtomicLong(0);
 
 	// --------------------------- Constructor ----------------------------
 
@@ -202,6 +208,8 @@ final class TimerTask implements Runnable {
 	void systemTimeUpdate(long changeMilliseconds, long currentTime) {
 		// Skip tasks when finished
 		if (finished) return;
+		// Save the time that have changed
+		systemTimeChanged.addAndGet(changeMilliseconds);
 		// Check the period
 		if (period <= 0) {
 			// The task is executed only once after the delay time
@@ -215,7 +223,7 @@ final class TimerTask implements Runnable {
 				nextRunTime = currentTime + period - ((currentTime - startTime) % period);
 			} else {
 				// Set to previous running time
-				nextRunTime = currentTime + (startTime - currentTime) % period;
+				nextRunTime = currentTime + ((startTime - currentTime) % period);
 			}
 		}
 	}
@@ -227,8 +235,12 @@ final class TimerTask implements Runnable {
 	 */
 	@Override
 	public void run() {
-		// Gets start time
+
+		// Gets running start time
 		long start = System.currentTimeMillis();
+		// Reset the system time that have changed before running
+		systemTimeChanged.set(0);
+
 		try {
 			// Run task
 			task.run();
@@ -236,16 +248,36 @@ final class TimerTask implements Runnable {
 			// Logs error
 			FrameworkCore.getLogger().error(FrameworkCore.getLocale().text("core.util.task.task.err", queue.getName(), task.getClass(), e.getMessage()), e);
 		}
-		// Get running time
-		long time = System.currentTimeMillis() - start;
+
+		// Get running end time
+		long end = System.currentTimeMillis();
+		// Get time changed within running
+		long changed = systemTimeChanged.get();
+		// Average elapsed time
+		long avgElapse = runTimes > 0 ? runElapsedTime / runTimes : 0;
+		// Elapsed time
+		long elapsed;
+		// Check time changes
+		if (changed != 0) {
+			// Use changed time to get elapsed time if the system time update event has caught
+			elapsed = end - start - changed;
+			if (elapsed < 0) elapsed = avgElapse;
+		} else if (end < start || avgElapse > 0 && end - start > avgElapse * 5) {
+			// The time has changed
+			elapsed = avgElapse;
+		} else {
+			// Set normal time
+			elapsed = end - start;
+		}
+		// Increase the elapsed time
+		runElapsedTime += elapsed;
+		// Increase total elapsed time
+		queue.totalElapsedTime.addAndGet(elapsed);
+
 		// Increase the number of times
 		runTimes++;
 		// Increase total run times
 		queue.totalRunTimes.incrementAndGet();
-		// Increase the elapsed time
-		runElapsedTime += time;
-		// Increase total elapsed time
-		queue.totalElapsedTime.addAndGet(time);
 		// Decrease total running task
 		queue.runningTasks.decrementAndGet();
 		// Remove finished
@@ -257,6 +289,7 @@ final class TimerTask implements Runnable {
 			// Remove from queue
 			queue.remove(id);
 		}
+
 		// Set running status.
 		running = false;
 	}

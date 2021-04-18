@@ -552,14 +552,46 @@ public final class ConvertHelper {
 	}
 
 	/**
-	 * Format minutes to HH:mm format (e.g. 01:20)
-	 * @param minutes Minutes from 0:00
-	 * @return String result
+	 * Format minutes to "HH:mm" format (e.g. format 80 minutes to "01:20").
+	 * @param minutes The minutes begins from midnight (00:00).
+	 * @return Formated string (e.g. "01:20").
 	 */
 	public static String formatMinutes(int minutes) {
 		int h = Double.valueOf(Math.floor(minutes / 60.0)).intValue();
 		int m = minutes % 60;
 		return (h < 10 ? "0" + h : h) + ":" + (m < 10 ? "0" + m : m);
+	}
+
+	/**
+	 * Format milliseconds to "D HH:mm:ss:SSS" format (e.g. format 4834853 milliseconds to "0D 01:20:34.853").
+	 * @param ms The milliseconds begins from midnight (00:00:00.000).
+	 * @param skipZeroFields Whether ignore the leading data segment with a value of 0 (e.g. Returns "10:24.532" when this data is set to true).
+	 * @return Formated string (e.g. "0D 01:20:34.853").
+	 */
+	public static String formatMilliseconds(long ms, boolean skipZeroFields) {
+		boolean isNegative = (ms < 0);
+		if (isNegative) ms = Math.abs(ms);
+		long milliseconds = ms % 1000;
+		ms = (ms - milliseconds) / 1000;
+		long seconds = ms % 60;
+		ms = (ms - seconds) / 60;
+		long minites = ms % 60;
+		ms = (ms - minites) / 60;
+		long hours = ms % 24;
+		ms = (ms - hours) / 24;
+		long day = ms;
+		if (skipZeroFields) {
+			StringBuilder sb = new StringBuilder(isNegative ? "-" : "");
+			if (day > 0) sb.append(day).append("D ");
+			if (hours > 0 || day > 0) sb.append(hours < 10 ? "0" + hours : hours).append(":");
+			if (minites > 0 || hours > 0 || day > 0) sb.append(minites < 10 ? "0" + minites : minites).append(":");
+			if (seconds > 0 || minites > 0 || hours > 0 || day > 0) sb.append(seconds < 10 ? "0" + seconds : seconds).append(".");
+			sb.append(String.format("%03d", milliseconds));
+			return sb.toString();
+		} else {
+			String format = isNegative ? "-%dD %02d:%02d:%02d.%03d" : "%dD %02d:%02d:%02d.%03d";
+			return String.format(format, day, hours, minites, seconds, milliseconds);
+		}
 	}
 
 }
