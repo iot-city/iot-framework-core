@@ -47,8 +47,8 @@ public class TaskHandlerTest extends TestCase {
 					@Override
 					public void run() {
 						logger.info("<< 1. Run timer task with delay 6 seconds ok.");
-						long delay = handler.getDelayForEverySeconds(10);
-						logger.info(">> 2. Schedule timer task with delay every: 10 seconds, delay time: " + delay);
+						long delay = handler.getDelayForEverySeconds(5);
+						logger.info(">> 2. Schedule timer task with delay every: 5 seconds, delay time: " + delay);
 						handler.add(new Runnable() {
 
 							@Override
@@ -119,7 +119,7 @@ public class TaskHandlerTest extends TestCase {
 	}
 
 	private void addMoreTasks(TaskHandler handler) {
-		final long delay = new Random().nextInt(10000);
+		final long delay = new Random().nextInt(5000);
 		handler.add("DELAY-" + delay, new Runnable() {
 
 			private int count = 0;
@@ -144,22 +144,42 @@ public class TaskHandlerTest extends TestCase {
 				}
 				if (tc == TASKS * RUNS) {
 					logger.info("<<<<<<<<<<<<<<<<<<<<< ALL TASKS FINISHED...................");
-					logger.info("Wait for 3 seconds to destroy...");
+
+					logger.info(">> 5. Schedule timer task with delay every: 5 seconds, period: 5 seconds, executions: 10...");
+					logger.info("FOR SYSTEM TIME CHANGING TEST ...................");
+
 					handler.add(new Runnable() {
+
+						int count = 0;
 
 						@Override
 						public void run() {
-							handler.destroy();
-							logger.info("Wait for 2 seconds to finish...");
-							try {
-								Thread.sleep(2000);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
+							count++;
+							logger.info("5. Please change the system time ...");
+							if (count == 10) {
+								logger.info("<< 5. System time changing test finished ...................");
+								logger.info("Wait for 3 seconds to destroy...");
+								handler.add(new Runnable() {
+
+									@Override
+									public void run() {
+										handler.destroy();
+										logger.info("Wait for 2 seconds to finish...");
+										try {
+											Thread.sleep(2000);
+										} catch (InterruptedException e) {
+											e.printStackTrace();
+										}
+										finish();
+									}
+
+								}, 3000);
+
 							}
-							finish();
 						}
 
-					}, 3000);
+					}, handler.getDelayForEverySeconds(5), 5000, 10);
+
 				}
 			}
 

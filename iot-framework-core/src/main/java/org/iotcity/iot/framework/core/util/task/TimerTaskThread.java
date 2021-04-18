@@ -220,7 +220,7 @@ final class TimerTaskThread extends Thread {
 
 			// ---------------------- SET START TIME --------------------
 
-			// Set start time to current for next loop
+			// Set start time to current time for next loop
 			// Important: This step will ensure the correctness of all times in the loop
 			startTime = currentTime;
 
