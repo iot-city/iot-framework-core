@@ -182,7 +182,7 @@ public final class FileHelper {
 	/**
 	 * Read text file content
 	 * @param filePathAndName Absolute path and file name of text file
-	 * @param encoding Text encoding (optional, if it is set to null, it will be judged automatically)
+	 * @param encoding Text encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically)
 	 * @param fromPackage Whether read file from package
 	 * @return String Text content
 	 * @throws IOException If there is a read error, an exception is thrown
@@ -237,7 +237,7 @@ public final class FileHelper {
 	 * Read property profile
 	 * @param props Properties object waiting to be written
 	 * @param filePathAndName Absolute path and file name of text file
-	 * @param encoding Text encoding (optional, if it is set to null, it will be judged automatically)
+	 * @param encoding File encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
 	 * @param fromPackage Whether read file from package
 	 * @return boolean Whether read successfully
 	 */
@@ -289,7 +289,7 @@ public final class FileHelper {
 	/**
 	 * Gets the input stream reader of the specified encoding
 	 * @param is Input stream object
-	 * @param encoding File encoding
+	 * @param encoding File encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
 	 * @return InputStreamReader Specifies the encoding input stream reader
 	 * @throws IOException
 	 */

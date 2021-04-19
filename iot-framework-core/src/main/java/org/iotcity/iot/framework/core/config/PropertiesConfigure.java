@@ -21,7 +21,7 @@ public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 	 * Constructor for automatic properties configuration object.
 	 * @param configFile The configure properties file to load (required, not null or empty).
 	 * @param fromPackage Whether load the file from package.
-	 * @throws IllegalArgumentException An error is thrown when the parameter is null
+	 * @throws IllegalArgumentException An error is thrown when the parameter is null.
 	 */
 	public PropertiesConfigure(String configFile, boolean fromPackage) {
 		// Parameters verification
@@ -35,9 +35,9 @@ public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 	/**
 	 * Constructor for automatic properties configuration object.
 	 * @param configFile The configure properties file to load (required, not null or empty).
-	 * @param encoding Text encoding (optional, if it is set to null, it will be judged automatically).
+	 * @param encoding Text encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
 	 * @param fromPackage Whether load the file from package.
-	 * @throws IllegalArgumentException An error is thrown when the parameter is null
+	 * @throws IllegalArgumentException An error is thrown when the parameter is null.
 	 */
 	public PropertiesConfigure(String configFile, String encoding, boolean fromPackage) {
 		// Parameters verification

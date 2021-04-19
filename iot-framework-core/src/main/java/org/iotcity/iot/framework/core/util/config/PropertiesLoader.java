@@ -12,7 +12,7 @@ import org.iotcity.iot.framework.core.util.helper.ConvertHelper;
 import org.iotcity.iot.framework.core.util.helper.FileHelper;
 
 /**
- * Use configure loader to load properties file
+ * Use configure loader to load properties file.
  * @author Ardon
  */
 public final class PropertiesLoader {
@@ -22,12 +22,14 @@ public final class PropertiesLoader {
 	 */
 	private static final Map<String, Properties> props = new HashMap<>();
 
+	// --------------------------------- Load configure file method ---------------------------------
+
 	/**
-	 * Gets a properties object
+	 * Gets a properties object from file.
 	 * @param filePathName Properties file directory and the file name (e.g. "org/iotcity/iot/framework/actor/iot-actor.properties").
-	 * @param encoding Text encoding (optional, if it is set to null, it will be judged automatically).
+	 * @param encoding File encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
 	 * @param fromPackage Whether load file from package.
-	 * @return Properties Properties object result (not null).
+	 * @return Properties object result (not null).
 	 */
 	public static Properties loadProperties(String filePathName, String encoding, boolean fromPackage) {
 		if (filePathName == null || filePathName.length() == 0) return null;
@@ -46,34 +48,36 @@ public final class PropertiesLoader {
 		return prop;
 	}
 
+	// --------------------------------- Load configure bean methods ---------------------------------
+
 	/**
-	 * Load a configure file and set the properties to the bean (returns null when failed)
-	 * @param beanClass The configure bean type
-	 * @param filePathName Configure file directory and the file name (e.g. "org/iotcity/iot/framework/actor/iot-actor.properties")
-	 * @param encoding File encoding (e.g. "UTF-8")
-	 * @param prefix The property prefix of the configuration file (e.g. "iot.framework.actor.apps")
-	 * @param fromPackage Whether load the file from package
-	 * @return T The configure bean
+	 * Load a configure file and set the properties to the bean (returns null when failed).
+	 * @param beanClass The configure bean type.
+	 * @param filePathName Configure file directory and the file name (e.g. "org/iotcity/iot/framework/actor/iot-actor.properties").
+	 * @param encoding File encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
+	 * @param prefix The property prefix of the configuration file (e.g. "iot.framework.actor.apps").
+	 * @param fromPackage Whether load the file from package.
+	 * @return The configure bean.
 	 */
-	public static <T> T loadConfig(Class<T> beanClass, String filePathName, String encoding, String prefix, boolean fromPackage) {
+	public static <T> T loadConfigBean(Class<T> beanClass, String filePathName, String encoding, String prefix, boolean fromPackage) {
 		try {
 			T bean = beanClass.newInstance();
 			return loadConfigBean(bean, filePathName, encoding, prefix, fromPackage);
 		} catch (Exception e) {
-			System.err.println("Load config to bean error: " + filePathName);
+			System.err.println("Load configure to a bean error: " + filePathName);
 			e.printStackTrace();
 			return null;
 		}
 	}
 
 	/**
-	 * Load a configure file and set the properties to the bean (returns null when failed)
-	 * @param bean The configure bean
-	 * @param filePathName Configure file directory and the file name (e.g. "org/iotcity/iot/framework/actor/iot-actor.properties")
-	 * @param encoding File encoding (e.g. "UTF-8")
-	 * @param prefix The property prefix of the configuration file (e.g. "iot.framework.actor.apps")
-	 * @param fromPackage Whether load the file from package
-	 * @return T The configure bean
+	 * Load a configure file and set the properties to the bean (returns null when failed).
+	 * @param bean The configure bean.
+	 * @param filePathName Configure file directory and the file name (e.g. "org/iotcity/iot/framework/actor/iot-actor.properties").
+	 * @param encoding File encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
+	 * @param prefix The property prefix of the configuration file (e.g. "iot.framework.actor.apps").
+	 * @param fromPackage Whether load the file from package.
+	 * @return The configure bean.
 	 */
 	public static <T> T loadConfigBean(T bean, String filePathName, String encoding, String prefix, boolean fromPackage) {
 		if (bean == null) return null;
@@ -84,12 +88,55 @@ public final class PropertiesLoader {
 		try {
 			fillConfigBean(bean.getClass(), bean, props, prefix);
 		} catch (Exception e) {
-			System.err.println("Load config to bean error: " + filePathName);
+			System.err.println("Load configure to a bean error: " + filePathName);
 			e.printStackTrace();
 			return null;
 		}
 		return bean;
 	}
+
+	// --------------------------------- Setup configure bean methods ---------------------------------
+
+	/**
+	 * Gets a bean configured from the properties configure (returns null when failed).
+	 * @param beanClass The configure bean type.
+	 * @param props Properties object has loaded (not null).
+	 * @param prefix The property prefix of the configuration file (e.g. "iot.framework.actor.apps").
+	 * @return The configure bean.
+	 */
+	public static <T> T getConfigBean(Class<T> beanClass, Properties props, String prefix) {
+		try {
+			T bean = beanClass.newInstance();
+			return getConfigBean(bean, props, prefix);
+		} catch (Exception e) {
+			System.err.println("Gets a bean configured from properties error: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Gets a bean configured from the properties configure (returns null when failed).
+	 * @param bean The configure bean to be setup.
+	 * @param props Properties object has loaded (not null).
+	 * @param prefix The property prefix of the configuration file (e.g. "iot.framework.actor.apps").
+	 * @return The configure bean.
+	 */
+	public static <T> T getConfigBean(T bean, Properties props, String prefix) {
+		if (bean == null || props == null) return null;
+		if (prefix == null) prefix = "";
+		if (prefix.length() > 0 && !prefix.endsWith(".")) prefix += ".";
+		try {
+			fillConfigBean(bean.getClass(), bean, props, prefix);
+		} catch (Exception e) {
+			System.err.println("Gets a bean configured from properties error: " + e.getMessage());
+			e.printStackTrace();
+			return null;
+		}
+		return bean;
+	}
+
+	// --------------------------------- Fill configure bean methods ---------------------------------
 
 	private static void fillConfigBean(Class<?> type, Object bean, Properties props, String prefix) throws Exception {
 		Field[] fields = type.getDeclaredFields();
@@ -105,12 +152,11 @@ public final class PropertiesLoader {
 	}
 
 	private static void fillConfigField(Field field, Class<?> type, Object bean, Properties props, String key) throws Exception {
+		if (!props.containsKey(key)) return;
 		field.setAccessible(true);
 		if (type.isPrimitive() || type == String.class || type == Date.class) {
-			if (!props.containsKey(key)) return;
 			field.set(bean, getFieldValue(type, props.getProperty(key), field.get(bean)));
 		} else if (type.isArray()) {
-			if (!props.containsKey(key)) return;
 			Class<?> subType = type.getComponentType();
 			if (subType.isPrimitive() || subType == String.class || subType == Date.class) {
 				String value = props.getProperty(key);
@@ -127,6 +173,10 @@ public final class PropertiesLoader {
 				}
 			}
 		} else {
+			// Determine whether the field enables parsing configuration
+			// e.g. iot.framework.actor.apps.app1.pool=true
+			if (!ConvertHelper.toBoolean(props.getProperty(key), false)) return;
+			// Parse the inner bean
 			Object fobj = field.get(bean);
 			if (fobj == null) {
 				fobj = type.newInstance();

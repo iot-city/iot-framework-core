@@ -6,7 +6,7 @@ import org.iotcity.iot.framework.core.logging.DefaultLoggerFactory;
 import org.iotcity.iot.framework.core.logging.LoggerFactory;
 
 /**
- * IoT Framework for smart city system development
+ * IoT Framework for smart city system development.
  * @author Ardon
  */
 public final class IoTFramework {
@@ -14,11 +14,11 @@ public final class IoTFramework {
 	// --------------------------- Public static fields ----------------------------
 
 	/**
-	 * Framework group name
+	 * Framework group name.
 	 */
 	public static final String NAME = "org.iot-city.iot-framework";
 	/**
-	 * Framework version
+	 * Framework version.
 	 */
 	public static final String VERSION = "0.0.1";
 

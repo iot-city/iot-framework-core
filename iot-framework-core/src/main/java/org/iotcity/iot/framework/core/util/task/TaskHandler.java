@@ -10,7 +10,7 @@ import org.iotcity.iot.framework.core.util.helper.StringHelper;
 import org.iotcity.iot.framework.core.util.helper.SystemHelper;
 
 /**
- * Task handler objects supporting thread pool to execute tasks and timer tasks.
+ * Task handler object supporting thread pool to execute tasks and timer tasks.
  * @author Ardon
  */
 public final class TaskHandler {

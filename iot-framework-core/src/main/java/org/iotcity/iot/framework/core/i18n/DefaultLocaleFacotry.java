@@ -213,15 +213,48 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 
 	@Override
 	public LocaleText getLocale(String name, String lang) {
-		if (StringHelper.isEmpty(name) || StringHelper.isEmpty(lang)) {
+		if (StringHelper.isEmpty(name)) {
 			return new DefaultLocaleText(name, lang, null);
 		}
-		LocaleText text = this.texts.get(getKey(name, lang));
-		if (text != null) return text;
+		if (StringHelper.isEmpty(lang)) {
+			LocaleText text = this.texts.get(getKey(name, this.getDefaultLangKey(name)));
+			if (text != null) return text;
+			text = this.texts.get(getKey(name, "en_US"));
+			return text != null ? text : new DefaultLocaleText(name, lang, null);
+		} else {
+			LocaleText text = this.texts.get(getKey(name, lang));
+			if (text != null) return text;
+			text = this.texts.get(getKey(name, this.getDefaultLangKey(name)));
+			if (text != null) return text;
+			text = this.texts.get(getKey(name, "en_US"));
+			return text != null ? text : new DefaultLocaleText(name, lang, null);
+		}
+	}
+
+	@Override
+	public LocaleText getLocale(String name, String[] langs) {
+		if (StringHelper.isEmpty(name)) {
+			return new DefaultLocaleText(name, langs != null && langs.length > 0 ? langs[0] : null, null);
+		}
+		// Defined the object
+		LocaleText text = null;
+		// If there is any language key, try to get one
+		if (langs != null && langs.length > 0) {
+			// Traversal language keys
+			for (String lang : langs) {
+				// Verify the language key
+				if (StringHelper.isEmpty(lang)) continue;
+				// Get the locale object
+				text = this.texts.get(getKey(name, lang));
+				// Return data if the object is not null
+				if (text != null) return text;
+			}
+		}
+		// Get default language key
 		text = this.texts.get(getKey(name, this.getDefaultLangKey(name)));
 		if (text != null) return text;
 		text = this.texts.get(getKey(name, "en_US"));
-		return text != null ? text : new DefaultLocaleText(name, lang, null);
+		return text != null ? text : new DefaultLocaleText(name, langs != null && langs.length > 0 ? langs[0] : null, null);
 	}
 
 	// --------------------------- Private methods ----------------------------

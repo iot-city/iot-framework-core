@@ -44,9 +44,17 @@ public interface LocaleFactory extends Configurable<LocaleConfig[]> {
 	/**
 	 * Gets a locale text object by specified name and language key (returns not null).
 	 * @param name The locale name (required, not null or empty, e.g. "CORE").
-	 * @param lang Locale text language key (required, not null or empty, e.g. "en_US", "zh_CN").
+	 * @param lang Locale text language key (optional, set a null value to use default language key by default, e.g. "en_US", "zh_CN").
 	 * @return Locale text object (not null).
 	 */
 	LocaleText getLocale(String name, String lang);
+
+	/**
+	 * Gets a locale text object by specified name and language keys (returns not null).
+	 * @param name The locale name (required, not null or empty, e.g. "CORE").
+	 * @param langs Locale text language keys (optional, set a null value to use default language key by default, e.g. ["en_US", "zh_CN"]).
+	 * @return Locale text object (not null).
+	 */
+	LocaleText getLocale(String name, String[] langs);
 
 }

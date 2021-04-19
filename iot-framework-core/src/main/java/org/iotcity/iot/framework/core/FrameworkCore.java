@@ -6,7 +6,7 @@ import org.iotcity.iot.framework.core.i18n.LocaleText;
 import org.iotcity.iot.framework.core.logging.Logger;
 
 /**
- * IoT Framework core
+ * IoT Framework core.
  * @author Ardon
  */
 public final class FrameworkCore {
@@ -14,13 +14,13 @@ public final class FrameworkCore {
 	// --------------------------- Private static fields ----------------------------
 
 	/**
-	 * The framework logger configure name
+	 * The logger configure name.
 	 */
-	private static final String CORE_LOGGER_NAME = "CORE";
+	private static final String LOGGER_NAME = "CORE";
 	/**
-	 * The framework locale configure name
+	 * The locale configure name.
 	 */
-	private static final String CORE_LOCALE_NAME = "CORE";
+	private static final String LOCALE_NAME = "CORE";
 
 	// --------------------------- Default static block ----------------------------
 
@@ -32,27 +32,45 @@ public final class FrameworkCore {
 	// --------------------------- Public static methods ----------------------------
 
 	/**
-	 * Configure or reconfigure framework core data.
+	 * Configure or reconfigure locale data.
 	 */
 	public static final void config() {
-		// Configure core locale text
+		// Configure the locale text
 		new LocaleConfigure("org/iotcity/iot/framework/core/resources/i18n-core-config.properties", true).config(IoTFramework.getLocaleFactory(), false);
 	}
 
 	/**
-	 * Gets a framework core default logger object.
-	 * @return Logger A logger to log message (not null)
+	 * Gets a default logger object of framework core (returns not null).
+	 * @return A logger to log message (not null).
 	 */
 	public static final Logger getLogger() {
-		return IoTFramework.getLoggerFactory().getLogger(CORE_LOGGER_NAME);
+		return IoTFramework.getLoggerFactory().getLogger(LOGGER_NAME);
 	}
 
 	/**
-	 * Gets a framework core default language locale object.
-	 * @return Locale text object (not null).
+	 * Gets a default language locale object of framework core (returns not null).
+	 * @return A locale text object (not null).
 	 */
 	public static final LocaleText getLocale() {
-		return IoTFramework.getLocaleFactory().getLocale(CORE_LOCALE_NAME);
+		return IoTFramework.getLocaleFactory().getLocale(LOCALE_NAME);
+	}
+
+	/**
+	 * Gets a locale text object by specified language key of framework core (returns not null).
+	 * @param lang Locale text language key (optional, set a null value to use default language key by default, e.g. "en_US", "zh_CN").
+	 * @return Locale text object (not null).
+	 */
+	public static final LocaleText getLocale(String lang) {
+		return IoTFramework.getLocaleFactory().getLocale(LOCALE_NAME, lang);
+	}
+
+	/**
+	 * Gets a locale text object by specified language keys of framework core (returns not null).
+	 * @param langs Locale text language keys (optional, set a null value to use default language key by default, e.g. ["en_US", "zh_CN"]).
+	 * @return Locale text object (not null).
+	 */
+	public static final LocaleText getLocale(String[] langs) {
+		return IoTFramework.getLocaleFactory().getLocale(LOCALE_NAME, langs);
 	}
 
 }
