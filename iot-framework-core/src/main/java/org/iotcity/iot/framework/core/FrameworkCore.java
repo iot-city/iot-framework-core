@@ -36,7 +36,7 @@ public final class FrameworkCore {
 	 */
 	public static final void config() {
 		// Configure core locale text
-		new LocaleConfigure("org/iotcity/iot/framework/core/i18n-core-config.properties", true).config(IoTFramework.getLocaleFactory(), false);
+		new LocaleConfigure("org/iotcity/iot/framework/core/resources/i18n-core-config.properties", true).config(IoTFramework.getLocaleFactory(), false);
 	}
 
 	/**
