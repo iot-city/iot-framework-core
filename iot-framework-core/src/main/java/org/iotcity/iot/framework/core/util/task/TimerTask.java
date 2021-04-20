@@ -246,7 +246,7 @@ final class TimerTask implements Runnable {
 			task.run();
 		} catch (Exception e) {
 			// Logs error
-			FrameworkCore.getLogger().error(FrameworkCore.getLocale().text("core.util.task.task.err", queue.getName(), task.getClass(), e.getMessage()), e);
+			FrameworkCore.getLogger().error(FrameworkCore.getLocale().text("core.util.task.task.err", queue.getName(), name, task.getClass(), e.getMessage()), e);
 		}
 
 		// Get running end time

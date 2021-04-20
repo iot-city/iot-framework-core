@@ -148,10 +148,10 @@ public final class TaskHandler {
 			pool.shutdown();
 		} catch (Exception e) {
 			// Logs error
-			thread.logger.error(thread.locale.text("core.util.task.shutdown.err", this.thread.getName(), e.getMessage()), e);
+			thread.logger.error(thread.locale.text("core.util.task.shutdown.err", name, e.getMessage()), e);
 		}
 		// Logs destroy message
-		thread.logger.info(thread.locale.text("core.util.task.destory", this.thread.getName()));
+		thread.logger.info(thread.locale.text("core.util.task.destory", name));
 	}
 
 	// --------------------------- Delay methods ----------------------------

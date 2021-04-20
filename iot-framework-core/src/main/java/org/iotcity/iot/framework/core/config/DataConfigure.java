@@ -15,7 +15,7 @@ public abstract class DataConfigure<T> implements AutoConfigure<T> {
 	 * Constructor for automatic data configuration object.
 	 * @param <T> The configure data type.
 	 * @param data Configuration data (required, not null).
-	 * @throws IllegalArgumentException An error is thrown when the parameter is null
+	 * @throws IllegalArgumentException An error is thrown when the parameter "data" is null.
 	 */
 	public DataConfigure(T data) {
 		// Parameters verification
