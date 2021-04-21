@@ -188,26 +188,22 @@ public final class PropertiesLoader {
 
 	private static Object getFieldValue(Class<?> type, String value, Object defaultValue) {
 		if (value != null) value = value.trim();
-		if (type.isPrimitive()) {
-			if (type == boolean.class || type == Boolean.class) {
-				return ConvertHelper.toBoolean(value, (boolean) defaultValue);
-			} else if (type == int.class || type == Integer.class) {
-				return ConvertHelper.toInt(value, (int) defaultValue);
-			} else if (type == long.class || type == Long.class) {
-				return ConvertHelper.toLong(value, (long) defaultValue);
-			} else if (type == float.class || type == Float.class) {
-				return ConvertHelper.toFloat(value, (float) defaultValue);
-			} else if (type == double.class || type == Double.class) {
-				return ConvertHelper.toDouble(value, (double) defaultValue);
-			} else if (type == short.class || type == Short.class) {
-				return ConvertHelper.toShort(value, (short) defaultValue);
-			} else if (type == byte.class || type == Byte.class) {
-				return ConvertHelper.toByte(value, (byte) defaultValue);
-			} else if (type == char.class || type == Character.class) {
-				return ConvertHelper.toChar(value, (char) defaultValue);
-			} else {
-				return value == null ? defaultValue : value;
-			}
+		if (type == boolean.class || type == Boolean.class) {
+			return ConvertHelper.toBoolean(value, (boolean) defaultValue);
+		} else if (type == int.class || type == Integer.class) {
+			return ConvertHelper.toInt(value, (int) defaultValue);
+		} else if (type == long.class || type == Long.class) {
+			return ConvertHelper.toLong(value, (long) defaultValue);
+		} else if (type == float.class || type == Float.class) {
+			return ConvertHelper.toFloat(value, (float) defaultValue);
+		} else if (type == double.class || type == Double.class) {
+			return ConvertHelper.toDouble(value, (double) defaultValue);
+		} else if (type == short.class || type == Short.class) {
+			return ConvertHelper.toShort(value, (short) defaultValue);
+		} else if (type == byte.class || type == Byte.class) {
+			return ConvertHelper.toByte(value, (byte) defaultValue);
+		} else if (type == char.class || type == Character.class) {
+			return ConvertHelper.toChar(value, (char) defaultValue);
 		} else if (type == String.class) {
 			return value == null ? defaultValue : value;
 		} else if (type == Date.class) {
@@ -218,26 +214,22 @@ public final class PropertiesLoader {
 	}
 
 	private static Object getDefaultValueByType(Class<?> type) {
-		if (type.isPrimitive()) {
-			if (type == boolean.class || type == Boolean.class) {
-				return false;
-			} else if (type == int.class || type == Integer.class) {
-				return 0;
-			} else if (type == long.class || type == Long.class) {
-				return 0L;
-			} else if (type == float.class || type == Float.class) {
-				return 0;
-			} else if (type == double.class || type == Double.class) {
-				return 0.0;
-			} else if (type == short.class || type == Short.class) {
-				return 0;
-			} else if (type == byte.class || type == Byte.class) {
-				return 0;
-			} else if (type == char.class || type == Character.class) {
-				return '\0';
-			} else {
-				return null;
-			}
+		if (type == boolean.class || type == Boolean.class) {
+			return false;
+		} else if (type == int.class || type == Integer.class) {
+			return 0;
+		} else if (type == long.class || type == Long.class) {
+			return 0L;
+		} else if (type == float.class || type == Float.class) {
+			return 0;
+		} else if (type == double.class || type == Double.class) {
+			return 0.0;
+		} else if (type == short.class || type == Short.class) {
+			return 0;
+		} else if (type == byte.class || type == Byte.class) {
+			return 0;
+		} else if (type == char.class || type == Character.class) {
+			return '\0';
 		} else {
 			return null;
 		}

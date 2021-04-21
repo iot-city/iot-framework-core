@@ -22,7 +22,7 @@ public final class TaskHandler {
 	 * Use parameters below:<br/>
 	 * <b>corePoolSize: 0, maximumPoolSize: 10, keepAliveTime: 60s, capacity: 0</b>
 	 */
-	public static final TaskHandler instance = new TaskHandler("DefaultTaskHandler");
+	public static final TaskHandler instance = new TaskHandler("Default");
 
 	// --------------------------- Private fields ----------------------------
 
@@ -78,7 +78,7 @@ public final class TaskHandler {
 	 */
 	public TaskHandler(String name, int corePoolSize, int maximumPoolSize, long keepAliveTime, int capacity) {
 		// Set handler name
-		this.name = StringHelper.isEmpty(name) ? "TaskHandler" : name;
+		this.name = StringHelper.isEmpty(name) ? "TaskHandler" : "TaskHandler-" + name;
 		// Create task queue and timer loop thread
 		queue = new TimerTaskQueue(this.name);
 		thread = new TimerTaskThread(this.name, this, queue);
