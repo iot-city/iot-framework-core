@@ -79,14 +79,14 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		String pkgPath = pkg.replaceAll("\\.", "/");
 		Enumeration<URL> urls = loader.getResources(pkgPath);
-		if (urls != null) {
+		if (urls != null && urls.hasMoreElements()) {
 			// From resources
 			while (urls.hasMoreElements()) {
 				URL url = urls.nextElement();
 				if (url == null) continue;
 				String protocol = url.getProtocol();
 				if ("file".equals(protocol)) {
-					this.analyzeFileClasses(pkg, new File(url.getPath()).listFiles(fileFiter));
+					this.analyzeFileClasses(pkg, new File(url.getPath()).listFiles(fileFiter), pkg);
 				} else if ("jar".equals(protocol)) {
 					this.analyzeJarClasses(pkgPath, ((JarURLConnection) url.openConnection()).getJarFile());
 				}
@@ -97,11 +97,11 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 			for (int i = 0; i < urls2.length; i++) {
 				URL url = urls2[i];
 				String urlPath = url.getPath();
-				if (urlPath.endsWith("classes/")) continue;
-				String jarPath = urlPath + "!/" + pkgPath;
-				String[] jarInfo = jarPath.split("!");
-				String jarFilePath = jarInfo[0].substring(jarInfo[0].indexOf("/"));
-				this.analyzeJarClasses(pkgPath, new JarFile(jarFilePath));
+				if (urlPath.endsWith("classes/")) {
+					this.analyzeFileClasses("", new File(urlPath).listFiles(fileFiter), pkg);
+				} else if (urlPath.endsWith(".jar")) {
+					this.analyzeJarClasses(pkgPath, new JarFile(urlPath));
+				}
 			}
 		}
 	}
@@ -110,20 +110,32 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	 * Analyze file classes
 	 * @param pkgName The package name (e.g. "org.iotcity.iot.framework.actor.test")
 	 * @param files Files for analyzing
+	 * @param startsPackage The start package to analyze.
 	 * @throws Exception Throw an exception when an error is encountered
 	 */
-	private void analyzeFileClasses(String pkgName, File[] files) throws Exception {
+	private void analyzeFileClasses(String pkgName, File[] files, String startsPackage) throws Exception {
 		if (files == null || files.length == 0 || this.isIgnoredPackage(pkgName)) return;
 		for (File f : files) {
 			String fileName = f.getName();
 			if (f.isFile()) {
+				if (!pkgName.startsWith(startsPackage)) continue;
 				int pos = fileName.lastIndexOf(".");
 				if (pos <= 0) continue;
-				String className = pkgName + "." + fileName.substring(0, pos);
+				String className;
+				if (pkgName.length() > 0) {
+					className = pkgName + "." + fileName.substring(0, pos);
+				} else {
+					className = fileName.substring(0, pos);
+				}
 				this.analyzeClass(className);
 			} else if (f.isDirectory()) {
-				String newPkg = pkgName.length() > 0 ? (pkgName + "." + fileName) : fileName;
-				this.analyzeFileClasses(newPkg, new File(f.getPath()).listFiles(fileFiter));
+				String newPkg;
+				if (pkgName.length() > 0) {
+					newPkg = pkgName + "." + fileName;
+				} else {
+					newPkg = fileName;
+				}
+				this.analyzeFileClasses(newPkg, new File(f.getPath()).listFiles(fileFiter), startsPackage);
 			}
 		}
 	}

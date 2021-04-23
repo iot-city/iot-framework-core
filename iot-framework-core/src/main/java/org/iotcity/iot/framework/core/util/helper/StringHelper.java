@@ -28,7 +28,7 @@ public final class StringHelper {
 	 * @param str String object
 	 * @return boolean Whether null or empty
 	 */
-	public static boolean isEmpty(String str) {
+	public final static boolean isEmpty(String str) {
 		return str == null || str.length() == 0;
 	}
 
@@ -37,7 +37,7 @@ public final class StringHelper {
 	 * @param str String object
 	 * @return boolean Whether null or empty
 	 */
-	public static boolean isEmptyWithTrim(String str) {
+	public final static boolean isEmptyWithTrim(String str) {
 		return str == null || str.length() == 0 || str.trim().length() == 0;
 	}
 
@@ -46,7 +46,7 @@ public final class StringHelper {
 	 * @param str String object
 	 * @return String A non null string that has removed the leading and trailing spaces
 	 */
-	public static String trim(String str) {
+	public final static String trim(String str) {
 		return str == null ? "" : str.trim();
 	}
 
@@ -54,7 +54,7 @@ public final class StringHelper {
 	 * Gets the global UUID string (32-bit length string)
 	 * @return String UUID string
 	 */
-	public static String getUUID() {
+	public final static String getUUID() {
 		return UUID.randomUUID().toString().replace("-", "");
 	}
 
@@ -63,7 +63,7 @@ public final class StringHelper {
 	 * @param params String data to be merged
 	 * @return String Merged string
 	 */
-	public static String concat(String... params) {
+	public final static String concat(String... params) {
 		if (params == null || params.length == 0) return "";
 		StringBuilder sb = new StringBuilder();
 		for (String str : params) {
@@ -78,7 +78,7 @@ public final class StringHelper {
 	 * @param params String data to be merged
 	 * @return String Merged string
 	 */
-	public static String concatAs(String separator, Object... params) {
+	public final static String concatAs(String separator, Object... params) {
 		if (params == null || params.length == 0) return "";
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0, c = params.length; i < c; i++) {
@@ -94,7 +94,7 @@ public final class StringHelper {
 	 * @param values Array of parameters to replace {0}.. {n}
 	 * @return String Formated result string
 	 */
-	public static String format(String str, Object... values) {
+	public final static String format(String str, Object... values) {
 		if (str == null || str.length() == 0 || values == null || values.length == 0) return str;
 		String result = str;
 		for (int i = 0, c = values.length; i < c; i++) {
@@ -114,7 +114,7 @@ public final class StringHelper {
 	 * @param str A string whose length needs to be calculated
 	 * @return int Byte length
 	 */
-	public static int getBytesLength(String str) {
+	public final static int getBytesLength(String str) {
 		if (str == null || str.length() == 0) return 0;
 		int len = 0;
 		for (int i = 0, c = str.length(); i < c; i++) {
@@ -134,7 +134,7 @@ public final class StringHelper {
 	 * @param inArray Array to search
 	 * @return int The string index in array
 	 */
-	public static int findPos(String str, String[] inArray) {
+	public final static int findPos(String str, String[] inArray) {
 		if (inArray == null || inArray.length == 0) return -1;
 		int size = inArray.length;
 		if (str == null) {
@@ -155,7 +155,7 @@ public final class StringHelper {
 	 * @param separator Separator key (e.g. '-', '_')
 	 * @return String Conversion result string
 	 */
-	public static String lineToHumpMode(String source, char separator) {
+	public final static String lineToHumpMode(String source, char separator) {
 		if (source == null || source.length() == 0) return source;
 		StringBuilder sb = new StringBuilder(source.length());
 		char[] cs = source.toCharArray();
@@ -183,7 +183,7 @@ public final class StringHelper {
 	 * @param keepCharCase Whether keep the source upper case characters (e.g. true > "AaaBbbCcc" to "Aaa-Bbb-Ccc")
 	 * @return String Conversion result string
 	 */
-	public static String humpToLineMode(String source, char separator, boolean keepCharCase) {
+	public final static String humpToLineMode(String source, char separator, boolean keepCharCase) {
 		if (source == null || source.length() == 0) return source;
 		StringBuilder sb = new StringBuilder(source.length());
 		char[] cs = source.toCharArray();
@@ -207,7 +207,7 @@ public final class StringHelper {
 	 * @param value The string to be converted
 	 * @return Conversion result string
 	 */
-	public static String upperCaseFirstChar(String value) {
+	public final static String upperCaseFirstChar(String value) {
 		if (value == null || value.length() == 0 || Character.isUpperCase(value.charAt(0))) return value;
 		byte[] items = value.getBytes();
 		items[0] = (byte) ((char) items[0] - 'a' + 'A');
@@ -219,7 +219,7 @@ public final class StringHelper {
 	 * @param value The string to be converted
 	 * @return Conversion result string
 	 */
-	public static String lowerCaseFirstChar(String value) {
+	public final static String lowerCaseFirstChar(String value) {
 		if (value == null || value.length() == 0 || Character.isLowerCase(value.charAt(0))) return value;
 		byte[] items = value.getBytes();
 		items[0] = (byte) ((char) items[0] - 'A' + 'a');
@@ -232,7 +232,7 @@ public final class StringHelper {
 	 * Gets a random double value string (e.g. "23.455645633")
 	 * @return String Double value string
 	 */
-	public static String getRandomDoubleString() {
+	public final static String getRandomDoubleString() {
 		return String.valueOf(_Random.nextDouble());
 	}
 
@@ -241,7 +241,7 @@ public final class StringHelper {
 	 * @param length The string length
 	 * @return String Number value string
 	 */
-	public static String getRandomNumericString(int length) {
+	public final static String getRandomNumericString(int length) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < length; i++) {
 			sb.append(_Random.nextInt(10));
@@ -254,7 +254,7 @@ public final class StringHelper {
 	 * @param length The string length
 	 * @return String A random string
 	 */
-	public static String getRandomString(int length) {
+	public final static String getRandomString(int length) {
 		int wlen = _KeyWords.length;
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < length; i++) {

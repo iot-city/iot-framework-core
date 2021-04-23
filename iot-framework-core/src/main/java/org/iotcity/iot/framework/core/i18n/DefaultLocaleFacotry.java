@@ -5,7 +5,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 
+import org.iotcity.iot.framework.core.util.config.PropertiesLoader;
+import org.iotcity.iot.framework.core.util.config.PropertiesMap;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
 import org.iotcity.iot.framework.core.util.helper.SystemHelper;
 
@@ -149,6 +153,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 		}
 		for (LocaleConfig config : data) {
 			if (config == null || StringHelper.isEmpty(config.name)) continue;
+
 			// Set language key
 			String name = config.name;
 			// Remove disable locale
@@ -159,19 +164,25 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 			}
 			// Set default language
 			this.setDefaultLangKey(name, config.defaultLang);
-			LocaleConfigText[] langs = config.langs;
-			if (langs == null || langs.length == 0) continue;
-			// Set locale text configure
-			for (LocaleConfigText textConfig : langs) {
-				if (textConfig == null || StringHelper.isEmpty(textConfig.lang)) continue;
-				String lang = textConfig.lang;
+			if (!config.enabled) continue;
+
+			// Load language texts
+			PropertiesMap<LocaleConfigFile> files = config.files;
+			if (files == null || files.size() == 0) continue;
+			for (Entry<String, LocaleConfigFile> kv : files.entrySet()) {
+
+				String lang = kv.getKey();
+				LocaleConfigFile file = kv.getValue();
+				Properties texts = PropertiesLoader.loadProperties(file.file, "UTF-8", file.fromPackage);
+				// Ensure that use this.texts to get the locale object
 				LocaleText locale = this.texts.get(getKey(name, lang));
 				if (locale == null) {
-					locale = new DefaultLocaleText(config.name, textConfig.lang, textConfig.texts);
+					locale = new DefaultLocaleText(config.name, lang, texts);
 					this.addLocale(name, lang, locale);
 				} else {
-					locale.config(textConfig, reset);
+					locale.config(texts, reset);
 				}
+
 			}
 		}
 		return true;

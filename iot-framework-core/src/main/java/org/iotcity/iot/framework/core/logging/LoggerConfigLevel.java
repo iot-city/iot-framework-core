@@ -7,24 +7,30 @@ package org.iotcity.iot.framework.core.logging;
 public class LoggerConfigLevel {
 
 	/**
-	 * The level name
+	 * Whether enable class tracking (String boolean type to fix default status).
 	 */
-	public String name;
+	public String classTracking;
 	/**
-	 * Whether enable class tracking
+	 * Whether enable method tracking (String boolean type to fix default status).
 	 */
-	public boolean classTracking;
+	public String methodTracking;
 	/**
-	 * Whether enable method tracking
+	 * Font color of console output.<br/>
+	 * Available colors: "black", "red", "green", "yellow", "blue", "purple", "cyan", "white", "default".
 	 */
-	public boolean methodTracking;
+	public String fontColor;
 	/**
-	 * Font color of console output (reference: LogLevelColor.FONT_XXXX)
+	 * Whether to use the highlight color (true by default).
 	 */
-	public int fontColor;
+	public boolean fontHighlight = true;
 	/**
-	 * Background color of console output (reference: LogLevelColor.BG_XXXX)
+	 * Background color of console output.<br/>
+	 * Available colors: "black", "red", "green", "yellow", "blue", "purple", "cyan", "white", "default".
 	 */
-	public int bgColor;
+	public String bgColor;
+	/**
+	 * Whether to use the highlight color (false by default).
+	 */
+	public boolean bgHighlight;
 
 }

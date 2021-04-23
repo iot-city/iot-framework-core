@@ -3,6 +3,7 @@ package org.iotcity.iot.framework.core.logging;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
@@ -31,7 +32,7 @@ public class DefaultLogger implements Logger {
 	/**
 	 * The configure map for all levels, the key is level name with upper case, the value is level configure (not null).
 	 */
-	protected final Map<String, LoggerConfigLevel> levels;
+	protected final Map<String, LogLevel> levels;
 	/**
 	 * Date format object.
 	 */
@@ -46,22 +47,22 @@ public class DefaultLogger implements Logger {
 	 * @param callerDepth The depth from get logger method to the logging message method (0 by default).
 	 * @param levels The configure map for all levels, the key is level name with upper case, the value is level configure (required, not null).
 	 */
-	public DefaultLogger(String name, Class<?> clazz, int callerDepth, Map<String, LoggerConfigLevel> levels) {
+	public DefaultLogger(String name, Class<?> clazz, int callerDepth, Map<String, LogLevel> levels) {
 		this.name = name == null ? "" : name;
 		this.clazz = clazz;
 		this.callerDepth = (callerDepth < 0 ? 0 : callerDepth) + 3;
-		this.levels = levels;
+		this.levels = levels == null ? new HashMap<>() : levels;
 	}
 
 	// --------------------------- Override methods ----------------------------
 
 	@Override
-	public boolean config(LoggerConfigLevel[] data, boolean reset) {
+	public boolean config(LogLevel[] data, boolean reset) {
 		if (data == null) return false;
 		if (reset) this.levels.clear();
-		for (LoggerConfigLevel config : data) {
-			if (config == null || StringHelper.isEmpty(config.name)) continue;
-			this.levels.put(config.name.toUpperCase(), config);
+		for (LogLevel level : data) {
+			if (level == null || StringHelper.isEmpty(level.name)) continue;
+			this.levels.put(level.name.toUpperCase(), level);
 		}
 		return true;
 	}
@@ -139,21 +140,21 @@ public class DefaultLogger implements Logger {
 	 */
 	protected void outputMessage(String level, Object message, Throwable e) {
 		// Get level config
-		LoggerConfigLevel config = this.levels.get(level);
+		LogLevel config = this.levels.get(level);
 		if (config == null) return;
 
 		StringBuilder sb = new StringBuilder();
 		StringBuilder sbColor = new StringBuilder();
 
 		// Set color
-		if (config.fontColor != LogLevelColor.FONT_DEFAULT || config.bgColor != LogLevelColor.BG_DEFAULT) {
+		if (config.fontColor != LogLevel.COLOR_FONT_DEFAULT || config.bgColor != LogLevel.COLOR_BG_DEFAULT) {
 			// Font color format: \033[XX;XX;XXm
 			sbColor.append("\033[");
 			// Add font color
-			if (config.fontColor != LogLevelColor.FONT_DEFAULT) {
+			if (config.fontColor != LogLevel.COLOR_FONT_DEFAULT) {
 				sbColor.append(config.fontColor).append(";");
 			}
-			if (config.bgColor != LogLevelColor.BG_DEFAULT) {
+			if (config.bgColor != LogLevel.COLOR_BG_DEFAULT) {
 				sbColor.append(config.bgColor).append(";");
 			}
 			sbColor.append("m");

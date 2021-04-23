@@ -57,10 +57,10 @@ public class DefaultLocaleText implements LocaleText {
 	// --------------------------- Override methods ----------------------------
 
 	@Override
-	public boolean config(LocaleConfigText data, boolean reset) {
-		if (data == null || data.texts == null) return false;
+	public boolean config(Map<Object, Object> data, boolean reset) {
+		if (data == null) return false;
 		if (reset) this.texts.clear();
-		this.texts.putAll(data.texts);
+		this.texts.putAll(data);
 		return true;
 	}
 

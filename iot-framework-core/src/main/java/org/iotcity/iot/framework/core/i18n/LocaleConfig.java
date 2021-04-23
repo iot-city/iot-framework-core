@@ -1,5 +1,7 @@
 package org.iotcity.iot.framework.core.i18n;
 
+import org.iotcity.iot.framework.core.util.config.PropertiesMap;
+
 /**
  * Locale configure data.
  * @author Ardon
@@ -19,8 +21,8 @@ public class LocaleConfig {
 	 */
 	public String defaultLang;
 	/**
-	 * Locale configuration text data for languages.
+	 * Locale configuration files for languages.
 	 */
-	public LocaleConfigText[] langs;
+	public PropertiesMap<LocaleConfigFile> files;
 
 }

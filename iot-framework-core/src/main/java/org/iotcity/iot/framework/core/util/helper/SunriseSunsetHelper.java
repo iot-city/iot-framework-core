@@ -20,7 +20,7 @@ public final class SunriseSunsetHelper {
 	 * @param day Current day (starting at 1)
 	 * @return SunriseSunset sunrise and sunset result
 	 */
-	public static SunriseSunset getSunriseSunset(String timeZone, double lat, double lng, int year, int month, int day) {
+	public final static SunriseSunset getSunriseSunset(String timeZone, double lat, double lng, int year, int month, int day) {
 		TimeZone tz = null;
 		if (timeZone == null || timeZone.length() == 0) {
 			tz = TimeZone.getDefault();
@@ -48,7 +48,7 @@ public final class SunriseSunsetHelper {
 		return _calRiseSet(mjday, tzh, lng, lat);
 	}
 
-	private static double[] _minisun(double t) {
+	private final static double[] _minisun(double t) {
 		double p2 = 6.283185307, coseps = 0.91748, sineps = 0.39778;
 		double L, M, DL, SL, X, Y, Z, RHO, ra, dec;
 		double[] suneq = new double[2];
@@ -68,14 +68,14 @@ public final class SunriseSunsetHelper {
 		return suneq;
 	}
 
-	private static double _frac(double x) {
+	private final static double _frac(double x) {
 		double a;
 		a = x - Math.floor(x);
 		if (a < 0) a += 1;
 		return a;
 	}
 
-	private static double _lmst(double mjday, double glong) {
+	private final static double _lmst(double mjday, double glong) {
 		double lst, t, d;
 		d = mjday - 51544.5;
 		t = d / 36525.0;
@@ -83,7 +83,7 @@ public final class SunriseSunsetHelper {
 		return (lst / 15.0 + glong / 15);
 	}
 
-	private static double _range(double x) {
+	private final static double _range(double x) {
 		double a, b;
 		b = x / 360;
 		a = 360 * (b - _ipart(b));
@@ -93,7 +93,7 @@ public final class SunriseSunsetHelper {
 		return a;
 	}
 
-	private static double _ipart(double x) {
+	private final static double _ipart(double x) {
 		double a;
 		if (x > 0) {
 			a = Math.floor(x);
@@ -103,7 +103,7 @@ public final class SunriseSunsetHelper {
 		return a;
 	}
 
-	private static double _sinAlt(double mjd0, double hour, double glong, double cglat, double sglat) {
+	private final static double _sinAlt(double mjd0, double hour, double glong, double cglat, double sglat) {
 		double mjday, t, ra, dec, tau, salt, rads = 0.0174532925;
 		mjday = mjd0 + hour / 24.0;
 		t = (mjday - 51544.5) / 36525.0;
@@ -115,7 +115,7 @@ public final class SunriseSunsetHelper {
 		return salt;
 	}
 
-	private static double[] _quad(double ym, double yz, double yp) {
+	private final static double[] _quad(double ym, double yz, double yp) {
 		double nz, a, b, c, dis, dx, xe, ye, z1 = 0.0, z2 = 0.0;
 		nz = 0;
 		a = 0.5 * (ym + yp) - yz;
@@ -141,7 +141,7 @@ public final class SunriseSunsetHelper {
 		return quadout;
 	}
 
-	private static double _getZTTime(double mjday, double tz, double glong) {
+	private final static double _getZTTime(double mjday, double tz, double glong) {
 		double date, ym, yz, utrise, utset, sinho;
 		double yp, nz, hour, z1, z2, ye, rads = 0.0174532925;
 		sinho = Math.sin(rads * -0.833);
@@ -181,11 +181,11 @@ public final class SunriseSunsetHelper {
 		return zt;
 	}
 
-	private static int _getHourMinutes(double hours) {
+	private final static int _getHourMinutes(double hours) {
 		return Double.valueOf(Math.floor(hours * 60 + 0.5)).intValue();
 	}
 
-	private static SunriseSunset _calRiseSet(double mjday, double tz, double glong, double glat) {
+	private final static SunriseSunset _calRiseSet(double mjday, double tz, double glong, double glat) {
 		double sinho, cglat, sglat, date, ym, yz, utrise, utset, yp, nz, hour, z1, z2, ye, rads = 0.0174532925;
 		boolean above = false, rise = false, sett = false;
 		sinho = Math.sin(rads * -0.833);

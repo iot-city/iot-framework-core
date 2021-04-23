@@ -17,11 +17,9 @@ public abstract class DataConfigure<T> implements AutoConfigure<T> {
 	 * @param data Configuration data (required, not null).
 	 * @throws IllegalArgumentException An error is thrown when the parameter "data" is null.
 	 */
-	public DataConfigure(T data) {
+	public DataConfigure(T data) throws IllegalArgumentException {
 		// Parameters verification
-		if (data == null) {
-			throw new IllegalArgumentException("Parameter data can not be null!");
-		}
+		if (data == null) throw new IllegalArgumentException("Parameter data can not be null!");
 		this.data = data;
 	}
 

@@ -2,7 +2,9 @@ package org.iotcity.iot.framework.core.logging;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.iotcity.iot.framework.core.util.config.PropertiesMap;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
 
 /**
@@ -38,13 +40,9 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	 */
 	public DefaultLoggerFactory(boolean createRoot) {
 		if (!createRoot) return;
-		LoggerConfig config = new LoggerConfig();
-		config.name = "GLOBAL";
-		config.forRoot = true;
-		config.levels = LoggerConfigure.getDefaultLevels();
-		this.config(new LoggerConfig[] {
-			config
-		}, false);
+		DefaultLogger logger = new DefaultLogger("ROOT", null, 0, null);
+		logger.config(LogLevel.getDefaultLevels(), false);
+		setRootLogger(logger);
 	}
 
 	// --------------------------- Public methods ----------------------------
@@ -123,10 +121,31 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	public boolean config(LoggerConfig[] data, boolean reset) {
 		if (data == null) return false;
 		if (reset) this.clearLoggers();
+		// Traverse all configures
 		for (LoggerConfig config : data) {
 			if (config == null || StringHelper.isEmpty(config.name)) continue;
-			DefaultLogger logger = new DefaultLogger(config.name, null, 0, new HashMap<>());
-			logger.config(config.levels, false);
+			// Get config info
+			PropertiesMap<LoggerConfigLevel> map = config.levels;
+			if (map == null || map.size() == 0) continue;
+			// Create map
+			Map<String, LogLevel> levels = new HashMap<>();
+			// Check for all
+			if (map.containsKey("all") || map.containsKey("ALL")) {
+				LogLevel[] lvs = LogLevel.getDefaultLevels();
+				for (LogLevel level : lvs) {
+					levels.put(level.name.toUpperCase(), level);
+				}
+			}
+			// Check for others
+			for (Entry<String, LoggerConfigLevel> kv : map.entrySet()) {
+				String name = kv.getKey();
+				if ("all".equalsIgnoreCase(name)) continue;
+				LogLevel level = LogLevel.getLogLevel(name, kv.getValue());
+				if (level == null) continue;
+				levels.put(name.toUpperCase(), level);
+			}
+			// Create logger
+			DefaultLogger logger = new DefaultLogger(config.name, null, 0, levels);
 			if (config.forRoot) {
 				this.setRootLogger(logger);
 			} else {

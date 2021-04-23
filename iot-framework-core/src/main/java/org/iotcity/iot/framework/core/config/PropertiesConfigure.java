@@ -23,7 +23,7 @@ public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 	 * @param fromPackage Whether load the file from package.
 	 * @throws IllegalArgumentException An error is thrown when the parameter "configFile" is null or empty.
 	 */
-	public PropertiesConfigure(String configFile, boolean fromPackage) {
+	public PropertiesConfigure(String configFile, boolean fromPackage) throws IllegalArgumentException {
 		// Parameters verification
 		if (StringHelper.isEmpty(configFile)) {
 			throw new IllegalArgumentException("Parameter configFile can not be null or empty!");
@@ -39,7 +39,7 @@ public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 	 * @param fromPackage Whether load the file from package.
 	 * @throws IllegalArgumentException An error is thrown when the parameter "configFile" is null or empty.
 	 */
-	public PropertiesConfigure(String configFile, String encoding, boolean fromPackage) {
+	public PropertiesConfigure(String configFile, String encoding, boolean fromPackage) throws IllegalArgumentException {
 		// Parameters verification
 		if (StringHelper.isEmpty(configFile)) {
 			throw new IllegalArgumentException("Parameter configFile can not be null or empty!");

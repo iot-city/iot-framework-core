@@ -28,7 +28,7 @@ public final class FileHelper {
 	/**
 	 * The separator in current system path (e.g. "\")
 	 */
-	public static final String Separator = File.separator;
+	public final static String Separator = File.separator;
 	/**
 	 * The application root path (no ending separator)
 	 */
@@ -45,7 +45,7 @@ public final class FileHelper {
 	 * @param endsWidthSeparator Whether to attach the end separator of the directory
 	 * @return String Application root directory
 	 */
-	public static String getRoot(boolean endsWidthSeparator) {
+	public final static String getRoot(boolean endsWidthSeparator) {
 		if (root == null) {
 			String path = new File("").getAbsolutePath();
 			if (path.endsWith(File.separator)) {
@@ -67,7 +67,7 @@ public final class FileHelper {
 	 * @param withEndedSeparator Whether to attach the end separator of the directory
 	 * @return String Local directory result
 	 */
-	public static String toLocalDirectory(String dir, boolean withEndedSeparator) {
+	public final static String toLocalDirectory(String dir, boolean withEndedSeparator) {
 		if (dir == null || dir.length() == 0) return getRoot(withEndedSeparator);
 		if (dir.indexOf(":\\") == 1) {
 			return replaceSeparator(dir, Separator, withEndedSeparator);
@@ -87,7 +87,7 @@ public final class FileHelper {
 	 * @param withEndedSeparator Whether to attach the end separator of the directory
 	 * @return String Result path, has replaced by new separator
 	 */
-	public static String replaceSeparator(String path, String separator, boolean withEndedSeparator) {
+	public final static String replaceSeparator(String path, String separator, boolean withEndedSeparator) {
 		if (path == null || path.length() == 0) return "";
 		String ret;
 		if ("\\".equals(separator)) {
@@ -114,7 +114,7 @@ public final class FileHelper {
 	 * @param path file path or directory
 	 * @return boolean Whether the path exists
 	 */
-	public static boolean exists(String path) {
+	public final static boolean exists(String path) {
 		try {
 			File f = new File(path);
 			return f.exists();
@@ -132,7 +132,7 @@ public final class FileHelper {
 	 * @param dir Folder directory
 	 * @return boolean Whether created successfully
 	 */
-	public static boolean createFolder(String dir) {
+	public final static boolean createFolder(String dir) {
 		if (dir == null || dir.length() == 0) return false;
 		try {
 			File f = new File(dir);
@@ -154,7 +154,7 @@ public final class FileHelper {
 	 * @param encoding Text encoding
 	 * @return boolean Whether written successfully
 	 */
-	public static boolean createFile(String filePathAndName, String fileContent, String encoding) {
+	public final static boolean createFile(String filePathAndName, String fileContent, String encoding) {
 		PrintWriter myFile = null;
 		try {
 			File f = new File(filePathAndName);
@@ -187,7 +187,7 @@ public final class FileHelper {
 	 * @return String Text content
 	 * @throws IOException If there is a read error, an exception is thrown
 	 */
-	public static String readText(String filePathAndName, String encoding, boolean fromPackage) throws IOException {
+	public final static String readText(String filePathAndName, String encoding, boolean fromPackage) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		String st = "";
 		InputStream fs = null;
@@ -241,7 +241,7 @@ public final class FileHelper {
 	 * @param fromPackage Whether read file from package
 	 * @return boolean Whether read successfully
 	 */
-	public static boolean loadProperties(Properties props, String filePathAndName, String encoding, boolean fromPackage) {
+	public final static boolean loadProperties(Properties props, String filePathAndName, String encoding, boolean fromPackage) {
 		if (!fromPackage && !exists(filePathAndName)) return false;
 		InputStream fis = null;
 		BufferedInputStream bis = null;
@@ -293,7 +293,7 @@ public final class FileHelper {
 	 * @return InputStreamReader Specifies the encoding input stream reader
 	 * @throws IOException
 	 */
-	public static InputStreamReader getUnicodeReader(InputStream is, String encoding) throws IOException {
+	public final static InputStreamReader getUnicodeReader(InputStream is, String encoding) throws IOException {
 		final int BOM_SIZE = 4;
 		byte bom[] = new byte[BOM_SIZE];
 		int n, unread;
@@ -331,7 +331,7 @@ public final class FileHelper {
 	 * @param keepDir Whether keep current folder, only delete the files under it
 	 * @return boolean Whether the deletion was successful
 	 */
-	public static boolean deleteFolder(String dir, boolean keepDir) {
+	public final static boolean deleteFolder(String dir, boolean keepDir) {
 		if (dir == null || dir.length() == 0) return false;
 		File file = new File(dir);
 		if (!file.exists() || !file.isDirectory()) {
@@ -361,7 +361,7 @@ public final class FileHelper {
 	 * @param filePathAndName Absolute path and file name of the file
 	 * @return boolean Whether the deletion was successful
 	 */
-	public static boolean deleteFile(String filePathAndName) {
+	public final static boolean deleteFile(String filePathAndName) {
 		try {
 			File f = new File(filePathAndName);
 			return f.delete();
@@ -378,7 +378,7 @@ public final class FileHelper {
 	 * @param toDir Absolute path of target folder
 	 * @return boolean Whether copy successfully
 	 */
-	public static boolean copyFolder(String fromDir, String toDir) {
+	public final static boolean copyFolder(String fromDir, String toDir) {
 		if (fromDir == null || fromDir.length() == 0 || toDir == null || toDir.length() == 0) return false;
 		if (!fromDir.endsWith(Separator)) fromDir = fromDir + Separator;
 		if (!toDir.endsWith(Separator)) toDir = toDir + Separator;
@@ -433,7 +433,7 @@ public final class FileHelper {
 	 * @param toFile Absolute path and file name of target file
 	 * @return boolean Whether copy successfully
 	 */
-	public static boolean copyFile(String fromFile, String toFile) {
+	public final static boolean copyFile(String fromFile, String toFile) {
 		InputStream inStream = null;
 		FileOutputStream fs = null;
 		try {
@@ -473,7 +473,7 @@ public final class FileHelper {
 	 * @param filePathAndName Absolute path and file name of the file
 	 * @return String MD5 result
 	 */
-	public static String getFileMD5(String filePathAndName) {
+	public final static String getFileMD5(String filePathAndName) {
 		String value = null;
 		FileInputStream in = null;
 		FileChannel channel = null;

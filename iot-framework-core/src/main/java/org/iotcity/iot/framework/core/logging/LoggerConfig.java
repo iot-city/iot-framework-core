@@ -1,22 +1,25 @@
 package org.iotcity.iot.framework.core.logging;
 
+import org.iotcity.iot.framework.core.util.config.PropertiesMap;
+
 /**
- * Logger configure data
+ * Logger configure data.
  * @author Ardon
  */
 public class LoggerConfig {
 
 	/**
-	 * Logger name
+	 * Logger name.
 	 */
-	String name;
+	public String name;
 	/**
-	 * Whether use for root logger
+	 * Whether use for root logger.
 	 */
-	boolean forRoot;
+	public boolean forRoot;
 	/**
-	 * All logger level configuration data
+	 * All logger levels configuration map (the key is level name, the value is LoggerConfigLevel object).<br/>
+	 * Available level names: "all", "trace", "debug", "info", "warn", "error", "fatal".
 	 */
-	LoggerConfigLevel[] levels;
+	public PropertiesMap<LoggerConfigLevel> levels;
 
 }
