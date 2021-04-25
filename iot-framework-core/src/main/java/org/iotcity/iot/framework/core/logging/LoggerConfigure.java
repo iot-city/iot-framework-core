@@ -16,7 +16,7 @@ public class LoggerConfigure extends PropertiesConfigure<LoggerConfig[]> {
 	 * <b>(Default configure template file: "org/iotcity/iot/framework/core/logging/iot-logger-template.properties")</b>
 	 * @param configFile The configure properties file to load (required, not null or empty).
 	 * @param fromPackage Whether load the file from package.
-	 * @throws IllegalArgumentException An error is thrown when the parameter is null
+	 * @throws IllegalArgumentException An error will be thrown when the parameter "configFile" is null.
 	 */
 	public LoggerConfigure(String configFile, boolean fromPackage) {
 		super(configFile, fromPackage);
@@ -28,7 +28,7 @@ public class LoggerConfigure extends PropertiesConfigure<LoggerConfig[]> {
 	 * @param configFile The configure properties file to load (required, not null or empty).
 	 * @param encoding Text encoding (optional, if it is set to null, it will be judged automatically).
 	 * @param fromPackage Whether load the file from package.
-	 * @throws IllegalArgumentException An error is thrown when the parameter is null
+	 * @throws IllegalArgumentException An error will be thrown when the parameter "configFile" is null.
 	 */
 	public LoggerConfigure(String configFile, String encoding, boolean fromPackage) {
 		super(configFile, encoding, fromPackage);

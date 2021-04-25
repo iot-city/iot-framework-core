@@ -13,6 +13,6 @@ public interface ThreadPoolSupport {
 	 * @param postmen Who send thread local data from current thread to the runnable thread.
 	 * @return If runnable object cannot be submitted for execution, it returns false; otherwise, it returns true.
 	 */
-	boolean run(final Runnable runnable, final ThreadLocalPostman... postmen);
+	boolean run(Runnable runnable, ThreadLocalPostman... postmen);
 
 }

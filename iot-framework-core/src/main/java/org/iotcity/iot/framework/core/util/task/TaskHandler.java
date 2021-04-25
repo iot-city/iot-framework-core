@@ -6,6 +6,7 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.iotcity.iot.framework.core.beans.PostmanRunnable;
 import org.iotcity.iot.framework.core.beans.ThreadLocalPostman;
 import org.iotcity.iot.framework.core.beans.ThreadPoolSupport;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
@@ -114,30 +115,14 @@ public final class TaskHandler implements ThreadPoolSupport {
 	}
 
 	@Override
-	public boolean run(final Runnable runnable, final ThreadLocalPostman... postmen) {
+	public boolean run(Runnable runnable, ThreadLocalPostman... postmen) {
 		if (runnable == null || destroyed) return false;
-		Runnable storeRunnable;
-		if (postmen != null && postmen.length > 0) {
-			storeRunnable = new Runnable() {
-
-				@Override
-				public void run() {
-					// Store thread local data to runnable thread.
-					for (ThreadLocalPostman postman : postmen) {
-						postman.storeToCurrentThread();
-					}
-					// Execute runnable
-					runnable.run();
-				}
-
-			};
-		} else {
-			storeRunnable = runnable;
-		}
+		// Check for postman objects
+		if (postmen != null && postmen.length > 0) runnable = new PostmanRunnable(runnable, postmen);
 		try {
 			synchronized (pool) {
 				if (destroyed) return false;
-				pool.execute(storeRunnable);
+				pool.execute(runnable);
 			}
 			return true;
 		} catch (Exception e) {

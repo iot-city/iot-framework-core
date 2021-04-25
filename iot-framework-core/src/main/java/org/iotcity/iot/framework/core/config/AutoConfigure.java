@@ -12,7 +12,7 @@ public interface AutoConfigure<T> {
 	 * @param <T> The configure data type.
 	 * @param configurable Configurable object that need to be configured (required, not null).
 	 * @param reset Whether reset the data of the current configurable object.
-	 * @return Whether configuration is successful
+	 * @return Whether configuration is successful.
 	 */
 	boolean config(Configurable<T> configurable, boolean reset);
 
