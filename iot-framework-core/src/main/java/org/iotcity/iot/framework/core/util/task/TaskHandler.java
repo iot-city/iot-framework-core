@@ -6,6 +6,8 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.iotcity.iot.framework.core.beans.ThreadLocalPostman;
+import org.iotcity.iot.framework.core.beans.ThreadPoolSupport;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
 import org.iotcity.iot.framework.core.util.helper.SystemHelper;
 
@@ -13,7 +15,7 @@ import org.iotcity.iot.framework.core.util.helper.SystemHelper;
  * Task handler object supporting thread pool to execute tasks and timer tasks.
  * @author Ardon
  */
-public final class TaskHandler {
+public final class TaskHandler implements ThreadPoolSupport {
 
 	// --------------------------- Public fields ----------------------------
 
@@ -111,17 +113,31 @@ public final class TaskHandler {
 		return name;
 	}
 
-	/**
-	 * Use the thread pool to execute runnable object immediately.
-	 * @param runnable Runnable object to be execute.
-	 * @return If runnable object cannot be submitted for execution, it returns false; otherwise, it returns true.
-	 */
-	public boolean run(Runnable runnable) {
+	@Override
+	public boolean run(final Runnable runnable, final ThreadLocalPostman... postmen) {
 		if (runnable == null || destroyed) return false;
+		Runnable storeRunnable;
+		if (postmen != null && postmen.length > 0) {
+			storeRunnable = new Runnable() {
+
+				@Override
+				public void run() {
+					// Store thread local data to runnable thread.
+					for (ThreadLocalPostman postman : postmen) {
+						postman.storeToCurrentThread();
+					}
+					// Execute runnable
+					runnable.run();
+				}
+
+			};
+		} else {
+			storeRunnable = runnable;
+		}
 		try {
 			synchronized (pool) {
 				if (destroyed) return false;
-				pool.execute(runnable);
+				pool.execute(storeRunnable);
 			}
 			return true;
 		} catch (Exception e) {

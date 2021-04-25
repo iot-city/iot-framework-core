@@ -371,8 +371,12 @@ public final class PropertiesLoader {
 		if (ConvertHelper.isConvertible(type)) {
 			// Get a convertible data
 			String data = props.getProperty(key);
+			// Skip no configure
+			if (StringHelper.isEmpty(data)) return;
+			data = data.trim();
+			if (data.length() == 0) return;
 			if (type == String.class) {
-				field.set(bean, data == null ? (String) field.get(bean) : data.trim());
+				field.set(bean, data);
 			} else {
 				field.set(bean, ConvertHelper.convertTo(type, data, field.get(bean)));
 			}
@@ -400,7 +404,8 @@ public final class PropertiesLoader {
 		} else {
 			// Determine whether the field enables parsing configuration
 			// e.g. iot.framework.actor.apps.app1.pool=true
-			if (!ConvertHelper.toBoolean(props.getProperty(key), false)) return;
+			String enabled = props.getProperty(key);
+			if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) return;
 			// Parse the sub-bean
 			Object subBean = field.get(bean);
 			if (subBean == null) {

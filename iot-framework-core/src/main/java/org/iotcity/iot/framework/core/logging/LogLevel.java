@@ -175,7 +175,7 @@ public class LogLevel {
 			list.add(level);
 		}
 		// Return levels
-		return list.toArray(new LogLevel[0]);
+		return list.toArray(new LogLevel[list.size()]);
 	}
 
 	/**

@@ -11,7 +11,7 @@ public interface Configurable<T> {
 	 * Data configuration for configurable object.
 	 * @param data Configuration data.
 	 * @param reset Whether reset the data of the current configurable object.
-	 * @return Whether configuration is successful
+	 * @return Whether configuration is successful.
 	 */
 	boolean config(T data, boolean reset);
 

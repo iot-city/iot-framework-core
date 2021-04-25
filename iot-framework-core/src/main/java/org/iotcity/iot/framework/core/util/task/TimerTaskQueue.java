@@ -247,7 +247,7 @@ final class TimerTaskQueue {
 			}
 		}
 		// Return array data
-		return list.toArray(new TimerTaskStatus[0]);
+		return list.toArray(new TimerTaskStatus[list.size()]);
 	}
 
 	/**
@@ -256,6 +256,7 @@ final class TimerTaskQueue {
 	 * @return Tasks status data array.
 	 */
 	TimerTaskStatus[] getBusyTaskStatus(int amount) {
+		if (amount <= 0) return new TimerTaskStatus[0];
 		// Create list
 		List<TimerTaskStatus> list = new ArrayList<>();
 		// Lock for traversal
@@ -271,8 +272,10 @@ final class TimerTaskQueue {
 		if (length > 0) {
 			// Sort by average elapsed time
 			list.sort(STATISTIC_COMPARATOR);
+			// Get size
+			int size = length < amount ? length : amount;
 			// Return array
-			return list.subList(0, length < amount ? length : amount).toArray(new TimerTaskStatus[0]);
+			return list.subList(0, size).toArray(new TimerTaskStatus[size]);
 		} else {
 			return new TimerTaskStatus[0];
 		}
