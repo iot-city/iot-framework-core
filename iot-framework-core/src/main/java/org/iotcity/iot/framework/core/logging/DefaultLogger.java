@@ -73,6 +73,16 @@ public class DefaultLogger implements Logger {
 	}
 
 	@Override
+	public void log(Object message) {
+		this.outputMessage(LogLevel.LOG, message, null);
+	}
+
+	@Override
+	public void log(Object message, Throwable e) {
+		this.outputMessage(LogLevel.LOG, message, e);
+	}
+
+	@Override
 	public final void trace(Object message) {
 		this.outputMessage(LogLevel.TRACE, message, null);
 	}
@@ -162,7 +172,11 @@ public class DefaultLogger implements Logger {
 		sb.append(sbColor);
 
 		// Append messages
-		sb.append("[").append(format.format(new Date())).append("] ").append(level).append(": ");
+		sb.append("[").append(format.format(new Date())).append("] ");
+		// Append level name
+		if (!LogLevel.LOG.equals(level)) {
+			sb.append(level).append(": ");
+		}
 		if (this.name.length() > 0) sb.append("(").append(name).append(") ");
 		sb.append(message);
 

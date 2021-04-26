@@ -18,6 +18,19 @@ public interface Logger extends Configurable<LogLevel[]> {
 	Logger newInstance(String name, Class<?> clazz, int callerDepth);
 
 	/**
+	 * Logs a message with the <b>LOG</b> level.
+	 * @param message The message object to log.
+	 */
+	void log(Object message);
+
+	/**
+	 * Logs a message with the <b>LOG</b> level.
+	 * @param message The message object to log.
+	 * @param e The exception to log, including its stack trace.
+	 */
+	void log(Object message, Throwable e);
+
+	/**
 	 * Logs a message with the <b>TRACE</b> level.
 	 * @param message The message object to log.
 	 */

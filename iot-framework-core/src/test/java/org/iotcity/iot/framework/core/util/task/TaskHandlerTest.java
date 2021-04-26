@@ -3,6 +3,7 @@ package org.iotcity.iot.framework.core.util.task;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.iotcity.iot.framework.IoTFramework;
 import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.logging.Logger;
 
@@ -24,6 +25,8 @@ public class TaskHandlerTest extends TestCase {
 	 * Timer test case
 	 */
 	public void testTimer() {
+
+		IoTFramework.init();
 
 		System.out.println("-------------------- TEST TASK HANDLER --------------------");
 

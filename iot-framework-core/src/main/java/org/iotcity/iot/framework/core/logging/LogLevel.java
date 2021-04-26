@@ -15,6 +15,10 @@ public class LogLevel {
 	// --------------------------- Static fields ----------------------------
 
 	/**
+	 * A log message.
+	 */
+	public static final String LOG = "LOG";
+	/**
 	 * A fine-grained debug message, typically capturing the flow through the application.
 	 */
 	public static final String TRACE = "TRACE";
@@ -43,6 +47,7 @@ public class LogLevel {
 	 * All logger levels in lower case.
 	 */
 	private static final String[] ALL_IN_LOWER_CASE = new String[] {
+		"log",
 		"trace",
 		"debug",
 		"info",
@@ -211,7 +216,7 @@ public class LogLevel {
 	 * @param name Level name.
 	 */
 	private static final boolean getTrackingDefault(String name) {
-		return !("trace".equals(name) || "info".equals(name));
+		return !("trace".equals(name) || "info".equals(name) || "log".equals(name));
 	}
 
 	/**
@@ -262,9 +267,12 @@ public class LogLevel {
 	 * Get the default color of current level.
 	 */
 	private static final int getDefaultColor(String name, boolean isFontColor) {
-		// Available logger levels: trace, debug, info, warn, error, fatal
+		// Available logger levels: log, trace, debug, info, warn, error, fatal
 		int color;
 		switch (name) {
+		case "log":
+			color = isFontColor ? COLOR_FONT_DEFAULT : COLOR_BG_DEFAULT;
+			break;
 		case "trace":
 			color = isFontColor ? COLOR_FONT_BLACK + 60 : COLOR_BG_DEFAULT;
 			break;

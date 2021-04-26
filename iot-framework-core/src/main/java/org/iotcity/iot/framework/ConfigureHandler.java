@@ -58,15 +58,14 @@ public final class ConfigureHandler {
 
 		// Framework messages
 		String[] messages = new String[] {
-			"============================================= LOADING FRAMEWORK RESOURCES =============================================",
-			"☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆",
-			"============================================ WELCOME TO IOT FRAMEWORK ===========================================",
-			"✧",
-			"✧ FRAMEWORK GROUPID: " + IoTFramework.NAME + ", VERSION: " + IoTFramework.VERSION + ", WEB SITE: " + IoTFramework.SITE,
-			"✧",
-			"✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧",
-			"✧ ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   (*^▽^*)    GOOD DAY, COMMANDER!    (*^▽^*) ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟   ⛟",
-			"=================================================================================================================",
+			"========================================== LOADING FRAMEWORK RESOURCES ==========================================",
+			"\033[30;1m☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆☆\033[0m",
+			"\033[94;1m============================================ WELCOME TO IOT FRAMEWORK ===========================================\033[0m",
+			"\033[94;1mFRAMEWORK GROUPID: \"" + IoTFramework.NAME + "\", VERSION: \"" + IoTFramework.VERSION + "\", SITE: \"" + IoTFramework.SITE + "\"\033[0m",
+			"\033[94;1m=================================================================================================================\033[0m",
+			"\033[30;1m✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\033[0m",
+			"\033[30;1m✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\033[95;m  -  (*^▽^*)  -  GOOD DAY, COMMANDER!  -  (*^▽^*)  -  \033[30;m✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\033[0m",
+			"\033[30;1m✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧✧\033[0m",
 		};
 		// Output messages
 		JavaHelper.log(messages[0]);
@@ -112,13 +111,15 @@ public final class ConfigureHandler {
 		// Get a logger
 		Logger logger = IoTFramework.getLoggerFactory().getLogger();
 		// Output framework messages
-		logger.info(messages[2]);
-		logger.info(messages[3]);
-		logger.info(messages[4]);
-		logger.info(messages[5]);
-		logger.info(messages[6]);
-		logger.info(messages[7]);
-		logger.info(messages[8]);
+		logger.log(messages[2]);
+		logger.log(messages[3]);
+		logger.log(messages[4]);
+		logger.log(messages[5]);
+		logger.log(messages[6]);
+		logger.log(messages[7]);
+
+		// Clear caches
+		PropertiesLoader.clearCaches();
 
 	}
 
