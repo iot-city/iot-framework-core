@@ -3,6 +3,7 @@ package org.iotcity.iot.framework.core.i18n;
 import java.util.Date;
 
 import org.iotcity.iot.framework.core.FrameworkCore;
+import org.iotcity.iot.framework.core.config.PropertiesConfigFile;
 import org.iotcity.iot.framework.core.logging.Logger;
 import org.iotcity.iot.framework.core.util.helper.ConvertHelper;
 
@@ -24,7 +25,12 @@ public class DefaultLocaleTest extends TestCase {
 
 		logger.info("------------------------- TEST TEMPLATE CONFIGURE -------------------------");
 
-		new LocaleConfigure("org/iotcity/iot/framework/core/i18n/iot-i18n-template.properties", true).config(factory, true);
+		LocaleConfigure configure = new LocaleConfigure();
+		PropertiesConfigFile file = new PropertiesConfigFile();
+		file.file = "org/iotcity/iot/framework/core/i18n/iot-i18n-template.properties";
+		file.fromPackage = true;
+		configure.load(file);
+		configure.config(factory, true);
 
 		logger.info("------------------------- LOCALE TEST: CORE -------------------------");
 

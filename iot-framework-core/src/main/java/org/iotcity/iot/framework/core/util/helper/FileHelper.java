@@ -16,7 +16,6 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
-import java.util.Date;
 import java.util.Properties;
 
 /**
@@ -119,7 +118,7 @@ public final class FileHelper {
 			File f = new File(path);
 			return f.exists();
 		} catch (Exception e) {
-			System.err.println("File exists error: " + path);
+			JavaHelper.err("File exists error: " + path);
 			e.printStackTrace();
 			return false;
 		}
@@ -141,7 +140,7 @@ public final class FileHelper {
 			}
 			return true;
 		} catch (Exception e) {
-			System.err.println("Create folder error: " + dir);
+			JavaHelper.err("Create folder error: " + dir);
 			e.printStackTrace();
 			return false;
 		}
@@ -165,7 +164,7 @@ public final class FileHelper {
 			myFile.print(fileContent);
 			return true;
 		} catch (Exception e) {
-			System.err.println("Create/write file error: " + filePathAndName);
+			JavaHelper.err("Create/write file error: " + filePathAndName);
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -197,7 +196,7 @@ public final class FileHelper {
 			if (fromPackage) {
 				fs = FileHelper.class.getClassLoader().getResourceAsStream(filePathAndName);
 			} else {
-				fs = new FileInputStream(replaceSeparator(filePathAndName, Separator, false));
+				fs = new FileInputStream(toLocalDirectory(filePathAndName, false));
 			}
 			isr = getUnicodeReader(fs, encoding);
 			br = new BufferedReader(isr);
@@ -207,7 +206,7 @@ public final class FileHelper {
 			}
 			st = sb.toString();
 		} catch (IOException es) {
-			System.err.println("Read text file error: " + filePathAndName);
+			JavaHelper.err("Read text file error: " + filePathAndName);
 			es.printStackTrace();
 			st = "";
 		} finally {
@@ -247,18 +246,18 @@ public final class FileHelper {
 		BufferedInputStream bis = null;
 		InputStreamReader isr = null;
 		// Print message
-		System.out.println("[" + ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + "] Load properties file: " + filePathAndName);
+		JavaHelper.log("Loading properties file: " + filePathAndName);
 		try {
 			if (fromPackage) {
 				fis = FileHelper.class.getClassLoader().getResourceAsStream(filePathAndName);
 			} else {
-				fis = new FileInputStream(replaceSeparator(filePathAndName, Separator, false));
+				fis = new FileInputStream(toLocalDirectory(filePathAndName, false));
 			}
 			isr = getUnicodeReader(fis, encoding);
 			props.load(isr);
 			return true;
 		} catch (Exception e) {
-			System.err.println("Load properties file error: " + filePathAndName);
+			JavaHelper.err("Load properties file error: " + filePathAndName);
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -366,7 +365,7 @@ public final class FileHelper {
 			File f = new File(filePathAndName);
 			return f.delete();
 		} catch (Exception e) {
-			System.err.println("Delete file error: " + filePathAndName);
+			JavaHelper.err("Delete file error: " + filePathAndName);
 			e.printStackTrace();
 			return false;
 		}
@@ -407,7 +406,7 @@ public final class FileHelper {
 				}
 			}
 		} catch (Exception e) {
-			System.err.println("Copy folder from \"" + fromDir + "\" to \"" + toDir + "\" error!");
+			JavaHelper.err("Copy folder from \"" + fromDir + "\" to \"" + toDir + "\" error!");
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -449,7 +448,7 @@ public final class FileHelper {
 				return true;
 			}
 		} catch (Exception e) {
-			System.err.println("Copy file from \"" + fromFile + "\" to \"" + toFile + "\" error!");
+			JavaHelper.err("Copy file from \"" + fromFile + "\" to \"" + toFile + "\" error!");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -488,7 +487,7 @@ public final class FileHelper {
 			BigInteger bi = new BigInteger(1, md5.digest());
 			value = bi.toString(16).toUpperCase();
 		} catch (Exception e) {
-			System.err.println("Get file MD5 error: " + filePathAndName);
+			JavaHelper.err("Get file MD5 error: " + filePathAndName);
 			e.printStackTrace();
 		} finally {
 			if (null != in) {

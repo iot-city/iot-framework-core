@@ -10,6 +10,32 @@ import java.util.Date;
  */
 public final class JavaHelper {
 
+	// ------------------------------------ Console methods -------------------------------
+
+	/**
+	 * Output an information message to console.
+	 * @param message An information message.
+	 */
+	public static final void log(String... message) {
+		if (message == null || message.length == 0) return;
+		String date = "[" + ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + "] ";
+		for (String msg : message) {
+			System.out.println(date + msg);
+		}
+	}
+
+	/**
+	 * Output an error message to console.
+	 * @param message An error message.
+	 */
+	public static final void err(String... message) {
+		if (message == null || message.length == 0) return;
+		String date = "[" + ConvertHelper.formatDate(new Date(), "yyyy-MM-dd HH:mm:ss.SSS") + "] ";
+		for (String msg : message) {
+			System.err.println(date + msg);
+		}
+	}
+
 	// ------------------------------------ Basic methods -------------------------------
 
 	/**
@@ -17,7 +43,7 @@ public final class JavaHelper {
 	 * @param count Estimated capacity
 	 * @return int Initial number result
 	 */
-	public final static int getMapInitialCapacity(int count) {
+	public static final int getMapInitialCapacity(int count) {
 		return (int) (count / 0.75 + 1);
 	}
 
@@ -26,7 +52,7 @@ public final class JavaHelper {
 	 * @param e Throwable object (e.g. Exception object)
 	 * @return String Stack trace information
 	 */
-	public final static String getThrowableTrace(Throwable e) {
+	public static final String getThrowableTrace(Throwable e) {
 		if (e != null) {
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
@@ -42,7 +68,7 @@ public final class JavaHelper {
 	 * @param type The class type.
 	 * @return Whether the data type is a primitive type.
 	 */
-	public final static boolean isPrimitive(Class<?> type) {
+	public static final boolean isPrimitive(Class<?> type) {
 		if (type == null) return false;
 		// boolean, int, long, float, double, short, byte or char
 		if (type.isPrimitive()) {
@@ -59,7 +85,7 @@ public final class JavaHelper {
 	 * @param type The class type.
 	 * @return Object The default data value of current type.
 	 */
-	public final static Object getTypeDefaultValue(Class<?> type) {
+	public static final Object getTypeDefaultValue(Class<?> type) {
 		if (type == boolean.class || type == Boolean.class) {
 			return false;
 		} else if (type == int.class || type == Integer.class) {
@@ -88,7 +114,7 @@ public final class JavaHelper {
 	 * @param data Data object.
 	 * @return Preview string of data value.
 	 */
-	public final static String getDataPreview(Object data) {
+	public static final String getDataPreview(Object data) {
 		StringBuilder sb = new StringBuilder();
 		getDataPreview(data, sb);
 		return sb.toString();
@@ -99,7 +125,7 @@ public final class JavaHelper {
 	 * @param data Data object.
 	 * @param sb The StringBuilder object that appends the string.
 	 */
-	public final static void getDataPreview(Object data, StringBuilder sb) {
+	public static final void getDataPreview(Object data, StringBuilder sb) {
 		if (data == null) {
 			sb.append("null");
 		} else {
@@ -112,7 +138,7 @@ public final class JavaHelper {
 	 * @param types The class types.
 	 * @return Preview string of type simple names.
 	 */
-	public final static String getTypesPreview(Class<?>[] types) {
+	public static final String getTypesPreview(Class<?>[] types) {
 		StringBuilder sb = new StringBuilder();
 		getTypesPreview(types, sb);
 		return sb.toString();
@@ -123,7 +149,7 @@ public final class JavaHelper {
 	 * @param types The class types.
 	 * @param sb The StringBuilder object that appends the string.
 	 */
-	public final static void getTypesPreview(Class<?>[] types, StringBuilder sb) {
+	public static final void getTypesPreview(Class<?>[] types, StringBuilder sb) {
 		if (types == null) {
 			sb.append("null");
 		} else {
@@ -142,7 +168,7 @@ public final class JavaHelper {
 	 * @param data The data array to get class types.
 	 * @return Preview string of type simple names.
 	 */
-	public final static <T> String getDataTypesPreview(T[] data) {
+	public static final <T> String getDataTypesPreview(T[] data) {
 		StringBuilder sb = new StringBuilder();
 		getDataTypesPreview(data, sb);
 		return sb.toString();
@@ -153,7 +179,7 @@ public final class JavaHelper {
 	 * @param data The data array to get class types.
 	 * @param sb The StringBuilder object that appends the string.
 	 */
-	public final static <T> void getDataTypesPreview(T[] data, StringBuilder sb) {
+	public static final <T> void getDataTypesPreview(T[] data, StringBuilder sb) {
 		if (data == null) {
 			sb.append("null");
 		} else {
@@ -178,7 +204,7 @@ public final class JavaHelper {
 	 * @param withPreSimpleName Whether to append a prefix simple name of class type before the data value (if set it to true, the long result would be "Long: 1000").
 	 * @return Preview string of data values.
 	 */
-	public final static <T> String getArrayPreview(T[] data, boolean withPreSimpleName) {
+	public static final <T> String getArrayPreview(T[] data, boolean withPreSimpleName) {
 		StringBuilder sb = new StringBuilder();
 		getArrayPreview(data, sb, withPreSimpleName);
 		return sb.toString();
@@ -191,7 +217,7 @@ public final class JavaHelper {
 	 * @param sb The StringBuilder object that appends the string.
 	 * @param withPreSimpleName Whether to append a prefix simple name of class type before the data value (if set it to true, the long result would be "Long: 1000").
 	 */
-	public final static <T> void getArrayPreview(T[] data, StringBuilder sb, boolean withPreSimpleName) {
+	public static final <T> void getArrayPreview(T[] data, StringBuilder sb, boolean withPreSimpleName) {
 		if (data == null) {
 			sb.append("null");
 		} else {
@@ -210,7 +236,7 @@ public final class JavaHelper {
 	 * @param sb The StringBuilder object that appends the string.
 	 * @param withPreSimpleName Whether to append a prefix simple name of class type before the data value (if set it to true, the long result would be "Long: 1000").
 	 */
-	private final static void getDataPreviewValue(Object data, StringBuilder sb, boolean withPreSimpleName) {
+	private static final void getDataPreviewValue(Object data, StringBuilder sb, boolean withPreSimpleName) {
 		if (data == null) {
 			sb.append("null");
 		} else {

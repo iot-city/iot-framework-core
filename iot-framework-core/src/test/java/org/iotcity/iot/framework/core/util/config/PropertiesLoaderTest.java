@@ -1,5 +1,6 @@
 package org.iotcity.iot.framework.core.util.config;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,7 +24,7 @@ public final class PropertiesLoaderTest extends TestCase {
 		Properties props = PropertiesLoader.loadProperties(file, null, true);
 		System.out.println("Properties loaded: " + props.getProperty("iot.properties.test.name"));
 
-		PropertiesTestConfig config = PropertiesLoader.loadConfigBean(PropertiesTestConfig.class, file, "UTF-8", "iot.properties.test", true);
+		PropertiesTestConfig config = PropertiesLoader.loadConfigBean(PropertiesTestConfig.class, file, "UTF-8", true, "iot.properties.test");
 		System.out.println("Properties bean loaded: " + config.name);
 
 		config = PropertiesLoader.getConfigBean(PropertiesTestConfig.class, props, "iot.properties.test");
@@ -33,6 +34,10 @@ public final class PropertiesLoaderTest extends TestCase {
 		System.out.println("Properties array geted: " + array.length);
 
 		List<PropertiesTestConfigSub> list = PropertiesLoader.getConfigList(PropertiesTestConfigSub.class, props, "iot.properties.test.list2");
+		System.out.println("Properties list geted: " + list.size());
+
+		list = new ArrayList<PropertiesTestConfigSub>();
+		PropertiesLoader.getConfigList(list, PropertiesTestConfigSub.class, props, "iot.properties.test.list2");
 		System.out.println("Properties list geted: " + list.size());
 
 		PropertiesMap<PropertiesTestConfigSub> map = PropertiesLoader.getConfigMap(PropertiesTestConfigSub.class, props, "iot.properties.test.map2");

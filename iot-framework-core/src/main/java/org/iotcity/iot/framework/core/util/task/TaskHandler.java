@@ -25,7 +25,11 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * Use parameters below:<br/>
 	 * <b>corePoolSize: 0, maximumPoolSize: 10, keepAliveTime: 60s, capacity: 0</b>
 	 */
-	public static final TaskHandler instance = new TaskHandler("Default");
+	private static TaskHandler instance = null;
+	/**
+	 * The instance lock.
+	 */
+	private static Object instanceLock = new Object();
 
 	// --------------------------- Private fields ----------------------------
 
@@ -92,7 +96,22 @@ public final class TaskHandler implements ThreadPoolSupport {
 		thread.logger.info(thread.locale.text("core.util.task.start", this.name, corePoolSize, maximumPoolSize, keepAliveTime, capacity));
 	}
 
-	// --------------------------- Private methods ----------------------------
+	// --------------------------- Static methods ----------------------------
+
+	/**
+	 * Gets a default global task handler instance object (returns not null).<br/>
+	 * Use parameters below:<br/>
+	 * <b>corePoolSize: 0, maximumPoolSize: 10, keepAliveTime: 60s, capacity: 0</b>
+	 * @return Task handler object.
+	 */
+	public static final TaskHandler getDefaultHandler() {
+		if (instance != null) return instance;
+		synchronized (instanceLock) {
+			if (instance != null) return instance;
+			instance = new TaskHandler("Default");
+		}
+		return instance;
+	}
 
 	/**
 	 * Gets the delay time for every milliseconds.

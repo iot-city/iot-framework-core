@@ -5,16 +5,18 @@ import java.io.FileFilter;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import org.iotcity.iot.framework.IoTFramework;
+import org.iotcity.iot.framework.core.config.ConfigureManagerParser;
+import org.iotcity.iot.framework.core.util.helper.JavaHelper;
+
 /**
- * Analyze annotations of the specified scope
+ * Annotation analyzer for the specified scope.
  * @author Ardon
  */
 public final class AnnotationAnalyzer extends AnnotationPackages {
@@ -36,11 +38,21 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	/**
 	 * The parsers in analyzer
 	 */
-	private final List<AnnotationParser> parsers = new ArrayList<>();
+	private final Set<AnnotationParser> parsers = new HashSet<>();
 	/**
 	 * The files parsed
 	 */
 	private final Set<String> parseFiles = new HashSet<>();
+
+	// --------------------------- Constructor ----------------------------
+
+	/**
+	 * Constructor for annotation analyzer.
+	 */
+	public AnnotationAnalyzer() {
+		// For configure manager auto setup
+		parsers.add(new ConfigureManagerParser());
+	}
 
 	// --------------------------- Public methods ----------------------------
 
@@ -65,6 +77,8 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 			this.analyzePackage(pkg);
 		}
 		this.parseFiles.clear();
+		// Notify configure handler perform configurations
+		IoTFramework.getConfigureHandler().performAll();
 	}
 
 	// --------------------------- Private methods ----------------------------
@@ -183,10 +197,11 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 		try {
 			clazz = Class.forName(className);
 		} catch (Exception e) {
-			System.err.println("Class for name error: " + className);
+			// Output error message
+			JavaHelper.err("Class for name error: " + className);
 			e.printStackTrace();
 		}
-		if (clazz == null || clazz.isInterface() || clazz.getConstructors().length == 0) return;
+		if (clazz == null || clazz.getConstructors().length == 0) return;
 		for (AnnotationParser parser : this.parsers) {
 			parser.parse(clazz);
 		}

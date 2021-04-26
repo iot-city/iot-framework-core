@@ -6,6 +6,7 @@ import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.i18n.LocaleText;
 import org.iotcity.iot.framework.core.logging.Logger;
 import org.iotcity.iot.framework.core.util.helper.ConvertHelper;
+import org.iotcity.iot.framework.core.util.helper.JavaHelper;
 import org.iotcity.iot.framework.core.util.helper.SystemHelper;
 
 /**
@@ -153,7 +154,7 @@ final class TimerTaskThread extends Thread {
 				}
 			} catch (Exception e) {
 				// if any thread interrupted the current thread before or while the current thread was waiting for a notification.
-				System.out.println("Timer task queue lock interrupted.");
+				JavaHelper.log("Timer task queue lock interrupted.");
 			}
 
 			// ---------------------- RECORD TASK RUNNING STATUS -----------------

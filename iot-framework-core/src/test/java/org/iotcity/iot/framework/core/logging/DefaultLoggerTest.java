@@ -1,5 +1,7 @@
 package org.iotcity.iot.framework.core.logging;
 
+import org.iotcity.iot.framework.core.config.PropertiesConfigFile;
+
 import junit.framework.TestCase;
 
 /**
@@ -27,7 +29,12 @@ public class DefaultLoggerTest extends TestCase {
 
 		System.out.println("-------------------- TEST TEMPLATE CONFIG ------------------");
 
-		new LoggerConfigure("org/iotcity/iot/framework/core/logging/iot-logger-template.properties", true).config(factory, true);
+		LoggerConfigure configure = new LoggerConfigure();
+		PropertiesConfigFile file = new PropertiesConfigFile();
+		file.file = "org/iotcity/iot/framework/core/logging/iot-logger-template.properties";
+		file.fromPackage = true;
+		configure.load(file);
+		configure.config(factory, true);
 
 		System.out.println("-------------------------- (GLOBAL) ------------------------");
 

@@ -12,40 +12,54 @@ import org.iotcity.iot.framework.core.util.helper.StringHelper;
  */
 public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 
+	// --------------------------- Protected fields ----------------------------
+
 	/**
-	 * Properties configure data (not null).
+	 * Properties configure data (null when file is not loaded).
 	 */
-	protected final Properties props;
+	protected Properties props;
+
+	// --------------------------- Constructor ----------------------------
 
 	/**
 	 * Constructor for automatic properties configuration object.
-	 * @param configFile The configure properties file to load (required, not null or empty).
-	 * @param fromPackage Whether load the file from package.
-	 * @throws IllegalArgumentException An error will be thrown when the parameter "configFile" is null or empty.
 	 */
-	public PropertiesConfigure(String configFile, boolean fromPackage) throws IllegalArgumentException {
-		// Parameters verification
-		if (StringHelper.isEmpty(configFile)) {
-			throw new IllegalArgumentException("Parameter configFile can not be null or empty!");
-		}
-		// Load properties file
-		props = PropertiesLoader.loadProperties(configFile, "UTF-8", fromPackage);
+	public PropertiesConfigure() {
 	}
 
 	/**
-	 * Constructor for automatic properties configuration object.
-	 * @param configFile The configure properties file to load (required, not null or empty).
-	 * @param encoding Text encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
-	 * @param fromPackage Whether load the file from package.
-	 * @throws IllegalArgumentException An error will be thrown when the parameter "configFile" is null or empty.
+	 * Load a properties object from file.
+	 * @param configFile The configure properties file information to load (required, not null).
+	 * @return Whether the configuration file is loaded successfully.
 	 */
-	public PropertiesConfigure(String configFile, String encoding, boolean fromPackage) throws IllegalArgumentException {
-		// Parameters verification
-		if (StringHelper.isEmpty(configFile)) {
-			throw new IllegalArgumentException("Parameter configFile can not be null or empty!");
-		}
-		// Load properties file
-		props = PropertiesLoader.loadProperties(configFile, encoding, fromPackage);
+	public boolean load(PropertiesConfigFile configFile) throws IllegalArgumentException {
+		if (configFile == null || StringHelper.isEmpty(configFile.file)) return false;
+		this.props = PropertiesLoader.loadProperties(configFile.file, configFile.encoding, configFile.fromPackage);
+		return this.props != null;
 	}
+
+	// --------------------------- Public method ----------------------------
+
+	/**
+	 * Gets the properties object that has been loaded (null when file is not loaded).
+	 * @return The properties object.
+	 */
+	public Properties getProperties() {
+		return props;
+	}
+
+	// --------------------------- Abstract method ----------------------------
+
+	/**
+	 * Gets the configuration prefix key of the current configuration.
+	 * @return The configuration prefix key.
+	 */
+	public abstract String getPrefixKey();
+
+	/**
+	 * Gets the default configuration file information object for external directory.
+	 * @return The default configuration file for external directory.
+	 */
+	public abstract PropertiesConfigFile getDefaultExternalFile();
 
 }

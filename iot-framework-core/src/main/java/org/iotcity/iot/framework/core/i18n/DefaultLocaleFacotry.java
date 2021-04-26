@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.iotcity.iot.framework.core.config.PropertiesConfigFile;
 import org.iotcity.iot.framework.core.util.config.PropertiesLoader;
 import org.iotcity.iot.framework.core.util.config.PropertiesMap;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
@@ -167,13 +168,14 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 			if (!config.enabled) continue;
 
 			// Load language texts
-			PropertiesMap<LocaleConfigFile> files = config.files;
+			PropertiesMap<PropertiesConfigFile> files = config.files;
 			if (files == null || files.size() == 0) continue;
-			for (Entry<String, LocaleConfigFile> kv : files.entrySet()) {
+			for (Entry<String, PropertiesConfigFile> kv : files.entrySet()) {
 
 				String lang = kv.getKey();
-				LocaleConfigFile file = kv.getValue();
-				Properties texts = PropertiesLoader.loadProperties(file.file, "UTF-8", file.fromPackage);
+				PropertiesConfigFile file = kv.getValue();
+				Properties texts = PropertiesLoader.loadProperties(file.file, file.encoding, file.fromPackage);
+				if (texts == null) return false;
 				// Ensure that use this.texts to get the locale object
 				LocaleText locale = this.texts.get(getKey(name, lang));
 				if (locale == null) {

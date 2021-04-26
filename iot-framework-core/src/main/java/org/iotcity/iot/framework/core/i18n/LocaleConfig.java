@@ -1,5 +1,6 @@
 package org.iotcity.iot.framework.core.i18n;
 
+import org.iotcity.iot.framework.core.config.PropertiesConfigFile;
 import org.iotcity.iot.framework.core.util.config.PropertiesMap;
 
 /**
@@ -23,6 +24,6 @@ public class LocaleConfig {
 	/**
 	 * Locale configuration files for languages.
 	 */
-	public PropertiesMap<LocaleConfigFile> files;
+	public PropertiesMap<PropertiesConfigFile> files;
 
 }
