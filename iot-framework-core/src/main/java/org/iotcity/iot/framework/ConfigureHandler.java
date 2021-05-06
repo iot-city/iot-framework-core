@@ -169,7 +169,7 @@ public final class ConfigureHandler {
 			try {
 				if (PropertiesConfigureManager.class.isAssignableFrom(managerClass)) {
 					// Set configure file to configure manager
-					PropertiesConfigureManager pm = (PropertiesConfigureManager) managerClass.newInstance();
+					PropertiesConfigureManager pm = (PropertiesConfigureManager) managerClass.getDeclaredConstructor().newInstance();
 					if (props != null) {
 						PropertiesConfigFile file;
 						String[] keys = pm.getExternalKeys();
@@ -183,7 +183,7 @@ public final class ConfigureHandler {
 					succeed = pm.perform();
 				} else {
 					// Perform configuration
-					ConfigureManager cm = managerClass.newInstance();
+					ConfigureManager cm = managerClass.getDeclaredConstructor().newInstance();
 					succeed = cm.perform();
 				}
 			} catch (Exception e) {

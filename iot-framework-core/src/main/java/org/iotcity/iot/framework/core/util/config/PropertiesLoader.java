@@ -101,7 +101,7 @@ public final class PropertiesLoader {
 	 */
 	public static final <T> T loadConfigBean(Class<T> beanClass, String filePathName, String encoding, boolean fromPackage, String prefix) {
 		try {
-			T bean = beanClass.newInstance();
+			T bean = beanClass.getDeclaredConstructor().newInstance();
 			return loadConfigBean(bean, filePathName, encoding, fromPackage, prefix) ? bean : null;
 		} catch (Exception e) {
 			JavaHelper.err("Load configure to a bean error: " + filePathName);
@@ -330,7 +330,7 @@ public final class PropertiesLoader {
 	 */
 	public static final <T> T getConfigBean(Class<T> beanClass, Properties props, String prefix) {
 		try {
-			T bean = beanClass.newInstance();
+			T bean = beanClass.getDeclaredConstructor().newInstance();
 			return getConfigBean(bean, props, prefix);
 		} catch (Exception e) {
 			JavaHelper.err("Gets a bean configured from properties error: " + e.getMessage());
@@ -400,7 +400,7 @@ public final class PropertiesLoader {
 				String enabled = props.getProperty(pkey.prefix);
 				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
 				try {
-					Object v = beanClass.newInstance();
+					Object v = beanClass.getDeclaredConstructor().newInstance();
 					Array.set(array, i, v);
 					fillConfigBean(beanClass, v, props, pkey.prefix + ".");
 				} catch (Exception e) {
@@ -463,7 +463,7 @@ public final class PropertiesLoader {
 				String enabled = props.getProperty(pkey.prefix);
 				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
 				try {
-					T v = beanClass.newInstance();
+					T v = beanClass.getDeclaredConstructor().newInstance();
 					list.add(v);
 					fillConfigBean(beanClass, v, props, pkey.prefix + ".");
 				} catch (Exception e) {
@@ -526,7 +526,7 @@ public final class PropertiesLoader {
 				String enabled = props.getProperty(pkey.prefix);
 				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
 				try {
-					T v = beanClass.newInstance();
+					T v = beanClass.getDeclaredConstructor().newInstance();
 					map.put(pkey.key, v);
 					fillConfigBean(beanClass, v, props, pkey.prefix + ".");
 				} catch (Exception e) {
@@ -601,7 +601,7 @@ public final class PropertiesLoader {
 			// Parse the sub-bean
 			Object subBean = field.get(bean);
 			if (subBean == null) {
-				subBean = type.newInstance();
+				subBean = type.getDeclaredConstructor().newInstance();
 				field.set(bean, subBean);
 			}
 			fillConfigBean(type, subBean, props, key + ".");
