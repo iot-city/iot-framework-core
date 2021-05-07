@@ -22,6 +22,10 @@ public class DefaultLogger implements Logger {
 	 */
 	protected final String name;
 	/**
+	 * Whether to use multiple colors to display log information.
+	 */
+	protected final boolean colorful;
+	/**
 	 * The Class whose name should be used in message. If null it will default to the calling class.
 	 */
 	protected final Class<?> clazz;
@@ -43,12 +47,14 @@ public class DefaultLogger implements Logger {
 	/**
 	 * Constructor for default logger.
 	 * @param name Logger name.
+	 * @param colorful Whether to use multiple colors to display log information.
 	 * @param clazz The Class whose name should be used in message. If null it will default to the calling class.
 	 * @param callerDepth The depth from get logger method to the logging message method (0 by default).
 	 * @param levels The configure map for all levels, the key is level name with upper case, the value is level configure (required, not null).
 	 */
-	public DefaultLogger(String name, Class<?> clazz, int callerDepth, Map<String, LogLevel> levels) {
+	public DefaultLogger(String name, boolean colorful, Class<?> clazz, int callerDepth, Map<String, LogLevel> levels) {
 		this.name = name == null ? "" : name;
+		this.colorful = colorful;
 		this.clazz = clazz;
 		this.callerDepth = (callerDepth < 0 ? 0 : callerDepth) + 3;
 		this.levels = levels == null ? new HashMap<>() : levels;
@@ -68,8 +74,13 @@ public class DefaultLogger implements Logger {
 	}
 
 	@Override
+	public boolean colorful() {
+		return colorful;
+	}
+
+	@Override
 	public Logger newInstance(String name, Class<?> clazz, int callerDepth) {
-		return new DefaultLogger(name, clazz, callerDepth, levels);
+		return new DefaultLogger(name, colorful, clazz, callerDepth, levels);
 	}
 
 	@Override
@@ -156,20 +167,22 @@ public class DefaultLogger implements Logger {
 		StringBuilder sb = new StringBuilder();
 		StringBuilder sbColor = new StringBuilder();
 
-		// Set color
-		if (config.fontColor != LogLevel.COLOR_FONT_DEFAULT || config.bgColor != LogLevel.COLOR_BG_DEFAULT) {
-			// Font color format: \033[XX;XX;XXm
-			sbColor.append("\033[");
-			// Add font color
-			if (config.fontColor != LogLevel.COLOR_FONT_DEFAULT) {
-				sbColor.append(config.fontColor).append(";");
+		if (colorful) {
+			// Set color
+			if (config.fontColor != LogLevel.COLOR_FONT_DEFAULT || config.bgColor != LogLevel.COLOR_BG_DEFAULT) {
+				// Font color format: \033[XX;XX;XXm
+				sbColor.append("\033[");
+				// Add font color
+				if (config.fontColor != LogLevel.COLOR_FONT_DEFAULT) {
+					sbColor.append(config.fontColor).append(";");
+				}
+				if (config.bgColor != LogLevel.COLOR_BG_DEFAULT) {
+					sbColor.append(config.bgColor).append(";");
+				}
+				sbColor.append("m");
 			}
-			if (config.bgColor != LogLevel.COLOR_BG_DEFAULT) {
-				sbColor.append(config.bgColor).append(";");
-			}
-			sbColor.append("m");
+			sb.append(sbColor);
 		}
-		sb.append(sbColor);
 
 		// Append messages
 		sb.append("[").append(format.format(new Date())).append("] ");
@@ -186,7 +199,7 @@ public class DefaultLogger implements Logger {
 			if (traces.length > this.callerDepth) {
 				StackTraceElement ele = traces[this.callerDepth];
 				sb.append(" [FROM: ").append(getSimpleClassName(ele.getClassName())).append(".").append(ele.getMethodName()).append("(...) -");
-				getSourceFileLink(sb, sbColor, ele.getFileName(), ele.getLineNumber());
+				getSourceFileLink(sb, colorful, sbColor, ele.getFileName(), ele.getLineNumber());
 				sb.append("]");
 			}
 		} else if (config.classTracking) {
@@ -196,12 +209,12 @@ public class DefaultLogger implements Logger {
 				if (traces.length > this.callerDepth) {
 					StackTraceElement ele = traces[this.callerDepth];
 					sb.append(" [FROM: ").append(getSimpleClassName(ele.getClassName())).append(".class -");
-					getSourceFileLink(sb, sbColor, ele.getFileName(), ele.getLineNumber());
+					getSourceFileLink(sb, colorful, sbColor, ele.getFileName(), ele.getLineNumber());
 					sb.append("]");
 				}
 			} else {
 				sb.append(" [FROM: ").append(this.clazz.getSimpleName()).append(".class -");
-				getSourceFileLink(sb, sbColor, this.clazz.getSimpleName() + ".java", 0);
+				getSourceFileLink(sb, colorful, sbColor, this.clazz.getSimpleName() + ".java", 0);
 				sb.append("]");
 			}
 		}
@@ -227,16 +240,20 @@ public class DefaultLogger implements Logger {
 	/**
 	 * Get java source file link
 	 */
-	private static final void getSourceFileLink(StringBuilder sb, StringBuilder sbColor, String fileName, int lineNumber) {
+	private static final void getSourceFileLink(StringBuilder sb, boolean colorful, StringBuilder sbColor, String fileName, int lineNumber) {
 		if (fileName != null && lineNumber >= 0) {
-			sb.append("\033[94;4m (");
-			sb.append(fileName).append(":").append(lineNumber).append(") \033[0m");
-			if (sbColor.length() > 0) sb.append(sbColor);
+			if (colorful) {
+				sb.append("\033[94;2m (");
+				sb.append(fileName).append(":").append(lineNumber).append(")\033[0m");
+				if (sbColor.length() > 0) sb.append(sbColor);
+			} else {
+				sb.append(" (").append(fileName).append(":").append(lineNumber).append(")");
+			}
 		} else {
 			if (fileName == null) {
-				sb.append(" (Unknown Source) ");
+				sb.append(" (Unknown Source)");
 			} else {
-				sb.append(" (").append(fileName).append(") ");
+				sb.append(" (").append(fileName).append(")");
 			}
 		}
 	}

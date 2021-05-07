@@ -9,6 +9,11 @@ import org.iotcity.iot.framework.core.config.Configurable;
 public interface Logger extends Configurable<LogLevel[]> {
 
 	/**
+	 * Whether to use multiple colors to display log information.
+	 */
+	boolean colorful();
+
+	/**
 	 * Create a new logger instance to log message (returns not null)
 	 * @param name Logger name (required, not null or empty)
 	 * @param clazz The Class whose name should be used in message. If null it will default to the calling class.

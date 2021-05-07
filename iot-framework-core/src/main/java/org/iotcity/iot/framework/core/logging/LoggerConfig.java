@@ -13,6 +13,10 @@ public class LoggerConfig {
 	 */
 	public String name;
 	/**
+	 * Whether to use multiple colors to display log information.
+	 */
+	public boolean colorful;
+	/**
 	 * Whether use for root logger.
 	 */
 	public boolean forRoot;

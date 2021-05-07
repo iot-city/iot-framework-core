@@ -40,7 +40,7 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	 */
 	public DefaultLoggerFactory(boolean createRoot) {
 		if (!createRoot) return;
-		DefaultLogger logger = new DefaultLogger("ROOT", null, 0, null);
+		DefaultLogger logger = new DefaultLogger("ROOT", true, null, 0, null);
 		logger.config(LogLevel.getDefaultLevels(), false);
 		setRootLogger(logger);
 	}
@@ -145,7 +145,7 @@ public class DefaultLoggerFactory implements LoggerFactory {
 				levels.put(name.toUpperCase(), level);
 			}
 			// Create logger
-			DefaultLogger logger = new DefaultLogger(config.name, null, 0, levels);
+			DefaultLogger logger = new DefaultLogger(config.name, config.colorful, null, 0, levels);
 			if (config.forRoot) {
 				this.setRootLogger(logger);
 			} else {
