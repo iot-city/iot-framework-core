@@ -1,6 +1,7 @@
 package org.iotcity.iot.framework.core.bus;
 
 import org.iotcity.iot.framework.IoTFramework;
+import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.annotation.AnnotationParser;
 
 /**
@@ -26,7 +27,10 @@ public final class BusDataListenerParser implements AnnotationParser {
 	public void parse(Class<?> clazz) {
 		if (clazz.isInterface() || !clazz.isAnnotationPresent(BusDataListener.class)) return;
 		// Get annotation
-		if (!BusEventListener.class.isAssignableFrom(clazz)) return;
+		if (!BusEventListener.class.isAssignableFrom(clazz)) {
+			FrameworkCore.getLogger().warn(FrameworkCore.getLocale().text("core.annotation.interface.warn", "BusDataListener", clazz.getName(), BusEventListener.class.getName()));
+			return;
+		}
 		BusDataListener annotation = clazz.getAnnotation(BusDataListener.class);
 		if (annotation == null || !annotation.enabled()) return;
 		// Get class type

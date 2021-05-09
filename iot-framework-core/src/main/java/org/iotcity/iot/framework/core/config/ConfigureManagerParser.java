@@ -2,6 +2,7 @@ package org.iotcity.iot.framework.core.config;
 
 import org.iotcity.iot.framework.ConfigureHandler;
 import org.iotcity.iot.framework.IoTFramework;
+import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.annotation.AnnotationParser;
 
 /**
@@ -26,7 +27,10 @@ public final class ConfigureManagerParser implements AnnotationParser {
 	@Override
 	public void parse(Class<?> clazz) {
 		if (clazz.isInterface() || !clazz.isAnnotationPresent(AutoConfigureManager.class)) return;
-		if (!ConfigureManager.class.isAssignableFrom(clazz)) return;
+		if (!ConfigureManager.class.isAssignableFrom(clazz)) {
+			FrameworkCore.getLogger().warn(FrameworkCore.getLocale().text("core.annotation.interface.warn", "AutoConfigureManager", clazz.getName(), ConfigureManager.class.getName()));
+			return;
+		}
 		AutoConfigureManager auto = clazz.getAnnotation(AutoConfigureManager.class);
 		if (auto == null || !auto.enabled()) return;
 		@SuppressWarnings("unchecked")
