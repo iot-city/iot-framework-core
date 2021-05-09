@@ -520,7 +520,7 @@ public final class ConvertHelper {
 	 * Determine whether the data type supports data conversion.<br/>
 	 * The supported types include: boolean, int, long, float, double, short, byte, char, String and Date.
 	 * @param type The data class type.
-	 * @return Whether supports data conversion.
+	 * @return Returns true if supports data conversion; otherwise, returns false.
 	 */
 	public final static boolean isConvertible(Class<?> type) {
 		return type == String.class || JavaHelper.isPrimitive(type) || type == Date.class;

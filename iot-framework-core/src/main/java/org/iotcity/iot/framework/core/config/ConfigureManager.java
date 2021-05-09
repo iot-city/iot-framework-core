@@ -9,7 +9,7 @@ public interface ConfigureManager {
 
 	/**
 	 * Perform data configuration immediately.
-	 * @return Whether configurations are successful.
+	 * @return Returns true if configurations are successful; otherwise, returns false.
 	 */
 	boolean perform();
 

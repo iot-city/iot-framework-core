@@ -112,7 +112,7 @@ final class TimerTaskRecorder {
 	 * @param startTime Start time of task execution.
 	 * @param waitTime Time to wait for next execution.
 	 * @param currentTime Current system time.
-	 * @return Whether the system time has changed.
+	 * @return Returns true if the system time has changed; otherwise, returns false.
 	 */
 	boolean systemTimeChanged(long startTime, long waitTime, long currentTime) {
 

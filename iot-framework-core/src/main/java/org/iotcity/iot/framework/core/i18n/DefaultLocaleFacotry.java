@@ -71,7 +71,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	/**
 	 * Returns true if this factory contains the locale name.
 	 * @param name The locale name (required, not null or empty, e.g. "CORE")
-	 * @return Whether this factor contains the locale name.
+	 * @return Returns true if this factor contains the locale name; otherwise, returns false.
 	 */
 	public boolean containsLocale(String name) {
 		if (StringHelper.isEmpty(name)) return false;
@@ -90,7 +90,7 @@ public class DefaultLocaleFacotry implements LocaleFactory {
 	 * Returns true if this factory contains the locale name and language key.
 	 * @param name The locale name (required, not null or empty, e.g. "CORE")
 	 * @param lang Locale text language key (required, not null or empty, e.g. "en_US", "zh_CN")
-	 * @return Whether this factor contains the locale name.
+	 * @return Returns true if this factor contains the locale name; otherwise, returns false.
 	 */
 	public boolean containsLocale(String name, String lang) {
 		if (StringHelper.isEmpty(name) || StringHelper.isEmpty(lang)) return false;

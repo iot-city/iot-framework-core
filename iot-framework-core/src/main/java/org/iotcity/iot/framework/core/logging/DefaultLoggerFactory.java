@@ -87,7 +87,7 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	/**
 	 * Returns true if this factory contains the logger name.
 	 * @param name Logger name (required, not null or empty).
-	 * @return Whether this factor contains the logger name.
+	 * @return Returns true if this factor contains the logger name; otherwise, returns false.
 	 */
 	public boolean containsLogger(String name) {
 		if (StringHelper.isEmpty(name)) return false;

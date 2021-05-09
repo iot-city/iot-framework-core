@@ -36,17 +36,17 @@ public final class ConfigureHandler {
 	 */
 	private final Object lock = new Object();
 	/**
-	 * The configuration properties.
-	 */
-	private Properties props = null;
-	/**
 	 * Completed configuration classes.
 	 */
-	private Set<Class<? extends ConfigureManager>> executed = new HashSet<>();
+	private final Set<Class<? extends ConfigureManager>> executed = new HashSet<>();
 	/**
 	 * Configuration classes waiting for execution.
 	 */
-	private Set<Class<? extends ConfigureManager>> managers = new HashSet<>();
+	private final Set<Class<? extends ConfigureManager>> managers = new HashSet<>();
+	/**
+	 * The configuration properties.
+	 */
+	private Properties props = null;
 
 	// --------------------------- Initialize method ----------------------------
 
@@ -126,19 +126,19 @@ public final class ConfigureHandler {
 
 	/**
 	 * Add a configure manager class to handler.
-	 * @param clazz Configure manager class.
+	 * @param managerClass Configure manager class.
 	 */
-	public <T extends ConfigureManager> void addManager(Class<T> clazz) {
-		if (clazz == null || executed.contains(clazz) || managers.contains(clazz)) return;
+	public <T extends ConfigureManager> void addManager(Class<T> managerClass) {
+		if (managerClass == null || executed.contains(managerClass) || managers.contains(managerClass)) return;
 		synchronized (lock) {
-			if (executed.contains(clazz) || managers.contains(clazz)) return;
-			managers.add(clazz);
+			if (executed.contains(managerClass) || managers.contains(managerClass)) return;
+			managers.add(managerClass);
 		}
 	}
 
 	/**
 	 * Perform all configuration managers immediately.
-	 * @return Whether configurations are successful.
+	 * @return Returns true if configurations are successful; otherwise, returns false.
 	 */
 	public boolean performAll() {
 		boolean succeed = true;
@@ -158,7 +158,7 @@ public final class ConfigureHandler {
 	/**
 	 * Perform a manager configuration.
 	 * @param managerClass Configure manager class.
-	 * @return Whether configuration is successful.
+	 * @return Returns true if configuration is successful; otherwise, returns false.
 	 */
 	public boolean perform(Class<? extends ConfigureManager> managerClass) {
 		if (managerClass == null) return false;

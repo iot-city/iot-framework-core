@@ -66,7 +66,7 @@ public final class JavaHelper {
 	 * Determine whether the data type is a primitive type.<br/>
 	 * <b>Primitive types: boolean, int, long, float, double, short, byte or char.</b>
 	 * @param type The class type.
-	 * @return Whether the data type is a primitive type.
+	 * @return Returns true if the data type is a primitive type; otherwise, returns false.
 	 */
 	public static final boolean isPrimitive(Class<?> type) {
 		if (type == null) return false;

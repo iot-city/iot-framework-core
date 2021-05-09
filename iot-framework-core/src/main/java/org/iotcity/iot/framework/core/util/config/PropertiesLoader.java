@@ -116,7 +116,7 @@ public final class PropertiesLoader {
 	 * @param bean The configure bean.
 	 * @param file The properties configure file information object.
 	 * @param prefix The property prefix of the configuration file (e.g. "iot.properties.test").
-	 * @return Whether load configure successful.
+	 * @return Returns true if load configure successful; otherwise, returns false.
 	 */
 	public static final <T> boolean loadConfigBean(T bean, PropertiesConfigFile file, String prefix) {
 		if (file == null) return false;
@@ -132,7 +132,7 @@ public final class PropertiesLoader {
 	 * @param encoding File encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
 	 * @param fromPackage Whether load the file from package.
 	 * @param prefix The property prefix of the configuration file (e.g. "iot.properties.test").
-	 * @return Whether load configure successful.
+	 * @return Returns true if load configure successful; otherwise, returns false.
 	 */
 	public static final <T> boolean loadConfigBean(T bean, String filePathName, String encoding, boolean fromPackage, String prefix) {
 		if (bean == null) return false;
@@ -225,7 +225,7 @@ public final class PropertiesLoader {
 	 * @param beanClass The parameterized type class of list.
 	 * @param file The properties configure file information object.
 	 * @param prefix The property prefix of the configuration file (e.g. "iot.properties.test.list").
-	 * @return Whether load configure successful.
+	 * @return Returns true if load configure successful; otherwise, returns false.
 	 */
 	public static final <T> boolean loadConfigList(List<T> list, Class<T> beanClass, PropertiesConfigFile file, String prefix) {
 		if (file == null) return false;
@@ -242,7 +242,7 @@ public final class PropertiesLoader {
 	 * @param encoding File encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
 	 * @param fromPackage Whether load the file from package.
 	 * @param prefix The property prefix of the configuration file (e.g. "iot.properties.test.list").
-	 * @return Whether load configure successful.
+	 * @return Returns true if load configure successful; otherwise, returns false.
 	 */
 	public static final <T> boolean loadConfigList(List<T> list, Class<T> beanClass, String filePathName, String encoding, boolean fromPackage, String prefix) {
 		if (list == null || beanClass == null || filePathName == null) return false;
@@ -291,7 +291,7 @@ public final class PropertiesLoader {
 	 * @param beanClass The parameterized type class of map.
 	 * @param file The properties configure file information object.
 	 * @param prefix The property prefix of the configuration file (e.g. "iot.properties.test.map").
-	 * @return Whether load configure successful.
+	 * @return Returns true if load configure successful; otherwise, returns false.
 	 */
 	public static final <T> boolean loadConfigMap(PropertiesMap<T> map, Class<T> beanClass, PropertiesConfigFile file, String prefix) {
 		if (file == null) return false;
@@ -308,7 +308,7 @@ public final class PropertiesLoader {
 	 * @param encoding File encoding (optional, e.g. "UTF-8", if it is set to null, it will be judged automatically).
 	 * @param fromPackage Whether load the file from package.
 	 * @param prefix The property prefix of the configuration file (e.g. "iot.properties.test.map").
-	 * @return Whether load configure successful.
+	 * @return Returns true if load configure successful; otherwise, returns false.
 	 */
 	public static final <T> boolean loadConfigMap(PropertiesMap<T> map, Class<T> beanClass, String filePathName, String encoding, boolean fromPackage, String prefix) {
 		if (map == null || beanClass == null || filePathName == null) return false;
@@ -434,7 +434,7 @@ public final class PropertiesLoader {
 	 * @param beanClass The parameterized type class of list.
 	 * @param props Properties object has loaded (not null).
 	 * @param prefix The property prefix of the configuration file (e.g. "iot.properties.test.values").
-	 * @return Whether load configure successful.
+	 * @return Returns true if load configure successful; otherwise, returns false.
 	 */
 	public static final <T> boolean getConfigList(List<T> list, Class<T> beanClass, Properties props, String prefix) {
 		if (list == null || beanClass == null || props == null || StringHelper.isEmpty(prefix)) return false;
@@ -496,7 +496,7 @@ public final class PropertiesLoader {
 	 * @param beanClass The parameterized type class of map.
 	 * @param props Properties object has loaded (not null).
 	 * @param prefix The property prefix of the configuration file (e.g. "iot.properties.test.map").
-	 * @return Whether load configure successful.
+	 * @return Returns true if load configure successful; otherwise, returns false.
 	 */
 	public static final <T> boolean getConfigMap(PropertiesMap<T> map, Class<T> beanClass, Properties props, String prefix) {
 		if (map == null || beanClass == null || props == null || StringHelper.isEmpty(prefix)) return false;

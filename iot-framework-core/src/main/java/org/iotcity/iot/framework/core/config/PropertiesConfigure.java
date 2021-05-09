@@ -30,7 +30,7 @@ public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 	/**
 	 * Load a properties object from file.
 	 * @param configFile The configure properties file information to load (required, not null).
-	 * @return Whether the configuration file is loaded successfully.
+	 * @return Returns true if the configuration file is loaded successfully; otherwise, returns false.
 	 */
 	public boolean load(PropertiesConfigFile configFile) throws IllegalArgumentException {
 		if (configFile == null || StringHelper.isEmpty(configFile.file)) return false;

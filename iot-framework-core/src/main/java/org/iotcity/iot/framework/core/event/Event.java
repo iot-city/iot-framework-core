@@ -27,7 +27,7 @@ public interface Event<T> {
 
 	/**
 	 * Whether the event propagation has stopped.
-	 * @return Whether event has been stopped.
+	 * @return Returns true if this event has been stopped; otherwise, returns false.
 	 */
 	boolean isStopped();
 

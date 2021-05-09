@@ -1,20 +1,19 @@
 package org.iotcity.iot.framework.core.event;
 
-import java.util.EventListener;
-
 /**
  * The event listener is used to process the event data after receiving the event.
  * @param <T> The class type of event type.
+ * @param <E> The event class type.
  * @author Ardon
  * @date 2021-04-24
  */
-public interface Listener<T> extends EventListener {
+public interface EventListener<T, E extends Event<T>> extends java.util.EventListener {
 
 	/**
 	 * Processing when data events are received.
 	 * @param event Event object (required, not null).
-	 * @return Whether the event has been executed in listener.
+	 * @return Returns true if the event has been executed successfully; otherwise, returns false.
 	 */
-	boolean onEvent(Event<T> event);
+	boolean onEvent(E event);
 
 }

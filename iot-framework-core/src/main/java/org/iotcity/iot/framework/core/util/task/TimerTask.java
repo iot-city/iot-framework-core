@@ -148,7 +148,7 @@ final class TimerTask implements Runnable {
 	/**
 	 * Determine whether the current task is allowed to be executed.
 	 * @param currentTime Current system time.
-	 * @return Whether the current task is allowed to be executed.
+	 * @return Returns true if the current task is allowed to be executed; otherwise, returns false.
 	 */
 	boolean isReady(long currentTime) {
 		// Check the task time and running status

@@ -144,7 +144,7 @@ public class PropertiesConfigureManager implements ConfigureManager {
 
 		/**
 		 * Do configuration.
-		 * @return Whether configuration is successful.
+		 * @return Returns true if configuration is successful; otherwise, returns false.
 		 */
 		boolean config() {
 			if (!file.fromPackage) {
