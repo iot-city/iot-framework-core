@@ -19,7 +19,7 @@ public @interface AutoConfigureManager {
 
 	/**
 	 * Whether the auto configuration function is enabled (optional, true by default).
-	 * @return
+	 * @return Returns true if automatic configuration is supported; otherwise, returns false.
 	 */
 	boolean enabled() default true;
 

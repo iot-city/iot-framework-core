@@ -9,10 +9,12 @@ import org.iotcity.iot.framework.core.config.Configurable;
  * Basic event publisher is used to publish base event data processing.
  * @param <T> The class type of event type.
  * @param <E> The event class type.
+ * @param <L> The listener class type.
+ * @param <F> The listener factory class type.
  * @author Ardon
  * @date 2021-04-24
  */
-public class BaseEventPublisher<T, E extends Event<T>> implements EventPublisher<T, E>, Configurable<BaseEventConfig<T, E>[]> {
+public class BaseEventPublisher<T, E extends Event<T>, L extends EventListener<T, E>, F extends EventListenerFactory<T, E, L>> implements EventPublisher<T, E>, Configurable<BaseEventConfig<T, E, L>[]> {
 
 	// --------------------------- Private object fields ----------------------------
 
@@ -23,15 +25,38 @@ public class BaseEventPublisher<T, E extends Event<T>> implements EventPublisher
 	/**
 	 * The listener container map (the key is the event type, the value is the listener container).
 	 */
-	private final Map<T, BaseListenerContainer<T, E>> map = new HashMap<>();
+	private final Map<T, BaseListenerContainer<T, E, L>> map = new HashMap<>();
+	/**
+	 * The event listener to create an event listener (optional, it can be set to null when using <b>new</b> to create an instance).
+	 */
+	private F factory = null;
+
+	// --------------------------- Listener factory methods ----------------------------
+
+	/**
+	 * Set the event listener factory to create an event listener.
+	 * @param factory The event listener factory (it can be set to null when using <b>new</b> to create an instance).
+	 */
+	public void setListenerFactory(F factory) {
+		this.factory = factory;
+	}
+
+	/**
+	 * Gets the event listener factory in publisher.<br/>
+	 * It can be null value when using <b>new</b> to create an instance.
+	 * @return The event listener factory.
+	 */
+	public F getListenerFactory() {
+		return factory;
+	}
 
 	// --------------------------- Public object methods ----------------------------
 
 	@Override
-	public boolean config(BaseEventConfig<T, E>[] data, boolean reset) {
+	public boolean config(BaseEventConfig<T, E, L>[] data, boolean reset) {
 		if (data == null) return false;
 		if (reset) this.clearListeners();
-		for (BaseEventConfig<T, E> config : data) {
+		for (BaseEventConfig<T, E, L> config : data) {
 			if (config == null) continue;
 			addListener(config.type, config.listener, config.priority);
 		}
@@ -51,7 +76,7 @@ public class BaseEventPublisher<T, E extends Event<T>> implements EventPublisher
 	 * @return The listener size.
 	 */
 	public int getListenerSize(T type) {
-		BaseListenerContainer<T, E> context = map.get(type);
+		BaseListenerContainer<T, E, L> context = map.get(type);
 		if (context == null) return 0;
 		return context.size();
 	}
@@ -61,7 +86,7 @@ public class BaseEventPublisher<T, E extends Event<T>> implements EventPublisher
 	 * @param type The event type.
 	 * @param listener The event listener object.
 	 */
-	public void addListener(T type, EventListener<T, E> listener) {
+	public void addListener(T type, L listener) {
 		this.addListener(type, listener, 0);
 	}
 
@@ -71,14 +96,14 @@ public class BaseEventPublisher<T, E extends Event<T>> implements EventPublisher
 	 * @param listener The event listener object (required, not null).
 	 * @param priority The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
 	 */
-	public void addListener(T type, EventListener<T, E> listener, int priority) {
+	public void addListener(T type, L listener, int priority) {
 		if (type == null || listener == null) return;
-		BaseListenerContainer<T, E> context = map.get(type);
+		BaseListenerContainer<T, E, L> context = map.get(type);
 		if (context == null) {
 			synchronized (lock) {
 				context = map.get(type);
 				if (context == null) {
-					context = new BaseListenerContainer<T, E>();
+					context = new BaseListenerContainer<T, E, L>();
 					map.put(type, context);
 				}
 			}
@@ -101,9 +126,9 @@ public class BaseEventPublisher<T, E extends Event<T>> implements EventPublisher
 	 * @param listener The event listener object (required, not null).
 	 * @return Returns true if the event type and the listener has been found; otherwise, returns false.
 	 */
-	public boolean containsListener(T type, EventListener<T, E> listener) {
+	public boolean containsListener(T type, L listener) {
 		if (type == null || listener == null) return false;
-		BaseListenerContainer<T, E> context = map.get(type);
+		BaseListenerContainer<T, E, L> context = map.get(type);
 		return context == null ? false : context.contains(listener);
 	}
 
@@ -113,9 +138,9 @@ public class BaseEventPublisher<T, E extends Event<T>> implements EventPublisher
 	 * @param listener The event listener object to be removed (required, not null).
 	 * @return Returns true if the listener has been found and removed; otherwise, returns false.
 	 */
-	public boolean removeListener(T type, EventListener<T, E> listener) {
+	public boolean removeListener(T type, L listener) {
 		if (type == null || listener == null) return false;
-		BaseListenerContainer<T, E> context = map.get(type);
+		BaseListenerContainer<T, E, L> context = map.get(type);
 		return context == null ? false : context.remove(listener);
 	}
 
@@ -145,12 +170,12 @@ public class BaseEventPublisher<T, E extends Event<T>> implements EventPublisher
 		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
 		T type = event.getType();
 		if (type == null) return 0;
-		BaseListenerContainer<T, E> context = map.get(type);
+		BaseListenerContainer<T, E, L> context = map.get(type);
 		if (context == null) return 0;
-		BaseListenerContainer<T, E>.ListenerObject[] listeners = context.listeners();
+		BaseListenerContainer<T, E, L>.ListenerObject[] listeners = context.listeners();
 		if (listeners.length == 0) return 0;
 		int count = 0;
-		for (BaseListenerContainer<T, E>.ListenerObject object : listeners) {
+		for (BaseListenerContainer<T, E, L>.ListenerObject object : listeners) {
 			if (event.isStopped()) break;
 			if (object.listener.onEvent(event)) {
 				count++;

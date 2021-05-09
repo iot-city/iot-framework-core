@@ -7,6 +7,6 @@ import org.iotcity.iot.framework.core.event.EventListener;
  * @author ardon
  * @date 2021-05-09
  */
-public abstract class ClassEventListener implements EventListener<Class<?>, ClassEvent> {
+public interface ClassEventListener extends EventListener<Class<?>, ClassEvent> {
 
 }

@@ -1,5 +1,6 @@
 package org.iotcity.iot.framework;
 
+import org.iotcity.iot.framework.core.bus.BusEventPublisher;
 import org.iotcity.iot.framework.core.i18n.DefaultLocaleFacotry;
 import org.iotcity.iot.framework.core.i18n.LocaleFactory;
 import org.iotcity.iot.framework.core.logging.DefaultLoggerFactory;
@@ -41,6 +42,10 @@ public final class IoTFramework {
 	 */
 	private static ConfigureHandler configHandler = new ConfigureHandler();
 	/**
+	 * Bus event publisher is used to publish bus event data processing.
+	 */
+	private static BusEventPublisher busEventPublisher = new BusEventPublisher();
+	/**
 	 * Logger factory used in framework.
 	 */
 	private static LoggerFactory loggerFactory = new DefaultLoggerFactory();
@@ -70,6 +75,7 @@ public final class IoTFramework {
 		}
 		// Initialize factories
 		if (options != null) {
+			if (options.busEventListenerFactory != null) busEventPublisher.setListenerFactory(options.busEventListenerFactory);
 			if (options.loggerFactory != null) loggerFactory = options.loggerFactory;
 			if (options.localeFactory != null) localeFactory = options.localeFactory;
 		}
@@ -78,7 +84,7 @@ public final class IoTFramework {
 	}
 
 	/**
-	 * Gets the configure manager handler of the framework.
+	 * Gets the configure manager handler of the framework (returns not null).
 	 * @return The configure manager handler.
 	 */
 	public static final ConfigureHandler getConfigureHandler() {
@@ -86,7 +92,15 @@ public final class IoTFramework {
 	}
 
 	/**
-	 * Gets the logger factory used in the framework.<br/>
+	 * Gets the bus event publisher of the framework (returns not null).
+	 * @return Bus event publisher.
+	 */
+	public static final BusEventPublisher getBusEventPublisher() {
+		return busEventPublisher;
+	}
+
+	/**
+	 * Gets the logger factory used in the framework (returns not null).<br/>
 	 * (the default instance object be created with {@link DefaultLoggerFactory }, it can be changed by using init(options) method).
 	 * @return Logger factory object.
 	 */
@@ -95,7 +109,7 @@ public final class IoTFramework {
 	}
 
 	/**
-	 * Gets the locale factory used in the framework.<br/>
+	 * Gets the locale factory used in the framework (returns not null).<br/>
 	 * (the default instance object be created with {@link DefaultLocaleFacotry }, it can be changed by using init(options) method).
 	 * @return Locale factory object.
 	 */

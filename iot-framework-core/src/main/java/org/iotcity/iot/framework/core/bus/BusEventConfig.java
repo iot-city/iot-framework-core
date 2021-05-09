@@ -1,27 +1,27 @@
-package org.iotcity.iot.framework.core.event.clazz;
+package org.iotcity.iot.framework.core.bus;
 
 import org.iotcity.iot.framework.core.event.BaseEventConfig;
 
 /**
- * Class event configure data.
+ * Bus event configure data.
  * @author ardon
  * @date 2021-05-09
  */
-public class ClassEventConfig extends BaseEventConfig<Class<?>, ClassEvent, ClassEventListener> {
+public class BusEventConfig extends BaseEventConfig<Class<?>, BusEvent, BusEventListener> {
 
 	/**
-	 * Constructor for class configure data.
+	 * Constructor for bus event configure data.
 	 */
-	public ClassEventConfig() {
+	public BusEventConfig() {
 	}
 
 	/**
-	 * Constructor for class event configure data.
+	 * Constructor for bus event configure data.
 	 * @param type The event type (required, not null).
 	 * @param listener Event listener object (required, not null).
 	 * @param priority The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
 	 */
-	public ClassEventConfig(Class<?> type, ClassEventListener listener, int priority) {
+	public BusEventConfig(Class<?> type, BusEventListener listener, int priority) {
 		super(type, listener, priority);
 	}
 

@@ -12,6 +12,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.iotcity.iot.framework.IoTFramework;
+import org.iotcity.iot.framework.core.bus.BusDataListenerParser;
 import org.iotcity.iot.framework.core.config.ConfigureManagerParser;
 import org.iotcity.iot.framework.core.util.helper.JavaHelper;
 
@@ -52,6 +53,8 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	public AnnotationAnalyzer() {
 		// For configure manager auto setup
 		parsers.add(new ConfigureManagerParser());
+		// For bus data event listeners
+		parsers.add(new BusDataListenerParser());
 	}
 
 	// --------------------------- Public methods ----------------------------

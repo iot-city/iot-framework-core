@@ -1,5 +1,6 @@
 package org.iotcity.iot.framework;
 
+import org.iotcity.iot.framework.core.bus.BusEventListenerFactory;
 import org.iotcity.iot.framework.core.config.PropertiesConfigFile;
 import org.iotcity.iot.framework.core.i18n.DefaultLocaleFacotry;
 import org.iotcity.iot.framework.core.i18n.LocaleFactory;
@@ -17,6 +18,10 @@ public final class FrameworkOptions {
 	 * The framework configuration properties file (optional, external "framework.properties" by default).
 	 */
 	public PropertiesConfigFile frameworkFile;
+	/**
+	 * Bus event listener factory to get a listener of specified listener class type (optional, it can be set to null when using <b>new</b> to create an instance).
+	 */
+	public BusEventListenerFactory busEventListenerFactory;
 	/**
 	 * Logger factory used in framework (optional, an instance of {@link DefaultLoggerFactory } by default).
 	 */
@@ -43,11 +48,13 @@ public final class FrameworkOptions {
 	/**
 	 * Constructor for framework startup options.
 	 * @param frameworkFile The framework configuration properties file (optional, external "framework.properties" by default).
+	 * @param busEventListenerFactory Bus event listener factory to get a listener of specified listener class type (optional, it can be set to null when using <b>new</b> to create an instance).
 	 * @param loggerFactory Logger factory used in framework (optional, an instance of {@link DefaultLoggerFactory } by default).
 	 * @param localeFactory Locale factory used in framework (optional, an instance of {@link DefaultLocaleFacotry } by default).
 	 */
-	public FrameworkOptions(PropertiesConfigFile frameworkFile, LoggerFactory loggerFactory, LocaleFactory localeFactory) {
+	public FrameworkOptions(PropertiesConfigFile frameworkFile, BusEventListenerFactory busEventListenerFactory, LoggerFactory loggerFactory, LocaleFactory localeFactory) {
 		this.frameworkFile = frameworkFile;
+		this.busEventListenerFactory = busEventListenerFactory;
 		this.loggerFactory = loggerFactory;
 		this.localeFactory = localeFactory;
 	}

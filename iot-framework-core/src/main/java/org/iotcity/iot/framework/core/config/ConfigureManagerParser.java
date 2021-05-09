@@ -9,7 +9,7 @@ import org.iotcity.iot.framework.core.annotation.AnnotationParser;
  * @author Ardon
  * @date 2021-04-26
  */
-public class ConfigureManagerParser implements AnnotationParser {
+public final class ConfigureManagerParser implements AnnotationParser {
 
 	/**
 	 * The configure manager handler of framework.

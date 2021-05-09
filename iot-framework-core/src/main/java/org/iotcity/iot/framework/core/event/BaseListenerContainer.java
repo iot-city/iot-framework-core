@@ -10,10 +10,11 @@ import java.util.Map;
  * Basic event listener container.
  * @param <T> The class type of event type.
  * @param <E> The event class type.
+ * @param <L> The listener class type.
  * @author ardon
  * @date 2021-05-07
  */
-final class BaseListenerContainer<T, E extends Event<T>> {
+final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener<T, E>> {
 
 	// --------------------------- Private object fields ----------------------------
 
@@ -24,7 +25,7 @@ final class BaseListenerContainer<T, E extends Event<T>> {
 	/**
 	 * The listener map.
 	 */
-	private final Map<EventListener<T, E>, ListenerObject> map = new HashMap<>();
+	private final Map<L, ListenerObject> map = new HashMap<>();
 	/**
 	 * The listener array.
 	 */
@@ -42,7 +43,7 @@ final class BaseListenerContainer<T, E extends Event<T>> {
 	private final Comparator<ListenerObject> COMPARATOR = new Comparator<ListenerObject>() {
 
 		@Override
-		public int compare(BaseListenerContainer<T, E>.ListenerObject o1, BaseListenerContainer<T, E>.ListenerObject o2) {
+		public int compare(BaseListenerContainer<T, E, L>.ListenerObject o1, BaseListenerContainer<T, E, L>.ListenerObject o2) {
 			if (o1.priority == o2.priority) return 0;
 			return o1.priority < o2.priority ? 1 : -1;
 		}
@@ -63,7 +64,7 @@ final class BaseListenerContainer<T, E extends Event<T>> {
 	 * @param listener Event listener instance (not null).
 	 * @param priority The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
 	 */
-	void add(EventListener<T, E> listener, int priority) {
+	void add(L listener, int priority) {
 		synchronized (lock) {
 			map.put(listener, new ListenerObject(listener, priority));
 			if (!modified) modified = true;
@@ -75,7 +76,7 @@ final class BaseListenerContainer<T, E extends Event<T>> {
 	 * @param listener Event listener instance to be tested (not null).
 	 * @return Returns true if the data has been found; otherwise, returns false.
 	 */
-	boolean contains(EventListener<T, E> listener) {
+	boolean contains(L listener) {
 		return map.containsKey(listener);
 	}
 
@@ -84,7 +85,7 @@ final class BaseListenerContainer<T, E extends Event<T>> {
 	 * @param listener Event listener instance to be removed (not null).
 	 * @return Returns true if the data has been found and removed; otherwise, returns false.
 	 */
-	boolean remove(EventListener<T, E> listener) {
+	boolean remove(L listener) {
 		synchronized (lock) {
 			if (map.remove(listener) != null) {
 				if (!modified) modified = true;
@@ -126,7 +127,7 @@ final class BaseListenerContainer<T, E extends Event<T>> {
 		/**
 		 * Event listener instance (not null).
 		 */
-		final EventListener<T, E> listener;
+		final L listener;
 		/**
 		 * The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
 		 */
@@ -137,7 +138,7 @@ final class BaseListenerContainer<T, E extends Event<T>> {
 		 * @param listener Event listener instance.
 		 * @param priority The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
 		 */
-		ListenerObject(EventListener<T, E> listener, int priority) {
+		ListenerObject(L listener, int priority) {
 			this.listener = listener;
 			this.priority = priority;
 		}
