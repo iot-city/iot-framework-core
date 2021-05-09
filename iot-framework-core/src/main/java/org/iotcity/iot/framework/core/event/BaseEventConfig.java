@@ -18,7 +18,7 @@ public class BaseEventConfig<T, E extends Event<T>> {
 	 */
 	public EventListener<T, E> listener;
 	/**
-	 * The execution order priority of the listener (the priority with the highest value is called first, 0 by default).
+	 * The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
 	 */
 	public int priority;
 
@@ -32,7 +32,7 @@ public class BaseEventConfig<T, E extends Event<T>> {
 	 * Constructor for event configure data.
 	 * @param type The event type (required, not null).
 	 * @param listener Event listener object (required, not null).
-	 * @param priority The execution order priority of the listener (the priority with the highest value is called first, 0 by default).
+	 * @param priority The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
 	 */
 	public BaseEventConfig(T type, EventListener<T, E> listener, int priority) {
 		this.type = type;
