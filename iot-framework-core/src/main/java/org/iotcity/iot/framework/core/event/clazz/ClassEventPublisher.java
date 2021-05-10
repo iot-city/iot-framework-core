@@ -1,5 +1,6 @@
 package org.iotcity.iot.framework.core.event.clazz;
 
+import org.iotcity.iot.framework.IoTFramework;
 import org.iotcity.iot.framework.core.event.BaseEventPublisher;
 
 /**
@@ -19,15 +20,10 @@ public class ClassEventPublisher extends BaseEventPublisher<Class<?>, ClassEvent
 		final ClassEventListenerFactory factory = this.getListenerFactory();
 		if (type == null) {
 			return null;
-		} else if (factory != null) {
-			return factory.getListener(type);
+		} else if (factory == null) {
+			return IoTFramework.getGlobalInstanceFactory().getInstance(type);
 		} else {
-			try {
-				return type.getDeclaredConstructor().newInstance();
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
+			return factory.getListener(type);
 		}
 	}
 

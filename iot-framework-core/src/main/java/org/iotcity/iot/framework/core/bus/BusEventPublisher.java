@@ -1,5 +1,6 @@
 package org.iotcity.iot.framework.core.bus;
 
+import org.iotcity.iot.framework.IoTFramework;
 import org.iotcity.iot.framework.core.event.BaseEventPublisher;
 
 /**
@@ -19,15 +20,10 @@ public final class BusEventPublisher extends BaseEventPublisher<Class<?>, BusEve
 		final BusEventListenerFactory factory = this.getListenerFactory();
 		if (type == null) {
 			return null;
-		} else if (factory != null) {
-			return factory.getListener(type);
+		} else if (factory == null) {
+			return IoTFramework.getGlobalInstanceFactory().getInstance(type);
 		} else {
-			try {
-				return type.getDeclaredConstructor().newInstance();
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
+			return factory.getListener(type);
 		}
 	}
 

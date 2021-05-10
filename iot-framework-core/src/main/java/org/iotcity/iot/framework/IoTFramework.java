@@ -1,5 +1,7 @@
 package org.iotcity.iot.framework;
 
+import org.iotcity.iot.framework.core.beans.ClassInstanceFactory;
+import org.iotcity.iot.framework.core.beans.DefaultClassInstanceFactory;
 import org.iotcity.iot.framework.core.bus.BusEventPublisher;
 import org.iotcity.iot.framework.core.i18n.DefaultLocaleFacotry;
 import org.iotcity.iot.framework.core.i18n.LocaleFactory;
@@ -40,11 +42,15 @@ public final class IoTFramework {
 	/**
 	 * Configure manager handler of framework.
 	 */
-	private static ConfigureHandler configHandler = new ConfigureHandler();
+	private static final ConfigureHandler configHandler = new ConfigureHandler();
 	/**
 	 * Bus event publisher is used to publish bus event data processing.
 	 */
-	private static BusEventPublisher busEventPublisher = new BusEventPublisher();
+	private static final BusEventPublisher busEventPublisher = new BusEventPublisher();
+	/**
+	 * Global class instance factory to get an instance of specified class.
+	 */
+	private static ClassInstanceFactory instanceFactory = new DefaultClassInstanceFactory();
 	/**
 	 * Logger factory used in framework.
 	 */
@@ -75,7 +81,7 @@ public final class IoTFramework {
 		}
 		// Initialize factories
 		if (options != null) {
-			if (options.busEventListenerFactory != null) busEventPublisher.setListenerFactory(options.busEventListenerFactory);
+			if (options.instanceFactory != null) instanceFactory = options.instanceFactory;
 			if (options.loggerFactory != null) loggerFactory = options.loggerFactory;
 			if (options.localeFactory != null) localeFactory = options.localeFactory;
 		}
@@ -97,6 +103,15 @@ public final class IoTFramework {
 	 */
 	public static final BusEventPublisher getBusEventPublisher() {
 		return busEventPublisher;
+	}
+
+	/**
+	 * Gets the global class instance factory to create or get an instance of specified class (returns not null).<br/>
+	 * The framework uses {@link DefaultClassInstanceFactory } by default to create an instance with "<b>clazz.getDeclaredConstructor().newInstance()</b>" method.
+	 * @return A class instance factory.
+	 */
+	public static ClassInstanceFactory getGlobalInstanceFactory() {
+		return instanceFactory;
 	}
 
 	/**

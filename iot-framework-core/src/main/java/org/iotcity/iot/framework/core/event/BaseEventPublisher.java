@@ -3,6 +3,7 @@ package org.iotcity.iot.framework.core.event;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.iotcity.iot.framework.IoTFramework;
 import org.iotcity.iot.framework.core.config.Configurable;
 
 /**
@@ -27,7 +28,7 @@ public class BaseEventPublisher<T, E extends Event<T>, L extends EventListener<T
 	 */
 	private final Map<T, BaseListenerContainer<T, E, L>> map = new HashMap<>();
 	/**
-	 * The event listener to create an event listener (optional, it can be set to null when using <b>new</b> to create an instance).
+	 * The event listener to create an event listener (optional, it can be set to null when using {@link IoTFramework }.getGlobalInstanceFactory() to create an instance).
 	 */
 	private F factory = null;
 
@@ -35,7 +36,7 @@ public class BaseEventPublisher<T, E extends Event<T>, L extends EventListener<T
 
 	/**
 	 * Set the event listener factory to create an event listener.
-	 * @param factory The event listener factory (it can be set to null when using <b>new</b> to create an instance).
+	 * @param factory The event listener factory (it can be set to null when using {@link IoTFramework }.getGlobalInstanceFactory() to create an instance).
 	 */
 	public void setListenerFactory(F factory) {
 		this.factory = factory;
@@ -43,7 +44,7 @@ public class BaseEventPublisher<T, E extends Event<T>, L extends EventListener<T
 
 	/**
 	 * Gets the event listener factory in publisher.<br/>
-	 * It can be null value when using <b>new</b> to create an instance.
+	 * It can be null value when using {@link IoTFramework }.getGlobalInstanceFactory() to create an instance.
 	 * @return The event listener factory.
 	 */
 	public F getListenerFactory() {
