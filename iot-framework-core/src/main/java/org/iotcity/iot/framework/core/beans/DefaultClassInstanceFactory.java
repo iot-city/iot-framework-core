@@ -8,16 +8,10 @@ package org.iotcity.iot.framework.core.beans;
 public final class DefaultClassInstanceFactory implements ClassInstanceFactory {
 
 	@Override
-	public <T> T getInstance(Class<?> clazz) {
+	public <T> T getInstance(Class<?> clazz) throws Exception {
 		if (clazz == null) return null;
-		Object obj = null;
-		try {
-			obj = clazz.getDeclaredConstructor().newInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		@SuppressWarnings("unchecked")
-		T ret = (T) obj;
+		T ret = (T) clazz.getDeclaredConstructor().newInstance();
 		return ret;
 	}
 

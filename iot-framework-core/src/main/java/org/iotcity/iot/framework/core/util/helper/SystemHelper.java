@@ -6,7 +6,7 @@ import java.util.Enumeration;
 import java.util.Locale;
 
 /**
- * System information util
+ * System information util.
  * @author Ardon
  */
 public final class SystemHelper {
@@ -14,42 +14,42 @@ public final class SystemHelper {
 	// --------------------------- Public fields ----------------------------
 
 	/**
-	 * Milliseconds per second
+	 * Milliseconds per second.
 	 */
 	public final static long SECOND_MS = 1000;
 	/**
-	 * Milliseconds per minute
+	 * Milliseconds per minute.
 	 */
 	public final static long MINUTE_MS = 60 * SECOND_MS;
 	/**
-	 * Milliseconds per hour
+	 * Milliseconds per hour.
 	 */
 	public final static long HOUR_MS = 60 * MINUTE_MS;
 	/**
-	 * Milliseconds per day
+	 * Milliseconds per day.
 	 */
 	public final static long DAY_MS = 24 * HOUR_MS;
 	/**
-	 * Milliseconds per month (31 days)
+	 * Milliseconds per month (31 days).
 	 */
 	public final static long MONTH_MS = 31 * DAY_MS;
 
 	// --------------------------- Private fields ----------------------------
 
 	/**
-	 * Local IP address
+	 * Local IP address.
 	 */
 	private static String localIP = null;
 	/**
-	 * The lock for IP
+	 * The lock for IP.
 	 */
 	private static Object lock = new Object();
 
 	// --------------------------- Public methods ----------------------------
 
 	/**
-	 * Gets the operating system default language key
-	 * @return String Language key (e.g. "en_US")
+	 * Gets the operating system default language key.
+	 * @return String Language key (e.g. "en_US").
 	 */
 	public final static String getSystemLang() {
 		Locale local = Locale.getDefault();
@@ -57,9 +57,9 @@ public final class SystemHelper {
 	}
 
 	/**
-	 * Test whether the string is local address (return true if IP is null)
-	 * @param ip IP address string
-	 * @return boolean Whether is the local IP address
+	 * Test whether the string is local address (return true if IP is null).
+	 * @param ip IP address string.
+	 * @return boolean Whether is the local IP address.
 	 */
 	public final static boolean isLocalhostIP(String ip) {
 		if (ip == null || ip.length() == 0) return true;
@@ -71,10 +71,10 @@ public final class SystemHelper {
 	}
 
 	/**
-	 * Gets the local IP address from OS
-	 * @param force Whether force re acquisition
-	 * @return String The local IP address
-	 * @throws Exception Throw an exception when an error is encountered
+	 * Gets the local IP address from OS.
+	 * @param force Whether force re acquisition.
+	 * @return String The local IP address.
+	 * @throws Exception Throw an exception when an error is encountered.
 	 */
 	public final static String getLocalIP(boolean force) throws Exception {
 		if (localIP == null || force) {
@@ -89,9 +89,9 @@ public final class SystemHelper {
 	}
 
 	/**
-	 * Get the local IP address at the current time
-	 * @return InetAddress IP address object
-	 * @throws Exception Throw an exception when an error is encountered
+	 * Get the local IP address at the current time.
+	 * @return InetAddress IP address object.
+	 * @throws Exception Throw an exception when an error is encountered.
 	 */
 	public final static InetAddress getLocalAddress() throws Exception {
 		InetAddress iadd = null;

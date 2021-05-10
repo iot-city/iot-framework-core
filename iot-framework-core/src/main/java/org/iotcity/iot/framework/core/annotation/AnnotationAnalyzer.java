@@ -25,7 +25,7 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	// --------------------------- Private fields ----------------------------
 
 	/**
-	 * Class file filter
+	 * Class file filter.
 	 */
 	private static final FileFilter fileFiter = new FileFilter() {
 
@@ -37,11 +37,11 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	};
 
 	/**
-	 * The parsers in analyzer
+	 * The parsers in analyzer.
 	 */
 	private final Set<AnnotationParser> parsers = new HashSet<>();
 	/**
-	 * The files parsed
+	 * The files parsed.
 	 */
 	private final Set<String> parseFiles = new HashSet<>();
 
@@ -60,16 +60,16 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	// --------------------------- Public methods ----------------------------
 
 	/**
-	 * Add annotation parser object to analyzer
-	 * @param parser Annotation parser
+	 * Add annotation parser object to analyzer.
+	 * @param parser Annotation parser.
 	 */
 	public void addParser(AnnotationParser parser) {
 		this.parsers.add(parser);
 	}
 
 	/**
-	 * Start analyze
-	 * @throws Exception Throw an exception when an error is encountered
+	 * Start analyze.
+	 * @throws Exception Throw an exception when an error is encountered.
 	 */
 	public void start() throws Exception {
 		if (this.parsers.size() == 0) return;
@@ -87,9 +87,9 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	// --------------------------- Private methods ----------------------------
 
 	/**
-	 * Analyze a package for class file
-	 * @param pkg package name (e.g. "org.iotcity.iot.framework.actor.test")
-	 * @throws Exception Throw an exception when an error is encountered
+	 * Analyze a package for class file.
+	 * @param pkg package name (e.g. "org.iotcity.iot.framework.actor.test").
+	 * @throws Exception Throw an exception when an error is encountered.
 	 */
 	private void analyzePackage(String pkg) throws Exception {
 		// Load resource from file
@@ -124,11 +124,11 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	}
 
 	/**
-	 * Analyze file classes
-	 * @param pkgName The package name (e.g. "org.iotcity.iot.framework.actor.test")
-	 * @param files Files for analyzing
+	 * Analyze file classes.
+	 * @param pkgName The package name (e.g. "org.iotcity.iot.framework.actor.test").
+	 * @param files Files for analyzing.
 	 * @param startsPackage The start package to analyze.
-	 * @throws Exception Throw an exception when an error is encountered
+	 * @throws Exception Throw an exception when an error is encountered.
 	 */
 	private void analyzeFileClasses(String pkgName, File[] files, String startsPackage) throws Exception {
 		if (files == null || files.length == 0 || this.isIgnoredPackage(pkgName)) return;
@@ -158,10 +158,10 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	}
 
 	/**
-	 * Analyze classes in jar file
-	 * @param pkgPath The package path (e.g. "org/iotcity/iot/framework/actor/test")
-	 * @param jar JAR file
-	 * @throws Exception Throw an exception when an error is encountered
+	 * Analyze classes in jar file.
+	 * @param pkgPath The package path (e.g. "org/iotcity/iot/framework/actor/test").
+	 * @param jar JAR file.
+	 * @throws Exception Throw an exception when an error is encountered.
 	 */
 	private void analyzeJarClasses(String pkgPath, JarFile jar) throws Exception {
 		if (jar == null) return;
@@ -188,9 +188,9 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	}
 
 	/**
-	 * Analyze a class file
-	 * @param className Class path name
-	 * @throws Exception Throw an exception when an error is encountered
+	 * Analyze a class file.
+	 * @param className Class path name.
+	 * @throws Exception Throw an exception when an error is encountered.
 	 */
 	private void analyzeClass(String className) throws Exception {
 		if (this.isIgnoredPackage(className)) return;

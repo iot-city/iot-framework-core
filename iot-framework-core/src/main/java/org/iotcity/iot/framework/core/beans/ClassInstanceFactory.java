@@ -12,7 +12,8 @@ public interface ClassInstanceFactory {
 	 * @param <T> The instance class type.
 	 * @param clazz The class of object instance.
 	 * @return An object created by factory.
+	 * @throws Exception Throw an exception when an error is encountered.
 	 */
-	<T> T getInstance(Class<?> clazz);
+	<T> T getInstance(Class<?> clazz) throws Exception;
 
 }
