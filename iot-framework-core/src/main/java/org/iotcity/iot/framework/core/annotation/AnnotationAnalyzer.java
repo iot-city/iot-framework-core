@@ -52,9 +52,9 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	 */
 	public AnnotationAnalyzer() {
 		// For configure manager auto setup
-		parsers.add(new ConfigureManagerParser());
-		// For bus data event listeners
-		parsers.add(new BusDataListenerParser());
+		parsers.add(new ConfigureManagerParser(IoTFramework.getConfigureHandler()));
+		// For bus data event listener analysis
+		parsers.add(new BusDataListenerParser(IoTFramework.getBusEventPublisher()));
 	}
 
 	// --------------------------- Public methods ----------------------------

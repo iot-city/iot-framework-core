@@ -9,12 +9,8 @@ import org.iotcity.iot.framework.core.event.BaseEventPublisher;
  */
 public class StringEventPublisher extends BaseEventPublisher<String, StringEvent, StringEventListener, StringEventListenerFactory> {
 
-	/**
-	 * Gets a listener for specified event type (returns null when no matching listener is found).
-	 * @param type The event type to listen on.
-	 * @return String event listener to process the event data after receiving the event.
-	 */
-	public StringEventListener getListener(String type) {
+	@Override
+	public StringEventListener getListenerInstanceFromFactory(String type) {
 		final StringEventListenerFactory factory = this.getListenerFactory();
 		if (type == null || factory == null) {
 			return null;

@@ -8,7 +8,41 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * This bus data listener annotation is used to implement an instance of the {@link BusEventListener } interface, and the framework will automatically use this annotation to add the bus listener to bus event publisher.
+ * This bus data listener annotation is used to implement an instance of the {@link BusEventListener }, and the framework will automatically use this annotation to add the bus listener to bus event publisher.<br/>
+ * <br/>
+ * Example 1, set up a simple data event listener for class:<br/>
+ * 
+ * <pre>
+ *    &#064;BusDataListener(ExampleEventData.class)
+ *    public class ExampleEventListener implements BusEventListener {
+ *    
+ *        &#64;Override
+ *        public boolean onEvent(BusEvent event) {
+ *            ExampleEventData data = event.getData();
+ *            ...
+ *        }
+ *    
+ *    }
+ * </pre>
+ * 
+ * <br/>
+ * Example 2, set up a multi-options data event listener for class:<br/>
+ * 
+ * <pre>
+ *    &#064;BusDataListener(value = ExampleEventData.class, priority = 1, enabled = true)
+ *    public class ExampleEventListener implements BusEventListener {
+ *    
+ *        &#64;Override
+ *        public boolean onEvent(BusEvent event) {
+ *            ExampleEventData data = event.getData();
+ *            ...
+ *        }
+ *    
+ *    }
+ * </pre>
+ * 
+ * <b>NOTICE: </b><br/>
+ * <b>This annotation needs to be used with the <b>{@link BusEventListener }</b> interface in class definition.<br/>
  * @author ardon
  * @date 2021-05-09
  */
@@ -18,9 +52,9 @@ import java.lang.annotation.Target;
 public @interface BusDataListener {
 
 	/**
-	 * The data class type to listen on.
+	 * The data class type in event object to listen on.
 	 */
-	Class<?> dataType();
+	Class<?> value();
 
 	/**
 	 * The execution order priority for this listener (the priority with the highest value is called first, 0 by default).

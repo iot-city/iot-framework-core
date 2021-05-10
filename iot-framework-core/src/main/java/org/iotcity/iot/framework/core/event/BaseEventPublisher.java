@@ -15,7 +15,7 @@ import org.iotcity.iot.framework.core.config.Configurable;
  * @author Ardon
  * @date 2021-04-24
  */
-public class BaseEventPublisher<T, E extends Event<T>, L extends EventListener<T, E>, F extends EventListenerFactory<T, E, L>> implements EventPublisher<T, E>, Configurable<BaseEventConfig<T, E, L>[]> {
+public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventListener<T, E>, F extends EventListenerFactory<T, E, L>> implements EventPublisher<T, E>, Configurable<BaseEventConfig<T, E, L>[]> {
 
 	// --------------------------- Private object fields ----------------------------
 
@@ -50,6 +50,13 @@ public class BaseEventPublisher<T, E extends Event<T>, L extends EventListener<T
 	public F getListenerFactory() {
 		return factory;
 	}
+
+	/**
+	 * Gets a listener instance from factory for specified event type (returns null when no matching listener is found).
+	 * @param type The type of data event to listen on.
+	 * @return Event listener instance to process the event data after receiving the event.
+	 */
+	public abstract L getListenerInstanceFromFactory(T type);
 
 	// --------------------------- Public object methods ----------------------------
 
