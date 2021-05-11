@@ -18,7 +18,18 @@ public class ClassEventTest extends TestCase {
 
 		logger.info("------------------------- CLASS EVENT TEST -------------------------");
 
-		ClassEventPublisher pub = new ClassEventPublisher();
+		ClassEventPublisher pub = new ClassEventPublisher(true);
+
+		pub.addListener(Object.class, new ClassEventListener() {
+
+			@Override
+			public boolean onEvent(ClassEvent event) {
+				logger.info("Object event: " + event.getType());
+				return true;
+			}
+
+		});
+
 		pub.addListener(PropertiesConfigFile.class, new ClassEventListener() {
 
 			@Override

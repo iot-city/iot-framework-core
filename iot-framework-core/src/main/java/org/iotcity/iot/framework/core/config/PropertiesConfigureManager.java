@@ -155,8 +155,7 @@ public class PropertiesConfigureManager implements ConfigureManager {
 				String filePathName = FileHelper.toLocalDirectory(file.file, false);
 				if (!FileHelper.exists(filePathName)) return true;
 			}
-			configure.load(file);
-			return configure.config(configurable, reset);
+			return configure.config(file, configurable, reset);
 		}
 
 	}

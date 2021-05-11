@@ -33,8 +33,7 @@ public class DefaultLoggerTest extends TestCase {
 		PropertiesConfigFile file = new PropertiesConfigFile();
 		file.file = "org/iotcity/iot/framework/core/logging/iot-logger-template.properties";
 		file.fromPackage = true;
-		configure.load(file);
-		configure.config(factory, true);
+		configure.config(file, factory, true);
 
 		System.out.println("-------------------------- (GLOBAL) ------------------------");
 

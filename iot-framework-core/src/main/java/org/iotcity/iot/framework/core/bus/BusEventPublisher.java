@@ -28,4 +28,20 @@ public final class BusEventPublisher extends BaseEventPublisher<Class<?>, BusEve
 		}
 	}
 
+	@Override
+	public int publish(BusEvent event) throws IllegalArgumentException {
+		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
+		Class<?> type = event.getType();
+		int count = 0;
+		while (type != null) {
+			// Publish event with specified type.
+			count += publishType(type, event);
+			// Check event status.
+			if (event.isStopped()) break;
+			// Publish event to all super class listeners.
+			type = type.getSuperclass();
+		}
+		return count;
+	}
+
 }

@@ -48,6 +48,18 @@ public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 		return props;
 	}
 
+	/**
+	 * Automatically configure file data to the configurable object.
+	 * @param <T> The configure data type.
+	 * @param configFile The configure properties file information to load (required, not null).
+	 * @param configurable Configurable object that need to be configured (required, not null).
+	 * @param reset Whether reset the data of the current configurable object.
+	 * @return Returns true if configuration is successful; otherwise, returns false.
+	 */
+	public boolean config(PropertiesConfigFile configFile, Configurable<T> configurable, boolean reset) {
+		return this.load(configFile) && this.config(configurable, reset);
+	}
+
 	// --------------------------- Abstract method ----------------------------
 
 	/**

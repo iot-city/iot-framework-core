@@ -178,6 +178,16 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
 		T type = event.getType();
 		if (type == null) return 0;
+		return publishType(type, event);
+	}
+
+	/**
+	 * Publish an event with specified type.
+	 * @param type Event type.
+	 * @param event The event object that needs to be published.
+	 * @return Number of successful execution of this event type.
+	 */
+	protected int publishType(T type, E event) {
 		BaseListenerContainer<T, E, L> context = map.get(type);
 		if (context == null) return 0;
 		BaseListenerContainer<T, E, L>.ListenerObject[] listeners = context.listeners();
