@@ -24,11 +24,13 @@ public class ClassEventTest extends TestCase {
 
 			@Override
 			public boolean onEvent(ClassEvent event) {
-				logger.info("Object event: " + event.getType());
+				logger.info("Object event 2: " + event.getType());
+				PropertiesConfigFile file = event.getData();
+				logger.info(file.file);
 				return true;
 			}
 
-		});
+		}, 2);
 
 		pub.addListener(PropertiesConfigFile.class, new ClassEventListener() {
 

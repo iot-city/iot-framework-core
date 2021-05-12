@@ -25,11 +25,11 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	/**
 	 * The listener map.
 	 */
-	private final Map<L, ListenerObject> map = new HashMap<>();
+	private final Map<L, BaseListenerObject<T, E, L>> map = new HashMap<>();
 	/**
 	 * The listener array.
 	 */
-	private ListenerObject[] listeners = null;
+	private BaseListenerObject<T, E, L>[] listeners = null;
 	/**
 	 * The listener data status for modifying.
 	 */
@@ -40,10 +40,10 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	/**
 	 * Event listener comparator for priority (the priority with the highest value is called first).
 	 */
-	private final Comparator<ListenerObject> COMPARATOR = new Comparator<ListenerObject>() {
+	private final Comparator<BaseListenerObject<T, E, L>> COMPARATOR = new Comparator<BaseListenerObject<T, E, L>>() {
 
 		@Override
-		public int compare(BaseListenerContainer<T, E, L>.ListenerObject o1, BaseListenerContainer<T, E, L>.ListenerObject o2) {
+		public int compare(BaseListenerObject<T, E, L> o1, BaseListenerObject<T, E, L> o2) {
 			if (o1.priority == o2.priority) return 0;
 			return o1.priority < o2.priority ? 1 : -1;
 		}
@@ -66,7 +66,7 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	 */
 	void add(L listener, int priority) {
 		synchronized (lock) {
-			map.put(listener, new ListenerObject(listener, priority));
+			map.put(listener, new BaseListenerObject<T, E, L>(listener, priority));
 			if (!modified) modified = true;
 		}
 	}
@@ -99,12 +99,12 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	/**
 	 * Gets listeners from container.
 	 */
-	ListenerObject[] listeners() {
+	BaseListenerObject<T, E, L>[] listeners() {
 		if (modified) {
 			synchronized (lock) {
 				if (modified) {
 					@SuppressWarnings("unchecked")
-					ListenerObject[] values = (ListenerObject[]) Array.newInstance(ListenerObject.class, map.size());
+					BaseListenerObject<T, E, L>[] values = (BaseListenerObject<T, E, L>[]) Array.newInstance(BaseListenerObject.class, map.size());
 					values = map.values().toArray(values);
 					Arrays.sort(values, COMPARATOR);
 					listeners = values;
@@ -113,36 +113,6 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 			}
 		}
 		return listeners;
-	}
-
-	// --------------------------- Inner object class ----------------------------
-
-	/**
-	 * Event listener object class for container.
-	 * @author ardon
-	 * @date 2021-05-08
-	 */
-	final class ListenerObject {
-
-		/**
-		 * Event listener instance (not null).
-		 */
-		final L listener;
-		/**
-		 * The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
-		 */
-		final int priority;
-
-		/**
-		 * Constructor for listener object class.
-		 * @param listener Event listener instance.
-		 * @param priority The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
-		 */
-		ListenerObject(L listener, int priority) {
-			this.listener = listener;
-			this.priority = priority;
-		}
-
 	}
 
 }

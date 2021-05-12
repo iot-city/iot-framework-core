@@ -1,8 +1,11 @@
 package org.iotcity.iot.framework.core.event.clazz;
 
+import java.util.List;
+
 import org.iotcity.iot.framework.IoTFramework;
 import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.event.BaseEventPublisher;
+import org.iotcity.iot.framework.core.event.BaseListenerObject;
 
 /**
  * Class event publisher is used to publish class event data processing.
@@ -18,7 +21,7 @@ public class ClassEventPublisher extends BaseEventPublisher<Class<?>, ClassEvent
 
 	/**
 	 * Constructor for class event publisher is used to publish class event data processing.
-	 * @param publishIncludingSuperClass Whether including super class when publish an event.
+	 * @param publishIncludingSuperClass Whether including super class listeners when publish an event.
 	 */
 	public ClassEventPublisher(boolean publishIncludingSuperClass) {
 		this.includingSuperClass = publishIncludingSuperClass;
@@ -45,15 +48,13 @@ public class ClassEventPublisher extends BaseEventPublisher<Class<?>, ClassEvent
 	public int publish(ClassEvent event) throws IllegalArgumentException {
 		if (includingSuperClass) {
 			if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
-			Class<?> type = event.getType();
 			int count = 0;
-			while (type != null) {
-				// Publish event with specified type.
-				count += publishType(type, event);
-				// Check event status.
+			List<BaseListenerObject<Class<?>, ClassEvent, ClassEventListener>> listeners = getClassListeners(event.getType());
+			for (BaseListenerObject<Class<?>, ClassEvent, ClassEventListener> object : listeners) {
 				if (event.isStopped()) break;
-				// Publish event to all super class listeners.
-				type = type.getSuperclass();
+				if (object.listener.onEvent(event)) {
+					count++;
+				}
 			}
 			return count;
 		} else {

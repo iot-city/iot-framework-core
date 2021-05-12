@@ -1,6 +1,10 @@
 package org.iotcity.iot.framework.core.event;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.iotcity.iot.framework.IoTFramework;
@@ -31,6 +35,21 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * The event listener to create an event listener (optional, it can be set to null when using {@link IoTFramework }.getGlobalInstanceFactory() to create an instance).
 	 */
 	private F factory = null;
+
+	// --------------------------- EventListener comparator ----------------------------
+
+	/**
+	 * Event listener comparator for priority (the priority with the highest value is called first).
+	 */
+	private final Comparator<BaseListenerObject<T, E, L>> COMPARATOR = new Comparator<BaseListenerObject<T, E, L>>() {
+
+		@Override
+		public int compare(BaseListenerObject<T, E, L> o1, BaseListenerObject<T, E, L> o2) {
+			if (o1.priority == o2.priority) return 0;
+			return o1.priority < o2.priority ? 1 : -1;
+		}
+
+	};
 
 	// --------------------------- Listener factory methods ----------------------------
 
@@ -176,30 +195,52 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	@Override
 	public int publish(E event) throws IllegalArgumentException {
 		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
-		T type = event.getType();
-		if (type == null) return 0;
-		return publishType(type, event);
-	}
-
-	/**
-	 * Publish an event with specified type.
-	 * @param type Event type.
-	 * @param event The event object that needs to be published.
-	 * @return Number of successful execution of this event type.
-	 */
-	protected int publishType(T type, E event) {
-		BaseListenerContainer<T, E, L> context = map.get(type);
-		if (context == null) return 0;
-		BaseListenerContainer<T, E, L>.ListenerObject[] listeners = context.listeners();
-		if (listeners.length == 0) return 0;
+		BaseListenerObject<T, E, L>[] listeners = getTypeListeners(event.getType());
+		if (listeners == null) return 0;
 		int count = 0;
-		for (BaseListenerContainer<T, E, L>.ListenerObject object : listeners) {
+		for (BaseListenerObject<T, E, L> object : listeners) {
 			if (event.isStopped()) break;
 			if (object.listener.onEvent(event)) {
 				count++;
 			}
 		}
 		return count;
+	}
+
+	// --------------------------- Protected object methods ----------------------------
+
+	/**
+	 * Get listeners by specified type (returns null if invalid).
+	 * @param type The event type.
+	 * @return Listeners array.
+	 */
+	protected BaseListenerObject<T, E, L>[] getTypeListeners(T type) {
+		if (type == null) return null;
+		BaseListenerContainer<T, E, L> context = map.get(type);
+		return context == null ? null : context.listeners();
+	}
+
+	/**
+	 * Get class event listeners by type (returns including super class listeners, not null).
+	 * @param type The class event type.
+	 * @return Listeners list.
+	 */
+	protected List<BaseListenerObject<T, E, L>> getClassListeners(Class<?> type) {
+		List<BaseListenerObject<T, E, L>> list = new ArrayList<>();
+		int typesCount = 0;
+		while (type != null) {
+			BaseListenerContainer<T, E, L> context = map.get(type);
+			if (context != null) {
+				BaseListenerObject<T, E, L>[] listeners = context.listeners();
+				if (listeners.length > 0) {
+					typesCount++;
+					list.addAll(Arrays.asList(listeners));
+				}
+			}
+			type = type.getSuperclass();
+		}
+		if (typesCount > 1 && list.size() > 0) list.sort(COMPARATOR);
+		return list;
 	}
 
 }

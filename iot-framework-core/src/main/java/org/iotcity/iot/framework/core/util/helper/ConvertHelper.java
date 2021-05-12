@@ -1,5 +1,6 @@
 package org.iotcity.iot.framework.core.util.helper;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -22,6 +23,31 @@ public final class ConvertHelper {
 	 * Hex characters
 	 */
 	private static final String HEX_CHARS = "0123456789ABCDEF";
+
+	// --------------------------- Public methods for Array ----------------------------
+
+	/**
+	 * Merge all arrays (returns null when arrays is null or zero length).
+	 * @param <T> The array component type.
+	 * @param arrays Arrays object.
+	 * @return Merge result array.
+	 */
+	public static <T> T[] mergeArrays(final T[][] arrays) {
+		if (arrays == null || arrays.length == 0) return null;
+		int length = 0;
+		for (T[] ts : arrays) {
+			length += ts.length;
+		}
+		final Class<?> type = arrays[0].getClass().getComponentType();
+		int startIndex = 0;
+		@SuppressWarnings("unchecked")
+		final T[] results = (T[]) Array.newInstance(type, length);
+		for (int i = 0; i < arrays.length; i++) {
+			if (i > 0) startIndex += arrays[i - 1].length;
+			System.arraycopy(arrays[i], 0, results, startIndex, arrays[i].length);
+		}
+		return results;
+	}
 
 	// --------------------------- Public methods for HEX ----------------------------
 
