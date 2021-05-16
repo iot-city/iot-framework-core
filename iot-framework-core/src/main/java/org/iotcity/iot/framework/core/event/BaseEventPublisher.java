@@ -1,5 +1,8 @@
 package org.iotcity.iot.framework.core.event;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -23,6 +26,18 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 
 	// --------------------------- Private object fields ----------------------------
 
+	/**
+	 * The actual class of type.
+	 */
+	protected final Type typeClass;
+	/**
+	 * The actual class of event.
+	 */
+	protected final Class<E> eventClass;
+	/**
+	 * The actual class of listener.
+	 */
+	protected final Class<L> listenerClass;
 	/**
 	 * Lock for listener map.
 	 */
@@ -50,6 +65,19 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 		}
 
 	};
+
+	// --------------------------- Constructor ----------------------------
+
+	/**
+	 * Constructor for event publisher.
+	 */
+	@SuppressWarnings("unchecked")
+	public BaseEventPublisher() {
+		Type[] types = ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments();
+		typeClass = types[0];
+		eventClass = (Class<E>) types[1];
+		listenerClass = (Class<L>) types[2];
+	}
 
 	// --------------------------- Listener factory methods ----------------------------
 
@@ -160,6 +188,23 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	}
 
 	/**
+	 * Get listeners by specified type (returns null when no matching listener is found).
+	 * @param type The event type (required, not null).
+	 * @return Event listeners to process the event data after receiving the event.
+	 */
+	public L[] getListeners(T type) {
+		BaseListenerObject<T, E, L>[] objs = getTypeListeners(type);
+		if (objs == null || objs.length == 0) return null;
+		@SuppressWarnings("unchecked")
+		L[] listeners = (L[]) Array.newInstance(listenerClass, objs.length);
+		for (int i = 0, c = objs.length; i < c; i++) {
+			BaseListenerObject<T, E, L> obj = objs[i];
+			listeners[i] = obj.listener;
+		}
+		return listeners;
+	}
+
+	/**
 	 * Remove a listener from publisher by specified event type.
 	 * @param type The event type (required, not null).
 	 * @param listener The event listener object to be removed (required, not null).
@@ -239,7 +284,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 			}
 			type = type.getSuperclass();
 		}
-		if (typesCount > 1 && list.size() > 0) list.sort(COMPARATOR);
+		if (typesCount > 1) list.sort(COMPARATOR);
 		return list;
 	}
 

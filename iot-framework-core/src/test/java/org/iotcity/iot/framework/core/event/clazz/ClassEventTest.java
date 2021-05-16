@@ -55,6 +55,9 @@ public class ClassEventTest extends TestCase {
 			}
 
 		}, 1);
+		ClassEventListener[] listeners = pub.getListeners(PropertiesConfigFile.class);
+		logger.info("Listeners of PropertiesConfigFile.class: " + listeners.length);
+
 		int count = pub.publish(new ClassEvent(this, new PropertiesConfigFile("abc", null, true)));
 		logger.info("Event execution count: " + count);
 
