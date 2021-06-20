@@ -62,11 +62,12 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	/**
 	 * Add a listener to the container.
 	 * @param listener Event listener instance (not null).
-	 * @param priority The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
+	 * @param priority The execution order priority for the listener (optional, the priority with the highest value is called first, 0 by default).
+	 * @param filterEventClass Specifies the class type of event to listen on (optional, the listener will respond to events of the currently specified event type and inherited subclass types).
 	 */
-	void add(L listener, int priority) {
+	void add(L listener, int priority, Class<? extends E> filterEventClass) {
 		synchronized (lock) {
-			map.put(listener, new BaseListenerObject<T, E, L>(listener, priority));
+			map.put(listener, new BaseListenerObject<T, E, L>(listener, priority, filterEventClass));
 			if (!modified) modified = true;
 		}
 	}

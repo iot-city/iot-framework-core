@@ -44,8 +44,11 @@ public final class BusDataListenerParser implements AnnotationParser {
 		BusEventListener listener = publisher.getListenerInstanceFromFactory(clazz);
 		if (listener == null) return;
 
+		// Get filter event
+		Class<? extends BusEvent> filterEvent = annotation.filterEvent() == BusEvent.class ? null : annotation.filterEvent();
+
 		// Add to publisher
-		publisher.addListener(dataType, listener, annotation.priority());
+		publisher.addListener(dataType, listener, annotation.priority(), filterEvent);
 	}
 
 }

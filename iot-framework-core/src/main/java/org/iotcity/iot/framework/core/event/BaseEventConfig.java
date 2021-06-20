@@ -19,9 +19,13 @@ public class BaseEventConfig<T, E extends Event<T>, L extends EventListener<T, E
 	 */
 	public L listener;
 	/**
-	 * The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
+	 * The execution order priority for the listener (optional, the priority with the highest value is called first, 0 by default).
 	 */
 	public int priority;
+	/**
+	 * The class type of event to listen on (optional, the listener will respond to events of the currently specified event type and inherited subclass types).
+	 */
+	public Class<? extends E> filterEventClass;
 
 	/**
 	 * Constructor for event configure data.
@@ -33,12 +37,14 @@ public class BaseEventConfig<T, E extends Event<T>, L extends EventListener<T, E
 	 * Constructor for event configure data.
 	 * @param type The event type (required, not null).
 	 * @param listener Event listener object (required, not null).
-	 * @param priority The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
+	 * @param priority The execution order priority for the listener (optional, the priority with the highest value is called first, 0 by default).
+	 * @param filterEventClass Specifies the class type of event to listen on (optional, the listener will respond to events of the currently specified event type and inherited subclass types).
 	 */
-	public BaseEventConfig(T type, L listener, int priority) {
+	public BaseEventConfig(T type, L listener, int priority, Class<? extends E> filterEventClass) {
 		this.type = type;
 		this.listener = listener;
 		this.priority = priority;
+		this.filterEventClass = filterEventClass;
 	}
 
 }

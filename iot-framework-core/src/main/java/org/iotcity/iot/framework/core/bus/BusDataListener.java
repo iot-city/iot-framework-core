@@ -26,10 +26,28 @@ import java.lang.annotation.Target;
  * </pre>
  * 
  * <br/>
- * Example 2, set up a multi-options data event listener for class:<br/>
+ * Example 2, set up a filter event listener for data class:<br/>
  * 
  * <pre>
- *    &#064;BusDataListener(value = ExampleEventData.class, priority = 1, enabled = true)
+ *    &#064;BusDataListener(value = ExampleEventData.class, filterEvent = ExampleEvent.clss)
+ *    public class ExampleEventListener implements BusEventListener {
+ *    
+ *        &#64;Override
+ *        public boolean onEvent(BusEvent event) {
+ *            ExampleEvent exampleEvent = (ExampleEvent) event;
+ *            String name = exampleEvent.getEaxmpleName();
+ *            ExampleEventData data = exampleEvent.getData();
+ *            ...
+ *        }
+ *    
+ *    }
+ * </pre>
+ * 
+ * <br/>
+ * Example 3, set up a multi-options data event listener for class:<br/>
+ * 
+ * <pre>
+ *    &#064;BusDataListener(value = ExampleEventData.class, priority = 1, filterEvent = ExampleEvent.clss, enabled = true)
  *    public class ExampleEventListener implements BusEventListener {
  *    
  *        &#64;Override
@@ -52,14 +70,19 @@ import java.lang.annotation.Target;
 public @interface BusDataListener {
 
 	/**
-	 * The data class type in event object to listen on.
+	 * The data class type in event object to listen on (required, the listener will respond to events of the currently specified data type and inherited subclass types).
 	 */
 	Class<?> value();
 
 	/**
-	 * The execution order priority for this listener (the priority with the highest value is called first, 0 by default).
+	 * The execution order priority for this listener (optional, the priority with the highest value is called first, 0 by default).
 	 */
 	int priority() default 0;
+
+	/**
+	 * The class type of event to listen on (optional, the listener will respond to events of the currently specified event type and inherited subclass types).
+	 */
+	Class<? extends BusEvent> filterEvent() default BusEvent.class;
 
 	/**
 	 * Whether the bus data listener is enabled (optional, true by default).

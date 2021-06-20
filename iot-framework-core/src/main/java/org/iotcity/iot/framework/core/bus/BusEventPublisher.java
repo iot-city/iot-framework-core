@@ -35,9 +35,13 @@ public final class BusEventPublisher extends BaseEventPublisher<Class<?>, BusEve
 	public int publish(BusEvent event) throws IllegalArgumentException {
 		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
 		int count = 0;
+		Class<?> eventClass = event.getClass();
 		List<BaseListenerObject<Class<?>, BusEvent, BusEventListener>> listeners = getClassListeners(event.getType());
 		for (BaseListenerObject<Class<?>, BusEvent, BusEventListener> object : listeners) {
 			if (event.isStopped()) break;
+			if (object.filterEventClass != null && !object.filterEventClass.isAssignableFrom(eventClass)) {
+				continue;
+			}
 			if (object.listener.onEvent(event)) {
 				count++;
 			}

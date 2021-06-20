@@ -113,7 +113,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 		if (reset) this.clearListeners();
 		for (BaseEventConfig<T, E, L> config : data) {
 			if (config == null) continue;
-			addListener(config.type, config.listener, config.priority);
+			addListener(config.type, config.listener, config.priority, config.filterEventClass);
 		}
 		return true;
 	}
@@ -142,16 +142,27 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param listener The event listener object.
 	 */
 	public void addListener(T type, L listener) {
-		this.addListener(type, listener, 0);
+		this.addListener(type, listener, 0, null);
+	}
+
+	/**
+	 * Add a listener to publisher, the priority value is set to 0 by default.
+	 * @param type The event type.
+	 * @param listener The event listener object.
+	 * @param priority The execution order priority for the listener (optional, the priority with the highest value is called first, 0 by default).
+	 */
+	public void addListener(T type, L listener, int priority) {
+		this.addListener(type, listener, priority, null);
 	}
 
 	/**
 	 * Add a listener to publisher.
 	 * @param type The event type (required, not null).
 	 * @param listener The event listener object (required, not null).
-	 * @param priority The execution order priority for the listener (the priority with the highest value is called first, 0 by default).
+	 * @param priority The execution order priority for the listener (optional, the priority with the highest value is called first, 0 by default).
+	 * @param filterEventClass Specifies the class type of event to listen on (optional, the listener will respond to events of the currently specified event type and inherited subclass types).
 	 */
-	public void addListener(T type, L listener, int priority) {
+	public void addListener(T type, L listener, int priority, Class<? extends E> filterEventClass) {
 		if (type == null || listener == null) return;
 		BaseListenerContainer<T, E, L> context = map.get(type);
 		if (context == null) {
@@ -163,7 +174,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 				}
 			}
 		}
-		context.add(listener, priority);
+		context.add(listener, priority, filterEventClass);
 	}
 
 	/**
@@ -243,8 +254,12 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 		BaseListenerObject<T, E, L>[] listeners = getTypeListeners(event.getType());
 		if (listeners == null) return 0;
 		int count = 0;
+		Class<?> eventClass = event.getClass();
 		for (BaseListenerObject<T, E, L> object : listeners) {
 			if (event.isStopped()) break;
+			if (object.filterEventClass != null && !object.filterEventClass.isAssignableFrom(eventClass)) {
+				continue;
+			}
 			if (object.listener.onEvent(event)) {
 				count++;
 			}
