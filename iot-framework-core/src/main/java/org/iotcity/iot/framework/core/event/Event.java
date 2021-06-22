@@ -21,6 +21,21 @@ public interface Event<T> {
 	T getType();
 
 	/**
+	 * Indicates whether the subsequent execution of this event is allowed to be cancelled.
+	 */
+	boolean isCancelable();
+
+	/**
+	 * Cancels subsequent execution corresponding to this event.
+	 */
+	void cancelEvent();
+
+	/**
+	 * Indicates whether the logic after execution of this event has been cancelled.
+	 */
+	boolean isCancelled();
+
+	/**
 	 * Stop the event propagation immediately.
 	 */
 	void stopPropagation();

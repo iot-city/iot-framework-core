@@ -24,6 +24,14 @@ public class BaseEvent<T> extends EventObject implements Event<T> {
 	 */
 	private final T type;
 	/**
+	 * Indicates whether the subsequent execution of an event is allowed to be cancelled.
+	 */
+	private final boolean cancelable;
+	/**
+	 * Indicates whether the logic after execution of this event has been cancelled.
+	 */
+	private boolean cancelled;
+	/**
 	 * Whether the event propagation has stopped.
 	 */
 	private boolean stopped;
@@ -38,12 +46,14 @@ public class BaseEvent<T> extends EventObject implements Event<T> {
 	 * Constructor for a basic event object.
 	 * @param source The object on which the Event initially occurred (required, not null).
 	 * @param type The type of data event to listen on (required, not null).
+	 * @param cancelable Indicates whether the subsequent execution of an event is allowed to be cancelled.
 	 * @throws IllegalArgumentException An error will be thrown when the parameter "source" or "type" is null.
 	 */
-	public BaseEvent(Object source, T type) throws IllegalArgumentException {
+	public BaseEvent(Object source, T type, boolean cancelable) throws IllegalArgumentException {
 		super(source);
 		if (type == null) throw new IllegalArgumentException("Parameter type can not be null!");
 		this.type = type;
+		this.cancelable = cancelable;
 		this.time = System.currentTimeMillis();
 	}
 
@@ -52,6 +62,21 @@ public class BaseEvent<T> extends EventObject implements Event<T> {
 	@Override
 	public T getType() {
 		return type;
+	}
+
+	@Override
+	public boolean isCancelable() {
+		return cancelable;
+	}
+
+	@Override
+	public void cancelEvent() {
+		if (cancelable) cancelled = true;
+	}
+
+	@Override
+	public boolean isCancelled() {
+		return cancelled;
 	}
 
 	@Override

@@ -10,7 +10,7 @@ public class ExampleBusEvent extends BusEvent {
 	private final String name;
 
 	public ExampleBusEvent(Object source, Object data, String name) throws IllegalArgumentException {
-		super(source, data);
+		super(source, data, false);
 		this.name = name;
 	}
 

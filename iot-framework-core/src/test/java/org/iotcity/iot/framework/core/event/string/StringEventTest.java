@@ -52,7 +52,7 @@ public class StringEventTest extends TestCase {
 			}
 
 		}, 2);
-		int count = pub.publish(new StringEvent(this, "event_type_1", new PropertiesConfigFile("abc", null, true)));
+		int count = pub.publish(new StringEvent(this, "event_type_1", new PropertiesConfigFile("abc", null, true), false));
 		logger.info("Event execution count: " + count);
 
 		logger.info("------------------------- STRING EVENT TEST COMPLETED -------------------------");
