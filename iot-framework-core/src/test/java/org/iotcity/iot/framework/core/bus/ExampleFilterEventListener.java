@@ -16,7 +16,7 @@ public class ExampleFilterEventListener implements BusEventListener {
 	public boolean onEvent(BusEvent event) throws Exception {
 		ExampleBusEvent exampleEvent = (ExampleBusEvent) event;
 		logger.info("On filter event name: " + exampleEvent.getName());
-		ExampleEventData data = exampleEvent.getData();
+		ExampleEventData data = exampleEvent.getEventData();
 		logger.info("On filter event data: " + data.name + "; desc: " + data.desc);
 		return true;
 	}

@@ -17,8 +17,8 @@ import java.lang.annotation.Target;
  *    public class ExampleEventListener implements BusEventListener {
  *    
  *        &#64;Override
- *        public boolean onEvent(BusEvent event) {
- *            ExampleEventData data = event.getData();
+ *        public boolean onEvent(BusEvent event) throws Exception {
+ *            ExampleEventData data = event.getEventData();
  *            ...
  *        }
  *    
@@ -33,10 +33,10 @@ import java.lang.annotation.Target;
  *    public class ExampleEventListener implements BusEventListener {
  *    
  *        &#64;Override
- *        public boolean onEvent(BusEvent event) {
+ *        public boolean onEvent(BusEvent event) throws Exception {
  *            ExampleEvent exampleEvent = (ExampleEvent) event;
  *            String name = exampleEvent.getEaxmpleName();
- *            ExampleEventData data = exampleEvent.getData();
+ *            ExampleEventData data = exampleEvent.getEventData();
  *            ...
  *        }
  *    
@@ -51,8 +51,8 @@ import java.lang.annotation.Target;
  *    public class ExampleEventListener implements BusEventListener {
  *    
  *        &#64;Override
- *        public boolean onEvent(BusEvent event) {
- *            ExampleEventData data = event.getData();
+ *        public boolean onEvent(BusEvent event) throws Exception {
+ *            ExampleEventData data = event.getEventData();
  *            ...
  *        }
  *    

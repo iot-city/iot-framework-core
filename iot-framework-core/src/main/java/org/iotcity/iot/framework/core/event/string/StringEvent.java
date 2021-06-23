@@ -15,11 +15,6 @@ public class StringEvent extends BaseEvent<String> {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * The data of this event object (optional, it can be null value when not needed).
-	 */
-	private final Object data;
-
-	/**
 	 * Constructor for an event object without event data.
 	 * @param source The object on which the Event initially occurred (required, not null).
 	 * @param type The type of data event to listen on (required, not null).
@@ -27,8 +22,7 @@ public class StringEvent extends BaseEvent<String> {
 	 * @throws IllegalArgumentException An error will be thrown when the parameter "source" or "type" is null.
 	 */
 	public StringEvent(Object source, String type, boolean cancelable) throws IllegalArgumentException {
-		super(source, type, cancelable);
-		this.data = null;
+		super(source, type, null, cancelable);
 	}
 
 	/**
@@ -40,18 +34,7 @@ public class StringEvent extends BaseEvent<String> {
 	 * @throws IllegalArgumentException An error will be thrown when the parameter "source" or "type" is null.
 	 */
 	public StringEvent(Object source, String type, Object data, boolean cancelable) throws IllegalArgumentException {
-		super(source, type, cancelable);
-		this.data = data;
-	}
-
-	/**
-	 * Gets data of this event object (optional, it can be null value when not needed).
-	 * @param <T> The class type of event data.
-	 */
-	public <T> T getData() {
-		@SuppressWarnings("unchecked")
-		T tdata = (T) data;
-		return tdata;
+		super(source, type, data, cancelable);
 	}
 
 }

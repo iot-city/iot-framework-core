@@ -12,10 +12,9 @@ public interface EventPublisher<T, E extends Event<T>> {
 	/**
 	 * Notifies all listeners that match the current event to execute this event.
 	 * @param event The event object that needs to be published (required, not null).
-	 * @return Number of successful execution of this event (the return value is 0 when no event is executed).
+	 * @return The event object that has been executed (returns not null).
 	 * @throws IllegalArgumentException An error will be thrown when parameter "event" is null.
-	 * @throws Exception Throw an exception when an error is encountered.
 	 */
-	int publish(E event) throws IllegalArgumentException, Exception;
+	E publish(E event) throws IllegalArgumentException;
 
 }

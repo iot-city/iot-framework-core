@@ -17,19 +17,14 @@ public class BusEventTest extends TestCase {
 
 		IoTFramework.init();
 
-		try {
-			// normal event data1
-			IoTFramework.getBusEventPublisher().publish(new BusEvent(this, new ExampleEventData("Name 1", "Desc 1"), false));
+		// normal event data1
+		IoTFramework.getBusEventPublisher().publish(new BusEvent(this, new ExampleEventData("Name 1", "Desc 1"), false));
 
-			// normal event data2
-			IoTFramework.getBusEventPublisher().publish(new BusEvent(this, new ExampleEventData2("Name 2", "Desc 2"), false));
+		// normal event data2
+		IoTFramework.getBusEventPublisher().publish(new BusEvent(this, new ExampleEventData2("Name 2", "Desc 2"), false));
 
-			// specified filter event
-			IoTFramework.getBusEventPublisher().publish(new ExampleBusEvent(this, new ExampleEventData("Name for filter", "Desc for filter"), "example"));
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// specified filter event
+		IoTFramework.getBusEventPublisher().publish(new ExampleBusEvent(this, new ExampleEventData("Name for filter", "Desc for filter"), "example"));
 
 		JavaHelper.log("------------------------- BUS EVENT TEST COMPLETED -------------------------");
 

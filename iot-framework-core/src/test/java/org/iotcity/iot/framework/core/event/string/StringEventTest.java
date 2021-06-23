@@ -23,8 +23,8 @@ public class StringEventTest extends TestCase {
 
 			@Override
 			public boolean onEvent(StringEvent event) throws Exception {
-				logger.info("priority 0: " + event.getType());
-				PropertiesConfigFile file = event.getData();
+				logger.info("priority 0: " + event.getEventType());
+				PropertiesConfigFile file = event.getEventData();
 				logger.info(file.file);
 				return true;
 			}
@@ -34,8 +34,8 @@ public class StringEventTest extends TestCase {
 
 			@Override
 			public boolean onEvent(StringEvent event) throws Exception {
-				logger.info("priority 1: " + event.getType());
-				PropertiesConfigFile file = event.getData();
+				logger.info("priority 1: " + event.getEventType());
+				PropertiesConfigFile file = event.getEventData();
 				logger.info(file.file);
 				return true;
 			}
@@ -45,19 +45,16 @@ public class StringEventTest extends TestCase {
 
 			@Override
 			public boolean onEvent(StringEvent event) throws Exception {
-				logger.info("priority 2: " + event.getType());
-				PropertiesConfigFile file = event.getData();
+				logger.info("priority 2: " + event.getEventType());
+				PropertiesConfigFile file = event.getEventData();
 				logger.info(file.file);
 				return true;
 			}
 
 		}, 2);
-		try {
-			int count = pub.publish(new StringEvent(this, "event_type_1", new PropertiesConfigFile("abc", null, true), false));
-			logger.info("Event execution count: " + count);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
+		StringEvent event = pub.publish(new StringEvent(this, "event_type_1", new PropertiesConfigFile("abc", null, true), false));
+		logger.info("Event execution count: " + event.getExecutionCount());
 
 		logger.info("------------------------- STRING EVENT TEST COMPLETED -------------------------");
 

@@ -249,22 +249,25 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	}
 
 	@Override
-	public int publish(E event) throws IllegalArgumentException, Exception {
+	public E publish(E event) throws IllegalArgumentException {
 		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
-		BaseListenerObject<T, E, L>[] listeners = getTypeListeners(event.getType());
-		if (listeners == null) return 0;
-		int count = 0;
+		BaseListenerObject<T, E, L>[] listeners = getTypeListeners(event.getEventType());
+		if (listeners == null) return event;
 		Class<?> eventClass = event.getClass();
 		for (BaseListenerObject<T, E, L> object : listeners) {
 			if (event.isStopped()) break;
 			if (object.filterEventClass != null && !object.filterEventClass.isAssignableFrom(eventClass)) {
 				continue;
 			}
-			if (object.listener.onEvent(event)) {
-				count++;
+			try {
+				if (object.listener.onEvent(event)) {
+					event.addExecutionCount();
+				}
+			} catch (Exception e) {
+				event.addException(e);
 			}
 		}
-		return count;
+		return event;
 	}
 
 	// --------------------------- Protected object methods ----------------------------

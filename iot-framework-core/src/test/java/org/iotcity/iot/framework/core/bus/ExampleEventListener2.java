@@ -14,7 +14,7 @@ public class ExampleEventListener2 implements BusEventListener {
 
 	@Override
 	public boolean onEvent(BusEvent event) throws Exception {
-		ExampleEventData2 data = event.getData();
+		ExampleEventData2 data = event.getEventData();
 		logger.info("On bus event data2: " + data.name + "; desc: " + data.desc);
 		return true;
 	}
