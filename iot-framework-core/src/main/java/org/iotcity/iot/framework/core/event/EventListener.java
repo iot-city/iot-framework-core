@@ -13,7 +13,8 @@ public interface EventListener<T, E extends Event<T>> extends java.util.EventLis
 	 * Processing when data events are received.
 	 * @param event Event object (not null).
 	 * @return Returns true if the event has been executed successfully; otherwise, returns false.
+	 * @throws Exception Throw an exception when an error is encountered.
 	 */
-	boolean onEvent(E event);
+	boolean onEvent(E event) throws Exception;
 
 }

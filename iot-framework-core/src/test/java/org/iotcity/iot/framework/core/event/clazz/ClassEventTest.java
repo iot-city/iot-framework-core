@@ -23,7 +23,7 @@ public class ClassEventTest extends TestCase {
 		pub.addListener(Object.class, new ClassEventListener() {
 
 			@Override
-			public boolean onEvent(ClassEvent event) {
+			public boolean onEvent(ClassEvent event) throws Exception {
 				logger.info("Object event 2: " + event.getType());
 				PropertiesConfigFile file = event.getData();
 				logger.info(file.file);
@@ -35,7 +35,7 @@ public class ClassEventTest extends TestCase {
 		pub.addListener(PropertiesConfigFile.class, new ClassEventListener() {
 
 			@Override
-			public boolean onEvent(ClassEvent event) {
+			public boolean onEvent(ClassEvent event) throws Exception {
 				logger.info("priority 0: " + event.getType());
 				PropertiesConfigFile file = event.getData();
 				logger.info(file.file);
@@ -46,7 +46,7 @@ public class ClassEventTest extends TestCase {
 		pub.addListener(PropertiesConfigFile.class, new ClassEventListener() {
 
 			@Override
-			public boolean onEvent(ClassEvent event) {
+			public boolean onEvent(ClassEvent event) throws Exception {
 				logger.info("priority 1: " + event.getType());
 				PropertiesConfigFile file = event.getData();
 				logger.info(file.file);
@@ -58,8 +58,12 @@ public class ClassEventTest extends TestCase {
 		ClassEventListener[] listeners = pub.getListeners(PropertiesConfigFile.class);
 		logger.info("Listeners of PropertiesConfigFile.class: " + listeners.length);
 
-		int count = pub.publish(new ClassEvent(this, new PropertiesConfigFile("abc", null, true), false));
-		logger.info("Event execution count: " + count);
+		try {
+			int count = pub.publish(new ClassEvent(this, new PropertiesConfigFile("abc", null, true), false));
+			logger.info("Event execution count: " + count);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		logger.info("------------------------- CLASS EVENT TEST COMPLETED -------------------------");
 

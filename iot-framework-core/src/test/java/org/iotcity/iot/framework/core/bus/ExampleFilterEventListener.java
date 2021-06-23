@@ -13,7 +13,7 @@ public class ExampleFilterEventListener implements BusEventListener {
 	private final Logger logger = FrameworkCore.getLogger();
 
 	@Override
-	public boolean onEvent(BusEvent event) {
+	public boolean onEvent(BusEvent event) throws Exception {
 		ExampleBusEvent exampleEvent = (ExampleBusEvent) event;
 		logger.info("On filter event name: " + exampleEvent.getName());
 		ExampleEventData data = exampleEvent.getData();

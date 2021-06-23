@@ -13,7 +13,7 @@ public class ExampleEventListener implements BusEventListener {
 	private final Logger logger = FrameworkCore.getLogger();
 
 	@Override
-	public boolean onEvent(BusEvent event) {
+	public boolean onEvent(BusEvent event) throws Exception {
 		ExampleEventData data = event.getData();
 		logger.info("On bus event data: " + data.name + "; desc: " + data.desc);
 		return true;

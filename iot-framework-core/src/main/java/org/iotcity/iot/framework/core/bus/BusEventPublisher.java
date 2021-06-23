@@ -32,7 +32,7 @@ public final class BusEventPublisher extends BaseEventPublisher<Class<?>, BusEve
 	}
 
 	@Override
-	public int publish(BusEvent event) throws IllegalArgumentException {
+	public int publish(BusEvent event) throws IllegalArgumentException, Exception {
 		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
 		int count = 0;
 		Class<?> eventClass = event.getClass();

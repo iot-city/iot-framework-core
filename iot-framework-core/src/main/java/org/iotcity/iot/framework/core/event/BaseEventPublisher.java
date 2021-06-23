@@ -249,7 +249,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	}
 
 	@Override
-	public int publish(E event) throws IllegalArgumentException {
+	public int publish(E event) throws IllegalArgumentException, Exception {
 		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
 		BaseListenerObject<T, E, L>[] listeners = getTypeListeners(event.getType());
 		if (listeners == null) return 0;
@@ -270,14 +270,14 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	// --------------------------- Protected object methods ----------------------------
 
 	/**
-	 * Get listeners by specified type (returns null if invalid).
+	 * Get listeners by specified type (returns null if there is no listener).
 	 * @param type The event type.
 	 * @return Listeners array.
 	 */
 	protected BaseListenerObject<T, E, L>[] getTypeListeners(T type) {
 		if (type == null) return null;
 		BaseListenerContainer<T, E, L> context = map.get(type);
-		return context == null ? null : context.listeners();
+		return context == null ? null : context.getListeners();
 	}
 
 	/**
@@ -291,8 +291,8 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 		while (type != null) {
 			BaseListenerContainer<T, E, L> context = map.get(type);
 			if (context != null) {
-				BaseListenerObject<T, E, L>[] listeners = context.listeners();
-				if (listeners.length > 0) {
+				BaseListenerObject<T, E, L>[] listeners = context.getListeners();
+				if (listeners != null && listeners.length > 0) {
 					typesCount++;
 					list.addAll(Arrays.asList(listeners));
 				}

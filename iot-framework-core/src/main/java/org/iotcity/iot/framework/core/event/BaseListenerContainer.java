@@ -33,7 +33,7 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	/**
 	 * The listener data status for modifying.
 	 */
-	private boolean modified = true;
+	private boolean modified = false;
 
 	// --------------------------- EventListener comparator ----------------------------
 
@@ -98,17 +98,21 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	}
 
 	/**
-	 * Gets listeners from container.
+	 * Gets listeners from container (returns null if there is no listener).
 	 */
-	BaseListenerObject<T, E, L>[] listeners() {
+	BaseListenerObject<T, E, L>[] getListeners() {
 		if (modified) {
 			synchronized (lock) {
 				if (modified) {
-					@SuppressWarnings("unchecked")
-					BaseListenerObject<T, E, L>[] values = (BaseListenerObject<T, E, L>[]) Array.newInstance(BaseListenerObject.class, map.size());
-					values = map.values().toArray(values);
-					Arrays.sort(values, COMPARATOR);
-					listeners = values;
+					if (map.size() == 0) {
+						listeners = null;
+					} else {
+						@SuppressWarnings("unchecked")
+						BaseListenerObject<T, E, L>[] values = (BaseListenerObject<T, E, L>[]) Array.newInstance(BaseListenerObject.class, map.size());
+						values = map.values().toArray(values);
+						Arrays.sort(values, COMPARATOR);
+						listeners = values;
+					}
 					modified = false;
 				}
 			}
