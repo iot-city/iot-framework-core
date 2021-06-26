@@ -47,6 +47,7 @@ public final class BusEventPublisher extends BaseEventPublisher<Class<?>, BusEve
 				}
 			} catch (Exception e) {
 				event.addException(e);
+				FrameworkCore.getLogger().error(FrameworkCore.getLocale().text("core.event.publish.err", this.getClass().getName(), e.getMessage()), e);
 			}
 		}
 		return event;

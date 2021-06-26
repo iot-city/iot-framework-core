@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iotcity.iot.framework.IoTFramework;
+import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.config.Configurable;
 
 /**
@@ -265,6 +266,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 				}
 			} catch (Exception e) {
 				event.addException(e);
+				FrameworkCore.getLogger().error(FrameworkCore.getLocale().text("core.event.publish.err", this.getClass().getName(), e.getMessage()), e);
 			}
 		}
 		return event;

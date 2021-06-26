@@ -33,7 +33,7 @@ public interface Event<T> {
 	<V> V getEventData();
 
 	/**
-	 * Add the number of times this event was successfully executed .
+	 * Add the number of times this event was successfully executed.
 	 */
 	void addExecutionCount();
 
