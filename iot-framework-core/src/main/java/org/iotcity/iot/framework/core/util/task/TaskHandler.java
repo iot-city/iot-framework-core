@@ -45,7 +45,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * The capacity of blocking queue to cache tasks when reaches the maximum of threads in the pool (1000 by default).
 	 */
-	private final int capacity;
+	private final int queueCapacity;
 	/**
 	 * The thread pool executor for executing tasks (not null).
 	 */
@@ -101,9 +101,9 @@ public final class TaskHandler implements ThreadPoolSupport {
 		this.queue = new TimerTaskQueue(this.name);
 		this.thread = new TimerTaskThread(this.name, this, queue);
 		this.executor = executor;
-		this.capacity = queueCapacity < 0 ? 1000 : queueCapacity;
+		this.queueCapacity = queueCapacity < 0 ? 1000 : queueCapacity;
 		// Logs message
-		this.thread.logger.info(thread.locale.text("core.util.task.start", this.name, executor.getCorePoolSize(), executor.getMaximumPoolSize(), executor.getKeepAliveTime(TimeUnit.SECONDS), this.capacity));
+		this.thread.logger.info(thread.locale.text("core.util.task.start", this.name, executor.getCorePoolSize(), executor.getMaximumPoolSize(), executor.getKeepAliveTime(TimeUnit.SECONDS), this.queueCapacity));
 	}
 
 	// --------------------------- Static methods ----------------------------
@@ -133,7 +133,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 		return ms - (now % ms);
 	}
 
-	// --------------------------- Public task methods ----------------------------
+	// --------------------------- Public executor methods ----------------------------
 
 	/**
 	 * Gets the task handler name.
@@ -141,6 +141,13 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 */
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * Gets the capacity of blocking queue to cache tasks when reaches the maximum of threads in the pool.
+	 */
+	public int getQueueCapacity() {
+		return queueCapacity;
 	}
 
 	@Override
@@ -168,7 +175,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 		// Check parameter and status.
 		if (runnable == null || destroyed) return false;
 		// Check queue size.
-		if (capacity > 0 && executor.getQueue().size() > capacity) return false;
+		if (queueCapacity > 0 && executor.getQueue().size() > queueCapacity) return false;
 
 		// Define the runner.
 		Runnable runner;
@@ -380,7 +387,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	}
 
 	/**
-	 * Add a task to be executed after the specified delay time, and then execute according to each specified period.<br/>
+	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified period.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
@@ -408,7 +415,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	}
 
 	/**
-	 * Add a task to be executed after the specified delay time, and then execute according to each specified period.<br/>
+	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified period.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
 	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
