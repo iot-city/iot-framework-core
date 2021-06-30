@@ -291,16 +291,17 @@ final class TimerTaskQueue {
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
+	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @return long Returns a task ID (sequence number).
 	 */
-	long add(String name, Runnable task, long delay, long period, long executions) {
+	long add(String name, Runnable task, long delay, long period, long executions, int priority) {
 
 		// Get next task id
 		long id = atoID.incrementAndGet();
 		if (StringHelper.isEmpty(name)) name = "TASK-" + id;
 		long currentTime = System.currentTimeMillis();
 		// Create the timer task object
-		TimerTask ttask = new TimerTask(this, id, name, task, delay, period, executions, currentTime);
+		TimerTask ttask = new TimerTask(this, id, name, task, delay, period, executions, currentTime, priority);
 
 		// Whether need to notify main loop
 		boolean notify = false;

@@ -9,7 +9,7 @@ import org.iotcity.iot.framework.core.FrameworkCore;
  * This task will be executed in single thread mode within the thread pool.
  * @author Ardon
  */
-final class TimerTask implements Runnable {
+final class TimerTask extends PriorityRunnable {
 
 	// --------------------------- Private fields ----------------------------
 
@@ -89,15 +89,18 @@ final class TimerTask implements Runnable {
 
 	/**
 	 * Constructor for timer task
+	 * @param queue Timer task queue object.
 	 * @param id Task serial number.
 	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0 or -1 means no restriction).
 	 * @param executions Maximum number of tasks executed (greater than 0 or -1 means no restriction).
+	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @param currentTime Current system time.
 	 */
-	TimerTask(TimerTaskQueue queue, long id, String name, Runnable task, long delay, long period, long executions, long currentTime) {
+	TimerTask(TimerTaskQueue queue, long id, String name, Runnable task, long delay, long period, long executions, long currentTime, int priority) {
+		super(priority);
 		// Config data
 		this.queue = queue;
 		this.id = id;

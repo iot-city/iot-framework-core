@@ -45,20 +45,20 @@ public class TaskHandlerTest extends TestCase {
 
 				long delay = handler.getDelayForEverySeconds(6);
 				logger.info(">> 1. Schedule timer task with delay every: 6 seconds, delay time: " + delay);
-				handler.add(new Runnable() {
+				handler.addDelayTask(new Runnable() {
 
 					@Override
 					public void run() {
 						logger.info("<< 1. Run timer task with delay 6 seconds ok.");
 						long delay = handler.getDelayForEverySeconds(5);
 						logger.info(">> 2. Schedule timer task with delay every: 5 seconds, delay time: " + delay);
-						handler.add(new Runnable() {
+						handler.addDelayTask(new Runnable() {
 
 							@Override
 							public void run() {
-								logger.info("<< 2. Run timer task with delay 10 seconds ok.");
+								logger.info("<< 2. Run timer task with delay 5 seconds ok.");
 								logger.info(">> 3. Schedule timer task with delay time: 1000 ms, period: 2000 ms, executions: 2");
-								handler.add(new Runnable() {
+								handler.addExecutionTask(new Runnable() {
 
 									private int count = 0;
 
@@ -71,7 +71,7 @@ public class TaskHandlerTest extends TestCase {
 
 											handler.outputStatistic();
 
-											logger.info(">> 4. Schedule timer 20 tasks with random delay time, period: 1000 ms.");
+											logger.info(">> 4. Schedule timer " + TASKS + " tasks (runs " + RUNS + " times for each task) with random delay time, period: 1000 ms.");
 											for (int i = 0, c = TASKS; i < c; i++) {
 												addMoreTasks(handler);
 											}
@@ -94,7 +94,7 @@ public class TaskHandlerTest extends TestCase {
 				}
 				delay = handler.getDelayForEverySeconds(1);
 				logger.info(">> 1.1. Schedule timer task for notify with delay every: 1 seconds, delay time: " + delay);
-				handler.add(new Runnable() {
+				handler.addDelayTask(new Runnable() {
 
 					@Override
 					public void run() {
@@ -123,7 +123,7 @@ public class TaskHandlerTest extends TestCase {
 
 	private void addMoreTasks(TaskHandler handler) {
 		final long delay = new Random().nextInt(5000);
-		handler.add("DELAY-" + delay, new Runnable() {
+		handler.addExecutionTask("DELAY-" + delay, new Runnable() {
 
 			private int count = 0;
 
@@ -131,11 +131,11 @@ public class TaskHandlerTest extends TestCase {
 			public void run() {
 				long tc = total.incrementAndGet();
 				count++;
-				try {
-					Thread.sleep(new Random().nextInt(1000));
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
+				// try {
+				// Thread.sleep(new Random().nextInt(1000));
+				// } catch (InterruptedException e1) {
+				// e1.printStackTrace();
+				// }
 				if (tc % 100 == 0) {
 					handler.outputStatistic();
 				}
@@ -151,7 +151,7 @@ public class TaskHandlerTest extends TestCase {
 					logger.info(">> 5. Schedule timer task with delay every: 5 seconds, period: 5 seconds, executions: 10...");
 					logger.info("FOR SYSTEM TIME CHANGING TEST ...................");
 
-					handler.add(new Runnable() {
+					handler.addExecutionTask(new Runnable() {
 
 						int count = 0;
 
@@ -162,7 +162,7 @@ public class TaskHandlerTest extends TestCase {
 							if (count == 10) {
 								logger.info("<< 5. System time changing test finished ...................");
 								logger.info("Wait for 3 seconds to destroy...");
-								handler.add(new Runnable() {
+								handler.addDelayTask(new Runnable() {
 
 									@Override
 									public void run() {
