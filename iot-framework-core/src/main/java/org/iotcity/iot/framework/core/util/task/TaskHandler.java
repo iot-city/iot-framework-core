@@ -1,6 +1,8 @@
 package org.iotcity.iot.framework.core.util.task;
 
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -20,7 +22,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * Default global task handler instance object.<br/>
 	 * Use parameters below:<br/>
-	 * <b>corePoolSize: 1, maximumPoolSize: 10, keepAliveTime: 60s, queueCapacity: 1000</b>
+	 * <b>corePoolSize: 8, maximumPoolSize: 8, keepAliveTime: 60s, queueCapacity: 1000</b>
 	 */
 	private static TaskHandler instance = null;
 	/**
@@ -43,13 +45,13 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 */
 	private final TimerTaskThread thread;
 	/**
-	 * The capacity of blocking queue to cache tasks when reaches the maximum of threads in the pool (1000 by default).
-	 */
-	private final int queueCapacity;
-	/**
 	 * The thread pool executor for executing tasks (not null).
 	 */
-	private ThreadPoolExecutor executor;
+	private final ThreadPoolExecutor executor;
+	/**
+	 * The thread pool execution lock.
+	 */
+	private final Object executionLock = new Object();
 	/**
 	 * Whether has been destroyed.
 	 */
@@ -60,39 +62,42 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * Constructor for task handler.<br/>
 	 * Use the thread pool executor parameters below:<br/>
-	 * <b>corePoolSize: 1, maximumPoolSize: 10, keepAliveTime: 60s, queueCapacity: 1000, queueClass: {@link PriorityBlockingQueue }.</b>
+	 * <b>corePoolSize: 8, maximumPoolSize: 8, keepAliveTime: 60s, queueCapacity: 1000, queueClass: {@link PriorityLimitedBlockingQueue }.</b>
 	 */
 	public TaskHandler() {
-		this(null, 1, 10, 60, 1000);
+		this(null, 8, 8, 60, 1000);
 	}
 
 	/**
 	 * Constructor for task handler.<br/>
 	 * Use the thread pool executor parameters below:<br/>
-	 * <b>corePoolSize: 1, maximumPoolSize: 10, keepAliveTime: 60s, queueCapacity: 1000, queueClass: {@link PriorityBlockingQueue }.</b>
+	 * <b>corePoolSize: 8, maximumPoolSize: 8, keepAliveTime: 60s, queueCapacity: 1000, queueClass: {@link PriorityLimitedBlockingQueue }.</b>
 	 * @param name The handler name used for the loop thread.
 	 */
 	public TaskHandler(String name) {
-		this(name, 1, 10, 60, 1000);
+		this(name, 8, 8, 60, 1000);
 	}
 
 	/**
-	 * Constructor for task handler (use the {@link PriorityBlockingQueue } in thread pool executor by default).
+	 * Constructor for task handler.<br/>
+	 * <b>NOTE:</b><br/>
+	 * When the <b>corePoolSize</b> equals to the <b>maximumPoolSize</b> and the <b>keepAliveTime</b> greater than 0, <br/>
+	 * the thread pool executor with allow the core threads timeout automatically.
 	 * @param name The handler name used for the loop thread.
 	 * @param corePoolSize The number of threads to keep in the pool.
 	 * @param maximumPoolSize The maximum number of threads to allow in the pool.
 	 * @param keepAliveTime The maximum seconds that excess idle threads will wait for new tasks before terminating.
-	 * @param queueCapacity The capacity of blocking queue to cache tasks when reaches the maximum of threads in the pool (1000 by default, when set to 0, the queue capacity is not limited).
+	 * @param queueCapacity The capacity of blocking queue to cache tasks in thread pool executor (when set to 0, the synchronous queue {@link SynchronousQueue } is used; when set to greater than 0, the bounded priority blocking queue {@link PriorityLimitedBlockingQueue } is used; when set to less than 0, the unbounded priority blocking queue {@link PriorityBlockingQueue } is used).
 	 */
 	public TaskHandler(String name, int corePoolSize, int maximumPoolSize, long keepAliveTime, int queueCapacity) {
-		this(name, new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, new PriorityBlockingQueue<Runnable>(), new ThreadPoolExecutor.AbortPolicy()), queueCapacity);
+		this(name, createExecutor(corePoolSize, maximumPoolSize, keepAliveTime, queueCapacity), queueCapacity);
 	}
 
 	/**
 	 * Constructor for task handler.
 	 * @param name The handler name used for the loop thread.
 	 * @param executor The thread pool executor for executing tasks (required, can not be null).
-	 * @param queueCapacity The capacity of blocking queue to cache tasks when reaches the maximum of threads in the pool (1000 by default, when set to 0, the queue capacity is not limited).
+	 * @param queueCapacity The capacity of blocking queue to cache tasks in thread pool executor (this parameter is only used for logging).
 	 */
 	public TaskHandler(String name, ThreadPoolExecutor executor, int queueCapacity) {
 		// Set handler name
@@ -101,9 +106,8 @@ public final class TaskHandler implements ThreadPoolSupport {
 		this.queue = new TimerTaskQueue(this.name);
 		this.thread = new TimerTaskThread(this.name, this, queue);
 		this.executor = executor;
-		this.queueCapacity = queueCapacity < 0 ? 1000 : queueCapacity;
 		// Logs message
-		this.thread.logger.info(thread.locale.text("core.util.task.start", this.name, executor.getCorePoolSize(), executor.getMaximumPoolSize(), executor.getKeepAliveTime(TimeUnit.SECONDS), this.queueCapacity));
+		this.thread.logger.info(thread.locale.text("core.util.task.start", this.name, executor.getCorePoolSize(), executor.getMaximumPoolSize(), executor.getKeepAliveTime(TimeUnit.SECONDS), queueCapacity));
 	}
 
 	// --------------------------- Static methods ----------------------------
@@ -111,7 +115,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * Gets a default global task handler instance object (returns not null).<br/>
 	 * Use parameters below:<br/>
-	 * <b>corePoolSize: 1, maximumPoolSize: 10, keepAliveTime: 60s, queueCapacity: 1000</b>
+	 * <b>corePoolSize: 8, maximumPoolSize: 8, keepAliveTime: 60s, queueCapacity: 1000</b>
 	 * @return Task handler object.
 	 */
 	public static final TaskHandler getDefaultHandler() {
@@ -121,6 +125,42 @@ public final class TaskHandler implements ThreadPoolSupport {
 			instance = new TaskHandler("Default");
 		}
 		return instance;
+	}
+
+	/**
+	 * Create a thread pool executor.<br/>
+	 * <b>NOTE:</b><br/>
+	 * When the <b>corePoolSize</b> equals to the <b>maximumPoolSize</b> and the <b>keepAliveTime</b> greater than 0, <br/>
+	 * the thread pool executor with allow the core threads timeout automatically.
+	 * @param corePoolSize The number of threads to keep in the pool.
+	 * @param maximumPoolSize The maximum number of threads to allow in the pool.
+	 * @param keepAliveTime The maximum seconds that excess idle threads will wait for new tasks before terminating.
+	 * @param queueCapacity The capacity of blocking queue to cache tasks in thread pool executor (when set to 0, the synchronous queue {@link SynchronousQueue } is used; when set to greater than 0, the bounded priority blocking queue {@link PriorityLimitedBlockingQueue } is used; when set to less than 0, the unbounded priority blocking queue {@link PriorityBlockingQueue } is used).
+	 * @return A new thread pool executor.
+	 */
+	private static final ThreadPoolExecutor createExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, int queueCapacity) {
+		// Define the blocking queue.
+		BlockingQueue<Runnable> queue;
+		// Check queue capacity.
+		if (queueCapacity > 0) {
+			// Create a bounded priority blocking queue.
+			queue = new PriorityLimitedBlockingQueue<Runnable>(queueCapacity);
+		} else if (queueCapacity == 0) {
+			// Create a synchronous queue.
+			queue = new SynchronousQueue<Runnable>();
+		} else {
+			// Create a bounded priority blocking queue.
+			queue = new PriorityBlockingQueue<Runnable>();
+		}
+		// Create the executor.
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, queue, new ThreadPoolExecutor.AbortPolicy());
+		// Check the core pool size and maximum pool size.
+		if (corePoolSize == maximumPoolSize && keepAliveTime > 0) {
+			// Set up a core thread pool that automatically increases or decreases.
+			executor.allowCoreThreadTimeOut(true);
+		}
+		// Return the executor.
+		return executor;
 	}
 
 	/**
@@ -141,13 +181,6 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 */
 	public String getName() {
 		return name;
-	}
-
-	/**
-	 * Gets the capacity of blocking queue to cache tasks when reaches the maximum of threads in the pool.
-	 */
-	public int getQueueCapacity() {
-		return queueCapacity;
 	}
 
 	@Override
@@ -174,8 +207,6 @@ public final class TaskHandler implements ThreadPoolSupport {
 	public boolean run(Runnable runnable, int priority, ThreadLocalPostman[] postmen) {
 		// Check parameter and status.
 		if (runnable == null || destroyed) return false;
-		// Check queue size.
-		if (queueCapacity > 0 && executor.getQueue().size() > queueCapacity) return false;
 
 		// Define the runner.
 		Runnable runner;
@@ -192,7 +223,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 		}
 
 		try {
-			synchronized (executor) {
+			synchronized (executionLock) {
 				if (destroyed) return false;
 				executor.execute(runner);
 			}
@@ -211,7 +242,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	public void destroy() {
 		// Ensure that destroyed only once
 		if (destroyed) return;
-		synchronized (executor) {
+		synchronized (executionLock) {
 			if (destroyed) return;
 			destroyed = true;
 		}
@@ -281,7 +312,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * Add a delay task to be executed after the specified delay time, the task will be executed only once.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addDelayTask(Runnable task, long delay) {
 		return this.addExecutionTask(null, task, delay, -1, 1, 0);
@@ -292,7 +323,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addDelayTask(Runnable task, long delay, int priority) {
 		return this.addExecutionTask(null, task, delay, -1, 1, priority);
@@ -303,7 +334,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addDelayTask(String name, Runnable task, long delay) {
 		return this.addExecutionTask(name, task, delay, -1, 1, 0);
@@ -315,7 +346,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addDelayTask(String name, Runnable task, long delay, int priority) {
 		return this.addExecutionTask(name, task, delay, -1, 1, priority);
@@ -328,7 +359,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addPeriodTask(Runnable task, long delay, long period) {
 		return this.addExecutionTask(null, task, delay, period, -1, 0);
@@ -340,7 +371,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addPeriodTask(Runnable task, long delay, long period, int priority) {
 		return this.addExecutionTask(null, task, delay, period, -1, priority);
@@ -352,7 +383,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addPeriodTask(String name, Runnable task, long delay, long period) {
 		return this.addExecutionTask(name, task, delay, period, -1, 0);
@@ -365,7 +396,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addPeriodTask(String name, Runnable task, long delay, long period, int priority) {
 		return this.addExecutionTask(name, task, delay, period, -1, priority);
@@ -380,7 +411,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addExecutionTask(Runnable task, long delay, long period, long executions) {
 		return this.addExecutionTask(null, task, delay, period, executions, 0);
@@ -394,7 +425,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addExecutionTask(Runnable task, long delay, long period, long executions, int priority) {
 		return this.addExecutionTask(null, task, delay, period, executions, priority);
@@ -408,7 +439,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addExecutionTask(String name, Runnable task, long delay, long period, long executions) {
 		return this.addExecutionTask(name, task, delay, period, executions, 0);
@@ -423,11 +454,11 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param period Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
-	 * @return long Returns a task ID (sequence number), and -1 if it fails.
+	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
 	public long addExecutionTask(String name, Runnable task, long delay, long period, long executions, int priority) {
 		// Parameter verification (-1 means no restriction)
-		if (destroyed || task == null || delay < 0 || period == 0 || period < -1 || executions == 0 || executions < -1) return -1;
+		if (destroyed || task == null || delay < 0 || period == 0 || period < -1 || executions == 0 || executions < -1) return 0;
 		// Start timer thread
 		thread.startLoop();
 		// Add a task to queue
@@ -445,7 +476,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	}
 
 	/**
-	 * Gets the task ID of the last added task.
+	 * Gets the task ID of the last added task (the return value is 0 before adding tasks).
 	 * @return The task ID.
 	 */
 	public long getLastTaskID() {
@@ -454,7 +485,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Gets a task runnable object from handler, returns null when it does not exist.
-	 * @param taskID The timer task sequence number returned when adding.
+	 * @param taskID The timer task sequence number returned when adding (required, greater than 0).
 	 * @return The task runnable object, returns null when it does not exist.
 	 */
 	public Runnable getTask(long taskID) {
@@ -464,7 +495,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Gets a task status data from handler, returns null when it does not exist.
-	 * @param taskID The timer task sequence number returned when adding.
+	 * @param taskID The timer task sequence number returned when adding (required, greater than 0).
 	 * @return Timer task status data, returns null when it does not exist.
 	 */
 	public TimerTaskStatus getTaskStatus(long taskID) {
@@ -497,7 +528,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Gets the busiest timer task status data array (the returned data is not null).
-	 * @param amount Maximum number of data returned.
+	 * @param amount Maximum number of data returned (required, greater than 0).
 	 * @return Tasks status data array.
 	 */
 	public TimerTaskStatus[] getBusyTaskStatus(int amount) {
@@ -506,7 +537,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Determine whether the timer task exists.
-	 * @param taskID The timer task sequence number returned when adding.
+	 * @param taskID The timer task sequence number returned when adding (required, greater than 0).
 	 * @return boolean whether the task exists.
 	 */
 	public boolean contains(long taskID) {
@@ -515,7 +546,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Remove a timer task from task queue of handler.
-	 * @param taskID The timer task sequence number returned when adding.
+	 * @param taskID The timer task sequence number returned when adding (required, greater than 0).
 	 * @return The task that has been removed, returns null when it does not exist.
 	 */
 	public Runnable remove(long taskID) {

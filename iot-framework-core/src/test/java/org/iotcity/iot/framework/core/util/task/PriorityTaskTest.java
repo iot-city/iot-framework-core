@@ -73,7 +73,7 @@ public class PriorityTaskTest extends TestCase {
 
 		System.out.println("-------------------- TEST TASK PRIORITY 2 --------------------");
 
-		TaskHandler handler = new TaskHandler("PRIORITY-TEST", 0, 2, 60, 0);
+		TaskHandler handler = new TaskHandler("PRIORITY-TEST", 0, 2, 60, -1);
 
 		AtomicInteger total = new AtomicInteger();
 		AtomicInteger fails = new AtomicInteger();
@@ -123,7 +123,7 @@ public class PriorityTaskTest extends TestCase {
 
 		System.out.println("-------------------- TEST TASK NO PRIORITY --------------------");
 
-		TaskHandler handler = new TaskHandler("PRIORITY-TEST", 0, 2, 60, 0);
+		TaskHandler handler = new TaskHandler("PRIORITY-TEST", 0, 2, 60, -1);
 
 		AtomicInteger total = new AtomicInteger();
 		AtomicInteger fails = new AtomicInteger();

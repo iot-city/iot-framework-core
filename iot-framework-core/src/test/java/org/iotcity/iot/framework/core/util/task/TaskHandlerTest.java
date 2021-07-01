@@ -1,6 +1,7 @@
 package org.iotcity.iot.framework.core.util.task;
 
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.iotcity.iot.framework.IoTFramework;
@@ -60,13 +61,13 @@ public class TaskHandlerTest extends TestCase {
 								logger.info(">> 3. Schedule timer task with delay time: 1000 ms, period: 2000 ms, executions: 2");
 								handler.addExecutionTask(new Runnable() {
 
-									private int count = 0;
+									private AtomicInteger count = new AtomicInteger();
 
 									@Override
 									public void run() {
-										count++;
-										logger.info("<< 3. Run timer task with delay, period, executions: " + count);
-										if (count == 2) {
+										count.incrementAndGet();
+										logger.info("<< 3. Run timer task with delay, period, executions: " + count.get());
+										if (count.get() == 2) {
 											logger.info("<< 3. Schedule timer task with delay time: 1000 ms, period: 2000 ms, executions: 2, ok.");
 
 											handler.outputStatistic();
@@ -122,15 +123,15 @@ public class TaskHandlerTest extends TestCase {
 	}
 
 	private void addMoreTasks(TaskHandler handler) {
-		final long delay = new Random().nextInt(5000);
+		final long delay = new Random().nextInt(1000);
 		handler.addExecutionTask("DELAY-" + delay, new Runnable() {
 
-			private int count = 0;
+			private AtomicInteger counter = new AtomicInteger();
 
 			@Override
 			public void run() {
 				long tc = total.incrementAndGet();
-				count++;
+				int count = counter.incrementAndGet();
 				// try {
 				// Thread.sleep(new Random().nextInt(1000));
 				// } catch (InterruptedException e1) {
@@ -153,11 +154,11 @@ public class TaskHandlerTest extends TestCase {
 
 					handler.addExecutionTask(new Runnable() {
 
-						int count = 0;
+						private AtomicInteger counter = new AtomicInteger();
 
 						@Override
 						public void run() {
-							count++;
+							int count = counter.incrementAndGet();
 							logger.info("5. Please change the system time ...");
 							if (count == 10) {
 								logger.info("<< 5. System time changing test finished ...................");
