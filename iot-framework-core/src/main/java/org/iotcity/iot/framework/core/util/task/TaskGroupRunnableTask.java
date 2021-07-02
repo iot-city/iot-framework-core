@@ -16,6 +16,10 @@ public class TaskGroupRunnableTask<T> extends PriorityRunnable {
 	 */
 	private final TaskGroupTaskCallback callback;
 	/**
+	 * The data index in data array.
+	 */
+	private final int index;
+	/**
 	 * The current task data object.
 	 */
 	private final T data;
@@ -23,13 +27,15 @@ public class TaskGroupRunnableTask<T> extends PriorityRunnable {
 	/**
 	 * Constructor for task group runnable task object.
 	 * @param group The task group waiting to be executed using multithreading.
+	 * @param index The data index in data array.
 	 * @param data The current task data object.
 	 * @param callback The task execution callback object.
 	 * @param priority The runnable execution priority.
 	 */
-	public TaskGroupRunnableTask(TaskGroupDataContext<T> group, T data, TaskGroupTaskCallback callback, int priority) {
+	public TaskGroupRunnableTask(TaskGroupDataContext<T> group, int index, T data, TaskGroupTaskCallback callback, int priority) {
 		super(priority);
 		this.group = group;
+		this.index = index;
 		this.data = data;
 		this.callback = callback;
 	}
@@ -39,7 +45,7 @@ public class TaskGroupRunnableTask<T> extends PriorityRunnable {
 		// Run task and callback the execution result.
 		boolean success;
 		try {
-			success = group.run(data);
+			success = group.run(index, data);
 		} catch (Exception e) {
 			e.printStackTrace();
 			success = false;

@@ -28,10 +28,15 @@ public class TaskGroupTest extends TestCase {
 			array[i] = i + 1;
 		}
 
-		TaskGroupDataContext<Integer> context = new TaskGroupDataContext<Integer>(array, 1) {
+		TaskGroupDataContext<Integer> context = new TaskGroupDataContext<Integer>(array) {
 
 			@Override
-			public boolean run(Integer data) {
+			public int getPriority(int index, Integer data) {
+				return 0;
+			}
+
+			@Override
+			public boolean run(int index, Integer data) {
 				if (data > 100) {
 					return false;
 				} else {
@@ -48,7 +53,7 @@ public class TaskGroupTest extends TestCase {
 		};
 
 		TaskGroupExecutor executor = new TaskGroupExecutor(handler, context, 5, true, 0);
-		int successes = executor.start();
+		int successes = executor.execute();
 		System.out.println("Run tasks complete with success: " + successes);
 		System.out.println(StringHelper.format("Submitted: {0}, Executed: {1}, Successes: {2}, Remains: {3}", executor.getSubmitted(), executor.getExecuted(), executor.getSuccesses(), executor.getRemains()));
 
@@ -56,7 +61,7 @@ public class TaskGroupTest extends TestCase {
 
 		context.setNextIndex(0);
 		executor = new TaskGroupExecutor(handler, context, 4, true, 3000);
-		successes = executor.start();
+		successes = executor.execute();
 		System.out.println("Run tasks complete with success: " + successes);
 		System.out.println(StringHelper.format("Submitted: {0}, Executed: {1}, Successes: {2}, Remains: {3}", executor.getSubmitted(), executor.getExecuted(), executor.getSuccesses(), executor.getRemains()));
 

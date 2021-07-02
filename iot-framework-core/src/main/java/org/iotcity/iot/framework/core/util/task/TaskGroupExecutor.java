@@ -74,10 +74,10 @@ public class TaskGroupExecutor {
 	/**
 	 * Constructor for task group executor.
 	 * @param handler The task handler to execute the tasks (required, can not be null).
-	 * @param tasks The task group data context waiting to be executed using multithreading (required, can not be null).
+	 * @param context The task group data context waiting to be executed using multithreading (required, can not be null).
 	 * @param threads The maximum number of threads used to perform the task (required, must be greater than 0).
 	 * @param expandCorePoolSize Whether to automatically expand the size of core threads in the thread pool according to the specified number of threads.
-	 * @param groupTimeout The total timeout in milliseconds of the task group execution (set to 0 when execution without timeout; when timeout value greater than 0, whether the tasks have been executed or not, it will exit the task scheduling after the timeout).
+	 * @param groupTimeout The total timeout in milliseconds of the task group execution (set to 0 when execution without timeout; when timeout value greater than 0, whether the tasks have been executed or not, it will exit the task scheduling after this timeout).
 	 * @throws IllegalArgumentException An error will be thrown when one of the parameters "handler" and "context" is null or the parameter "threads" less than 1.
 	 */
 	public TaskGroupExecutor(TaskHandler handler, TaskGroupDataContext<?> context, int threads, boolean expandCorePoolSize, long groupTimeout) throws IllegalArgumentException {
@@ -146,10 +146,10 @@ public class TaskGroupExecutor {
 	}
 
 	/**
-	 * Start using multithreading to execute tasks (this method is only allowed to be called once).
-	 * @return The number of tasks executed successfully (if repeated method calling or stop method has been called before calling this method, return - 1).
+	 * Starts using multithreading to execute tasks (this method is only allowed to be called once).
+	 * @return The number of tasks executed successfully (if repeated method calling or abort method has been called before calling this method, return - 1).
 	 */
-	public int start() {
+	public int execute() {
 
 		// Check started status.
 		if (started || stopped) return -1;
@@ -166,8 +166,8 @@ public class TaskGroupExecutor {
 
 				@Override
 				public void run() {
-					// Call stop.
-					stop();
+					// Call abort.
+					abort();
 					// Gets the data type.
 					Type[] types = ((ParameterizedType) context.getClass().getGenericSuperclass()).getActualTypeArguments();
 					Class<?> dataType = (Class<?>) types[0];
@@ -290,9 +290,9 @@ public class TaskGroupExecutor {
 	}
 
 	/**
-	 * Stop executing the task (this method allows only one call).
+	 * Terminate execution of current execution (this method allows only one call).
 	 */
-	public void stop() {
+	public void abort() {
 		// Check stopped status.
 		if (stopped) return;
 		// Get a lock to check stopped status again.

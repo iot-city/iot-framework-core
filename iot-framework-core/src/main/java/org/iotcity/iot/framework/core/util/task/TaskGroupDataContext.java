@@ -15,10 +15,6 @@ public abstract class TaskGroupDataContext<T> {
 	 */
 	private final Object source;
 	/**
-	 * The runnable execution priority.
-	 */
-	private final int priority;
-	/**
 	 * The length of source array.
 	 */
 	private final int length;
@@ -30,26 +26,22 @@ public abstract class TaskGroupDataContext<T> {
 	/**
 	 * Constructor for the task group of collection data.
 	 * @param source The data collection waiting to be executed using multithreading (required, can not be null).
-	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @throws IllegalArgumentException An error will be thrown when the parameter "source" is null.
 	 */
-	public TaskGroupDataContext(Collection<T> source, int priority) throws IllegalArgumentException {
+	public TaskGroupDataContext(Collection<T> source) throws IllegalArgumentException {
 		if (source == null) throw new IllegalArgumentException("Parameter source can not be null!");
 		this.source = source.toArray();
-		this.priority = priority;
 		this.length = source.size();
 	}
 
 	/**
 	 * Constructor for the task group of array data.
 	 * @param source The data array waiting to be executed using multithreading (required, can not be null).
-	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @throws IllegalArgumentException An error will be thrown when the parameter "source" is null.
 	 */
-	public TaskGroupDataContext(T[] source, int priority) throws IllegalArgumentException {
+	public TaskGroupDataContext(T[] source) throws IllegalArgumentException {
 		if (source == null) throw new IllegalArgumentException("Parameter source can not be null!");
 		this.source = source;
-		this.priority = priority;
 		this.length = source.length;
 	}
 
@@ -84,18 +76,29 @@ public abstract class TaskGroupDataContext<T> {
 	public PriorityRunnable nextTask(TaskGroupTaskCallback callback) {
 		// Check the array index.
 		if (!hasNext()) return null;
+		// Get next data index.
+		int index = nextIndex++;
 		// Gets the next data object.
 		@SuppressWarnings("unchecked")
-		final T data = (T) Array.get(source, nextIndex++);
+		final T data = (T) Array.get(source, index);
 		// Return the runnable task.
-		return new TaskGroupRunnableTask<T>(this, data, callback, priority);
+		return new TaskGroupRunnableTask<T>(this, index, data, callback, getPriority(index, data));
 	}
 
 	/**
+	 * Gets the execution priority of the data task.
+	 * @param index The data index in data array.
+	 * @param data The current task data object.
+	 * @return The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
+	 */
+	public abstract int getPriority(int index, T data);
+
+	/**
 	 * Execute the current data processing task.
+	 * @param index The data index in data array.
 	 * @param data The current task data object.
 	 * @return Returns whether the task was executed successfully.
 	 */
-	public abstract boolean run(T data);
+	public abstract boolean run(int index, T data);
 
 }
