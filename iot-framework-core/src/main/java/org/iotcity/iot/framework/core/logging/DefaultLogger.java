@@ -225,6 +225,7 @@ public class DefaultLogger implements Logger {
 		// Output info
 		System.out.println(sb.toString());
 		if (e != null) e.printStackTrace();
+		if (message != null && message instanceof Throwable) ((Throwable) message).printStackTrace();
 	}
 
 	// --------------------------- Private static methods ----------------------------

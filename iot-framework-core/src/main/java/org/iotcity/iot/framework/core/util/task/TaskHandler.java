@@ -352,117 +352,117 @@ public final class TaskHandler implements ThreadPoolSupport {
 		return this.addExecutionTask(name, task, delay, -1, 1, priority);
 	}
 
-	// --------------------------- Period task methods ----------------------------
+	// --------------------------- Interval task methods ----------------------------
 
 	/**
-	 * Add a period task to be executed after the specified delay time, and then execute according to each specified period.
+	 * Add an interval task to be executed after the specified delay time, and then execute according to each specified interval.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
-	public long addPeriodTask(Runnable task, long delay, long period) {
-		return this.addExecutionTask(null, task, delay, period, -1, 0);
+	public long addIntervalTask(Runnable task, long delay, long interval) {
+		return this.addExecutionTask(null, task, delay, interval, -1, 0);
 	}
 
 	/**
-	 * Add a period task to be executed after the specified delay time, and then execute according to each specified period.
+	 * Add a interval task to be executed after the specified delay time, and then execute according to each specified interval.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
-	public long addPeriodTask(Runnable task, long delay, long period, int priority) {
-		return this.addExecutionTask(null, task, delay, period, -1, priority);
+	public long addIntervalTask(Runnable task, long delay, long interval, int priority) {
+		return this.addExecutionTask(null, task, delay, interval, -1, priority);
 	}
 
 	/**
-	 * Add a period task to be executed after the specified delay time, and then execute according to each specified period.
+	 * Add a interval task to be executed after the specified delay time, and then execute according to each specified interval.
 	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
-	public long addPeriodTask(String name, Runnable task, long delay, long period) {
-		return this.addExecutionTask(name, task, delay, period, -1, 0);
+	public long addIntervalTask(String name, Runnable task, long delay, long interval) {
+		return this.addExecutionTask(name, task, delay, interval, -1, 0);
 	}
 
 	/**
-	 * Add a period task to be executed after the specified delay time, and then execute according to each specified period.
+	 * Add a interval task to be executed after the specified delay time, and then execute according to each specified interval.
 	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
-	public long addPeriodTask(String name, Runnable task, long delay, long period, int priority) {
-		return this.addExecutionTask(name, task, delay, period, -1, priority);
+	public long addIntervalTask(String name, Runnable task, long delay, long interval, int priority) {
+		return this.addExecutionTask(name, task, delay, interval, -1, priority);
 	}
 
 	// --------------------------- Execution task methods ----------------------------
 
 	/**
-	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified period.<br/>
+	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified interval.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
-	public long addExecutionTask(Runnable task, long delay, long period, long executions) {
-		return this.addExecutionTask(null, task, delay, period, executions, 0);
+	public long addExecutionTask(Runnable task, long delay, long interval, long executions) {
+		return this.addExecutionTask(null, task, delay, interval, executions, 0);
 	}
 
 	/**
-	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified period.<br/>
+	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified interval.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
-	public long addExecutionTask(Runnable task, long delay, long period, long executions, int priority) {
-		return this.addExecutionTask(null, task, delay, period, executions, priority);
+	public long addExecutionTask(Runnable task, long delay, long interval, long executions, int priority) {
+		return this.addExecutionTask(null, task, delay, interval, executions, priority);
 	}
 
 	/**
-	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified period.<br/>
+	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified interval.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
 	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
-	public long addExecutionTask(String name, Runnable task, long delay, long period, long executions) {
-		return this.addExecutionTask(name, task, delay, period, executions, 0);
+	public long addExecutionTask(String name, Runnable task, long delay, long interval, long executions) {
+		return this.addExecutionTask(name, task, delay, interval, executions, 0);
 	}
 
 	/**
-	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified period.<br/>
+	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified interval.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
 	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
-	public long addExecutionTask(String name, Runnable task, long delay, long period, long executions, int priority) {
+	public long addExecutionTask(String name, Runnable task, long delay, long interval, long executions, int priority) {
 		// Parameter verification (-1 means no restriction)
-		if (destroyed || task == null || delay < 0 || period == 0 || period < -1 || executions == 0 || executions < -1) return 0;
+		if (destroyed || task == null || delay < 0 || interval == 0 || interval < -1 || executions == 0 || executions < -1) return 0;
 		// Start timer thread
 		thread.startLoop();
 		// Add a task to queue
-		return queue.add(name, task, delay, period, executions, priority);
+		return queue.add(name, task, delay, interval, executions, priority);
 	}
 
 	// --------------------------- Other public methods ----------------------------

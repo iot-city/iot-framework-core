@@ -1,5 +1,7 @@
 package org.iotcity.iot.framework.core.util.task;
 
+import org.iotcity.iot.framework.core.FrameworkCore;
+
 /**
  * The task group runnable task object.
  * @author ardon
@@ -47,7 +49,7 @@ public class TaskGroupRunnableTask<T> extends PriorityRunnable {
 		try {
 			success = group.run(index, data);
 		} catch (Exception e) {
-			e.printStackTrace();
+			FrameworkCore.getLogger().error(e);
 			success = false;
 		}
 		callback.onExecuted(success);

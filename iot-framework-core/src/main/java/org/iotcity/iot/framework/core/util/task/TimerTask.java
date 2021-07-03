@@ -36,7 +36,7 @@ final class TimerTask extends PriorityRunnable {
 	/**
 	 * Time in milliseconds between successive task executions (greater than 0 or -1 means no restriction).
 	 */
-	private final long period;
+	private final long interval;
 	/**
 	 * Maximum number of tasks executed (greater than 0 or -1 means no restriction).
 	 */
@@ -94,12 +94,12 @@ final class TimerTask extends PriorityRunnable {
 	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0 or -1 means no restriction).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0 or -1 means no restriction).
 	 * @param executions Maximum number of tasks executed (greater than 0 or -1 means no restriction).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @param currentTime Current system time.
 	 */
-	TimerTask(TimerTaskQueue queue, long id, String name, Runnable task, long delay, long period, long executions, long currentTime, int priority) {
+	TimerTask(TimerTaskQueue queue, long id, String name, Runnable task, long delay, long interval, long executions, long currentTime, int priority) {
 		super(priority);
 		// Config data
 		this.queue = queue;
@@ -107,7 +107,7 @@ final class TimerTask extends PriorityRunnable {
 		this.name = name;
 		this.task = task;
 		this.delay = delay;
-		this.period = period;
+		this.interval = interval;
 		this.executions = executions;
 		this.createTime = currentTime;
 		// Status data
@@ -191,9 +191,9 @@ final class TimerTask extends PriorityRunnable {
 			finished = true;
 		} else {
 			// Determine execution cycle
-			if (period > 0) {
+			if (interval > 0) {
 				// Set next execution time
-				nextRunTime += period;
+				nextRunTime += interval;
 				// Update next execution time
 				queue.updateNextRunTime(this);
 			} else {
@@ -213,8 +213,8 @@ final class TimerTask extends PriorityRunnable {
 		if (finished) return;
 		// Save the time that have changed
 		systemTimeChanged.addAndGet(changeMilliseconds);
-		// Check the period
-		if (period <= 0) {
+		// Check the interval
+		if (interval <= 0) {
 			// The task is executed only once after the delay time
 			nextRunTime += changeMilliseconds;
 		} else {
@@ -223,10 +223,10 @@ final class TimerTask extends PriorityRunnable {
 			// Check the range from start time to now time
 			if (startTime <= currentTime) {
 				// Set next running time
-				nextRunTime = currentTime + period - ((currentTime - startTime) % period);
+				nextRunTime = currentTime + interval - ((currentTime - startTime) % interval);
 			} else {
 				// Set to previous running time
-				nextRunTime = currentTime + ((startTime - currentTime) % period);
+				nextRunTime = currentTime + ((startTime - currentTime) % interval);
 			}
 		}
 	}

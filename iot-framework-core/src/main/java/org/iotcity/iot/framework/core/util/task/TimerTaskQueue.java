@@ -284,33 +284,33 @@ final class TimerTaskQueue {
 	// --------------------------- Task management methods ----------------------------
 
 	/**
-	 * Add a task to be executed after the specified delay time, and then execute according to each specified period.<br/>
+	 * Add a task to be executed after the specified delay time, and then execute according to each specified interval.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
 	 * @param name Task name, will be used for logging.
 	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
-	 * @param period Time in milliseconds between successive task executions (greater than 0).
+	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @return long Returns a task ID (sequence number).
 	 */
-	long add(String name, Runnable task, long delay, long period, long executions, int priority) {
+	long add(String name, Runnable task, long delay, long interval, long executions, int priority) {
 
 		// Get next task id
 		long id = atoID.incrementAndGet();
 		if (StringHelper.isEmpty(name)) name = "TASK-" + id;
 		long currentTime = System.currentTimeMillis();
 		// Create the timer task object
-		TimerTask ttask = new TimerTask(this, id, name, task, delay, period, executions, currentTime, priority);
+		TimerTask ttask = new TimerTask(this, id, name, task, delay, interval, executions, currentTime, priority);
 
 		// Whether need to notify main loop
 		boolean notify = false;
 		// Get a task lock
 		synchronized (tasks) {
-			// Put to the map
-			tasks.put(id, ttask);
 			// Set to changed
 			if (!taskChanged) taskChanged = true;
+			// Put to the map
+			tasks.put(id, ttask);
 			// Get the next execution time
 			long nextTime = ttask.getNextTime();
 			// Notify loop if waiting time changes

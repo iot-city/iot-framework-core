@@ -3,6 +3,8 @@ package org.iotcity.iot.framework.core.util.task;
 import java.lang.reflect.Array;
 import java.util.Collection;
 
+import org.iotcity.iot.framework.core.FrameworkCore;
+
 /**
  * The task group waiting to be executed using multithreading.
  * @author ardon
@@ -81,8 +83,16 @@ public abstract class TaskGroupDataContext<T> {
 		// Gets the next data object.
 		@SuppressWarnings("unchecked")
 		final T data = (T) Array.get(source, index);
+		// Get priority for execution.
+		int priority;
+		try {
+			priority = getPriority(index, data);
+		} catch (Exception e) {
+			FrameworkCore.getLogger().error(e);
+			return null;
+		}
 		// Return the runnable task.
-		return new TaskGroupRunnableTask<T>(this, index, data, callback, getPriority(index, data));
+		return new TaskGroupRunnableTask<T>(this, index, data, callback, priority);
 	}
 
 	/**
