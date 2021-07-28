@@ -562,6 +562,7 @@ public final class PropertiesLoader {
 		if (!props.containsKey(key)) return;
 		field.setAccessible(true);
 		if (ConvertHelper.isConvertible(type)) {
+
 			// Get a convertible data
 			String data = props.getProperty(key);
 			// Skip no configure
@@ -573,12 +574,16 @@ public final class PropertiesLoader {
 			} else {
 				field.set(bean, ConvertHelper.convertTo(type, data, field.get(bean)));
 			}
+
 		} else if (type.isArray()) {
+
 			// Get an array data
 			Class<?> subType = type.getComponentType();
 			Object array = getConfigArray(subType, props, key);
 			if (array != null) field.set(bean, array);
+
 		} else if (type == PropertiesMap.class) {
+
 			ParameterizedType ptype = (ParameterizedType) field.getGenericType();
 			if (ptype == null) return;
 			Type[] types = ptype.getActualTypeArguments();
@@ -586,7 +591,9 @@ public final class PropertiesLoader {
 			Class<?> valueType = (Class<?>) types[0];
 			PropertiesMap<?> map = getConfigMap(valueType, props, key);
 			if (map != null) field.set(bean, map);
+
 		} else if (type == List.class) {
+
 			ParameterizedType ptype = (ParameterizedType) field.getGenericType();
 			if (ptype == null) return;
 			Type[] types = ptype.getActualTypeArguments();
@@ -594,7 +601,20 @@ public final class PropertiesLoader {
 			Class<?> valueType = (Class<?>) types[0];
 			List<?> list = getConfigList(valueType, props, key);
 			if (list != null) field.set(bean, list);
+
+		} else if (type == Class.class) {
+
+			// Get a class string
+			String data = props.getProperty(key);
+			// Skip no configure
+			if (StringHelper.isEmpty(data)) return;
+			data = data.trim();
+			if (data.length() == 0) return;
+			// Get the class
+			field.set(bean, Class.forName(data));
+
 		} else {
+
 			// Determine whether the field enables parsing configuration
 			// e.g. iot.framework.actor.apps.app1.pool=true
 			String enabled = props.getProperty(key);
@@ -606,6 +626,7 @@ public final class PropertiesLoader {
 				field.set(bean, subBean);
 			}
 			fillConfigBean(type, subBean, props, key + ".");
+
 		}
 	}
 
