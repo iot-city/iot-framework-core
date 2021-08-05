@@ -376,7 +376,7 @@ public final class PropertiesLoader {
 		if (beanClass == null || props == null || StringHelper.isEmpty(prefix)) return null;
 		String value = props.getProperty(prefix);
 		if (StringHelper.isEmptyWithTrim(value)) return null;
-		String[] values = value.trim().split("[,;]");
+		String[] values = separateToArray(value);
 		if (values == null || values.length == 0) return null;
 		Object array = Array.newInstance(beanClass, values.length);
 		if (ConvertHelper.isConvertible(beanClass)) {
@@ -384,7 +384,7 @@ public final class PropertiesLoader {
 			// e.g. iot.framework.actor.apps.app1.packages=actors.app1.async, actors.app1.sync
 			Object defaultValue = JavaHelper.getTypeDefaultValue(beanClass);
 			for (int i = 0, c = values.length; i < c; i++) {
-				String v = values[i].trim();
+				String v = values[i];
 				if (beanClass == String.class) {
 					Array.set(array, i, v);
 				} else {
@@ -395,7 +395,7 @@ public final class PropertiesLoader {
 			// Convert to a custom data object by section defined
 			// e.g. iot.framework.actor.apps=app1, app2
 			for (int i = 0, c = values.length; i < c; i++) {
-				String k = values[i].trim();
+				String k = values[i];
 				if (StringHelper.isEmpty(k)) continue;
 				PropertyKey pkey = new PropertyKey(k, prefix);
 				String enabled = props.getProperty(pkey.prefix);
@@ -441,14 +441,14 @@ public final class PropertiesLoader {
 		if (list == null || beanClass == null || props == null || StringHelper.isEmpty(prefix)) return false;
 		String value = props.getProperty(prefix);
 		if (StringHelper.isEmptyWithTrim(value)) return false;
-		String[] values = value.trim().split("[,;]");
+		String[] values = separateToArray(value);
 		if (values == null || values.length == 0) return false;
 		if (ConvertHelper.isConvertible(beanClass)) {
 			// Convert convertible data to array
 			// e.g. iot.framework.actor.apps.app1.packages=actors.app1.async, actors.app1.sync
 			Object defaultValue = JavaHelper.getTypeDefaultValue(beanClass);
 			for (int i = 0, c = values.length; i < c; i++) {
-				String v = values[i].trim();
+				String v = values[i];
 				if (StringHelper.isEmpty(v)) continue;
 				@SuppressWarnings("unchecked")
 				T tv = (T) ConvertHelper.convertTo(beanClass, v, defaultValue);
@@ -458,7 +458,7 @@ public final class PropertiesLoader {
 			// Convert to a custom data object by section defined
 			// e.g. iot.framework.actor.apps=app1, app2
 			for (int i = 0, c = values.length; i < c; i++) {
-				String k = values[i].trim();
+				String k = values[i];
 				if (StringHelper.isEmpty(k)) continue;
 				PropertyKey pkey = new PropertyKey(k, prefix);
 				String enabled = props.getProperty(pkey.prefix);
@@ -503,14 +503,14 @@ public final class PropertiesLoader {
 		if (map == null || beanClass == null || props == null || StringHelper.isEmpty(prefix)) return false;
 		String value = props.getProperty(prefix);
 		if (StringHelper.isEmptyWithTrim(value)) return false;
-		String[] values = value.trim().split("[,;]");
+		String[] values = separateToArray(value);
 		if (values == null || values.length == 0) return false;
 		if (ConvertHelper.isConvertible(beanClass)) {
 			// Convert convertible data to map
 			// e.g. iot.framework.actor.apps.map=sub1, sub2
 			Object defaultValue = JavaHelper.getTypeDefaultValue(beanClass);
 			for (int i = 0, c = values.length; i < c; i++) {
-				String k = values[i].trim();
+				String k = values[i];
 				if (StringHelper.isEmpty(k)) continue;
 				PropertyKey pkey = new PropertyKey(k, prefix);
 				@SuppressWarnings("unchecked")
@@ -521,7 +521,7 @@ public final class PropertiesLoader {
 			// Convert to a custom data object by section defined
 			// e.g. iot.framework.actor.apps=app1, app2
 			for (int i = 0, c = values.length; i < c; i++) {
-				String k = values[i].trim();
+				String k = values[i];
 				if (StringHelper.isEmpty(k)) continue;
 				PropertyKey pkey = new PropertyKey(k, prefix);
 				String enabled = props.getProperty(pkey.prefix);
@@ -541,6 +541,20 @@ public final class PropertiesLoader {
 	}
 
 	// --------------------------------- Fill configure bean methods ---------------------------------
+
+	/**
+	 * Split the string into arrays.
+	 * @param str The source string.
+	 * @return String array.
+	 */
+	private static final String[] separateToArray(String str) {
+		String fixed = str.replaceAll("\\\\,", "\\\\C\r").replaceAll("\\\\;", "\\\\D\r");
+		String[] array = fixed.split("[,;]");
+		for (int i = 0, c = array.length; i < c; i++) {
+			array[i] = array[i].replaceAll("\\\\C\r", ",").replaceAll("\\\\D\r", ";").trim();
+		}
+		return array;
+	}
 
 	/**
 	 * Set values to property fields of the bean.
