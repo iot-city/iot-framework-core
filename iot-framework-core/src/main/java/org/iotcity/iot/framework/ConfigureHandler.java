@@ -168,7 +168,7 @@ public final class ConfigureHandler {
 			try {
 				if (PropertiesConfigureManager.class.isAssignableFrom(managerClass)) {
 					// Set configure file to configure manager
-					PropertiesConfigureManager pm = IoTFramework.getGlobalInstanceFactory().getInstance(managerClass);
+					PropertiesConfigureManager pm = IoTFramework.getInstance(managerClass);
 					if (props != null) {
 						PropertiesConfigFile file;
 						String[] keys = pm.getExternalKeys();
@@ -182,7 +182,7 @@ public final class ConfigureHandler {
 					succeed = pm.perform();
 				} else {
 					// Perform configuration
-					ConfigureManager cm = IoTFramework.getGlobalInstanceFactory().getInstance(managerClass);
+					ConfigureManager cm = IoTFramework.getInstance(managerClass);
 					succeed = cm.perform();
 				}
 			} catch (Exception e) {

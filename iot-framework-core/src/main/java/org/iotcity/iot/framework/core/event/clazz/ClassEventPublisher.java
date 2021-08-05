@@ -34,7 +34,7 @@ public class ClassEventPublisher extends BaseEventPublisher<Class<?>, ClassEvent
 			return null;
 		} else if (factory == null) {
 			try {
-				return IoTFramework.getGlobalInstanceFactory().getInstance(type);
+				return IoTFramework.getInstance(type);
 			} catch (Exception e) {
 				FrameworkCore.getLogger().error(FrameworkCore.getLocale().text("core.global.instance.error", type.getName(), e.getMessage()), e);
 				return null;

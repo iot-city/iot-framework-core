@@ -60,7 +60,7 @@ public final class IoTFramework {
 	 */
 	private static LocaleFactory localeFactory = new DefaultLocaleFacotry();
 
-	// --------------------------- Public static methods ----------------------------
+	// --------------------------- Initialize methods ----------------------------
 
 	/**
 	 * Initialize the framework configuration data.
@@ -89,6 +89,36 @@ public final class IoTFramework {
 		configHandler.init(options);
 	}
 
+	// --------------------------- Instance methods ----------------------------
+
+	/**
+	 * Create or get an instance of the declaring class from global instance factory (returns the class instance, it will returns null when no instance for specified class).<br/>
+	 * The framework uses {@link DefaultClassInstanceFactory } by default to create an instance with "<b>clazz.getDeclaredConstructor().newInstance()</b>" method.
+	 * @param <T> The instance class type.
+	 * @param clazz The class of object instance.
+	 * @return An object created by factory.
+	 * @throws Exception Throw an exception when an error is encountered.
+	 */
+	public static final <T> T getInstance(Class<?> clazz) throws Exception {
+		return instanceFactory.getInstance(clazz);
+	}
+
+	/**
+	 * Create or get an instance of the declaring class from global instance factory (returns the class instance, it will returns null when no instance for specified class).<br/>
+	 * The framework uses {@link DefaultClassInstanceFactory } by default to create an instance with "<b>clazz.getDeclaredConstructor(Class<?>... parameterTypes).newInstance(Object ... initargs)</b>" method.
+	 * @param <T> The instance class type.
+	 * @param clazz The class of object instance.
+	 * @param parameterTypes The parameter class array of constructor.
+	 * @param initargs The array of objects to be passed as arguments to the constructor call.
+	 * @return An object created by factory.
+	 * @throws Exception Throw an exception when an error is encountered.
+	 */
+	public static final <T> T getInstance(Class<?> clazz, Class<?>[] parameterTypes, Object[] initargs) throws Exception {
+		return instanceFactory.getInstance(clazz, parameterTypes, initargs);
+	}
+
+	// --------------------------- Public object methods ----------------------------
+
 	/**
 	 * Gets the configure manager handler of the framework (returns not null).
 	 * @return The configure manager handler.
@@ -107,10 +137,10 @@ public final class IoTFramework {
 
 	/**
 	 * Gets the global class instance factory to create or get an instance of specified class (returns not null).<br/>
-	 * The framework uses {@link DefaultClassInstanceFactory } by default to create an instance with "<b>clazz.getDeclaredConstructor().newInstance()</b>" method.
+	 * The framework uses {@link DefaultClassInstanceFactory } by default.
 	 * @return A class instance factory.
 	 */
-	public static ClassInstanceFactory getGlobalInstanceFactory() {
+	public static final ClassInstanceFactory getInstanceFactory() {
 		return instanceFactory;
 	}
 

@@ -102,7 +102,7 @@ public final class PropertiesLoader {
 	 */
 	public static final <T> T loadConfigBean(Class<T> beanClass, String filePathName, String encoding, boolean fromPackage, String prefix) {
 		try {
-			T bean = IoTFramework.getGlobalInstanceFactory().getInstance(beanClass);
+			T bean = IoTFramework.getInstance(beanClass);
 			return loadConfigBean(bean, filePathName, encoding, fromPackage, prefix) ? bean : null;
 		} catch (Exception e) {
 			JavaHelper.err("Load configure to a bean error: " + filePathName);
@@ -331,7 +331,7 @@ public final class PropertiesLoader {
 	 */
 	public static final <T> T getConfigBean(Class<T> beanClass, Properties props, String prefix) {
 		try {
-			T bean = IoTFramework.getGlobalInstanceFactory().getInstance(beanClass);
+			T bean = IoTFramework.getInstance(beanClass);
 			return getConfigBean(bean, props, prefix);
 		} catch (Exception e) {
 			JavaHelper.err("Gets a bean configured from properties error: " + e.getMessage());
@@ -401,7 +401,7 @@ public final class PropertiesLoader {
 				String enabled = props.getProperty(pkey.prefix);
 				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
 				try {
-					Object v = IoTFramework.getGlobalInstanceFactory().getInstance(beanClass);
+					Object v = IoTFramework.getInstance(beanClass);
 					Array.set(array, i, v);
 					fillConfigBean(beanClass, v, props, pkey.prefix + ".");
 				} catch (Exception e) {
@@ -464,7 +464,7 @@ public final class PropertiesLoader {
 				String enabled = props.getProperty(pkey.prefix);
 				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
 				try {
-					T v = IoTFramework.getGlobalInstanceFactory().getInstance(beanClass);
+					T v = IoTFramework.getInstance(beanClass);
 					list.add(v);
 					fillConfigBean(beanClass, v, props, pkey.prefix + ".");
 				} catch (Exception e) {
@@ -527,7 +527,7 @@ public final class PropertiesLoader {
 				String enabled = props.getProperty(pkey.prefix);
 				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
 				try {
-					T v = IoTFramework.getGlobalInstanceFactory().getInstance(beanClass);
+					T v = IoTFramework.getInstance(beanClass);
 					map.put(pkey.key, v);
 					fillConfigBean(beanClass, v, props, pkey.prefix + ".");
 				} catch (Exception e) {
@@ -636,7 +636,7 @@ public final class PropertiesLoader {
 			// Parse the sub-bean
 			Object subBean = field.get(bean);
 			if (subBean == null) {
-				subBean = IoTFramework.getGlobalInstanceFactory().getInstance(type);
+				subBean = IoTFramework.getInstance(type);
 				field.set(bean, subBean);
 			}
 			fillConfigBean(type, subBean, props, key + ".");

@@ -21,7 +21,7 @@ public final class BusEventPublisher extends BaseEventPublisher<Class<?>, BusEve
 			return null;
 		} else if (factory == null) {
 			try {
-				return IoTFramework.getGlobalInstanceFactory().getInstance(type);
+				return IoTFramework.getInstance(type);
 			} catch (Exception e) {
 				FrameworkCore.getLogger().error(FrameworkCore.getLocale().text("core.global.instance.error", type.getName(), e.getMessage()), e);
 				return null;
