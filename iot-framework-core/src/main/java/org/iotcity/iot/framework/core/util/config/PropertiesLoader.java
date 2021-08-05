@@ -377,7 +377,7 @@ public final class PropertiesLoader {
 		String value = props.getProperty(prefix);
 		if (StringHelper.isEmptyWithTrim(value)) return null;
 		String[] values = separateToArray(value);
-		if (values == null || values.length == 0) return null;
+		if (values.length == 0) return null;
 		Object array = Array.newInstance(beanClass, values.length);
 		if (ConvertHelper.isConvertible(beanClass)) {
 			// Convert convertible data to array
@@ -442,7 +442,7 @@ public final class PropertiesLoader {
 		String value = props.getProperty(prefix);
 		if (StringHelper.isEmptyWithTrim(value)) return false;
 		String[] values = separateToArray(value);
-		if (values == null || values.length == 0) return false;
+		if (values.length == 0) return false;
 		if (ConvertHelper.isConvertible(beanClass)) {
 			// Convert convertible data to array
 			// e.g. iot.framework.actor.apps.app1.packages=actors.app1.async, actors.app1.sync
@@ -504,7 +504,7 @@ public final class PropertiesLoader {
 		String value = props.getProperty(prefix);
 		if (StringHelper.isEmptyWithTrim(value)) return false;
 		String[] values = separateToArray(value);
-		if (values == null || values.length == 0) return false;
+		if (values.length == 0) return false;
 		if (ConvertHelper.isConvertible(beanClass)) {
 			// Convert convertible data to map
 			// e.g. iot.framework.actor.apps.map=sub1, sub2
