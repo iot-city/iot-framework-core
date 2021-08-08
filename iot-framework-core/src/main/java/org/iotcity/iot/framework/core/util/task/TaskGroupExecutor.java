@@ -86,10 +86,11 @@ public class TaskGroupExecutor {
 		this.context = context;
 		this.threads = threads;
 		this.groupTimeout = groupTimeout;
+		// Get the executor.
+		ThreadPoolExecutor executor = handler.getThreadPoolExecutor();
 		// Determines whether to expand the core size.
-		if (expandCorePoolSize) {
-			// Get the executor.
-			ThreadPoolExecutor executor = handler.getThreadPoolExecutor();
+		if (expandCorePoolSize && threads > executor.getCorePoolSize()) {
+			// Synchronize the executor.
 			synchronized (executor) {
 				// Get the pool size.
 				int corePoolSize = executor.getCorePoolSize();
