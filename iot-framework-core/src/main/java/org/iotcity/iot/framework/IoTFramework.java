@@ -10,6 +10,16 @@ import org.iotcity.iot.framework.core.logging.LoggerFactory;
 
 /**
  * IoT Framework for smart city system development.
+ * 
+ * <pre>
+ * The configuration file of the framework ("framework.properties" by default) can be configured according to the following parameters:<br/>
+ * 1. Full parameter configuration:
+ * java -jar xxx.jar -Dframework.file=framework.properties -Dframework.file.encoding=UTF-8 -Dframework.file.fromPackage=false<br/>
+ * 
+ * 2. Simple parameter configuration:
+ * java -jar xxx.jar -Dframework.file=framework.properties
+ * </pre>
+ * 
  * @author Ardon
  */
 public final class IoTFramework {
@@ -93,7 +103,7 @@ public final class IoTFramework {
 
 	/**
 	 * Create or get an instance of the declaring class from global instance factory (returns the class instance, it will returns null when no instance for specified class).<br/>
-	 * The framework uses {@link DefaultClassInstanceFactory } by default to create an instance with "<b>clazz.getDeclaredConstructor().newInstance()</b>" method.
+	 * The framework uses {@link DefaultClassInstanceFactory } by default to create an instance with "<b>clazz.getConstructor().newInstance()</b>" method.
 	 * @param <T> The instance class type.
 	 * @param clazz The class of object instance.
 	 * @return An object created by factory.
@@ -105,7 +115,7 @@ public final class IoTFramework {
 
 	/**
 	 * Create or get an instance of the declaring class from global instance factory (returns the class instance, it will returns null when no instance for specified class).<br/>
-	 * The framework uses {@link DefaultClassInstanceFactory } by default to create an instance with "<b>clazz.getDeclaredConstructor(Class<?>... parameterTypes).newInstance(Object ... initargs)</b>" method.
+	 * The framework uses {@link DefaultClassInstanceFactory } by default to create an instance with "<b>clazz.getConstructor(Class<?>... parameterTypes).newInstance(Object ... initargs)</b>" method.
 	 * @param <T> The instance class type.
 	 * @param clazz The class of object instance.
 	 * @param parameterTypes The parameter class array of constructor.

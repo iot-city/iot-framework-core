@@ -86,7 +86,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * Set the event listener factory to create an event listener.
 	 * @param factory The event listener factory (it can be set to null when using {@link IoTFramework }.getGlobalInstanceFactory() to create an instance).
 	 */
-	public void setListenerFactory(F factory) {
+	public final void setListenerFactory(F factory) {
 		this.factory = factory;
 	}
 
@@ -95,7 +95,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * It can be null value when using {@link IoTFramework }.getGlobalInstanceFactory() to create an instance.
 	 * @return The event listener factory.
 	 */
-	public F getListenerFactory() {
+	public final F getListenerFactory() {
 		return factory;
 	}
 
@@ -109,7 +109,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	// --------------------------- Public object methods ----------------------------
 
 	@Override
-	public boolean config(BaseEventConfig<T, E, L>[] data, boolean reset) {
+	public final boolean config(BaseEventConfig<T, E, L>[] data, boolean reset) {
 		if (data == null) return false;
 		if (reset) this.clearListeners();
 		for (BaseEventConfig<T, E, L> config : data) {
@@ -122,7 +122,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	/**
 	 * Gets the size for event types.
 	 */
-	public int getTypeSize() {
+	public final int getTypeSize() {
 		return map.size();
 	}
 
@@ -131,7 +131,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param type The event type.
 	 * @return The listener size.
 	 */
-	public int getListenerSize(T type) {
+	public final int getListenerSize(T type) {
 		BaseListenerContainer<T, E, L> context = map.get(type);
 		if (context == null) return 0;
 		return context.size();
@@ -142,7 +142,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param type The event type.
 	 * @param listener The event listener object.
 	 */
-	public void addListener(T type, L listener) {
+	public final void addListener(T type, L listener) {
 		this.addListener(type, listener, 0, null);
 	}
 
@@ -152,7 +152,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param listener The event listener object.
 	 * @param priority The execution order priority for the listener (optional, the priority with the highest value is called first, 0 by default).
 	 */
-	public void addListener(T type, L listener, int priority) {
+	public final void addListener(T type, L listener, int priority) {
 		this.addListener(type, listener, priority, null);
 	}
 
@@ -163,7 +163,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param priority The execution order priority for the listener (optional, the priority with the highest value is called first, 0 by default).
 	 * @param filterEventClass Specifies the class type of event to listen on (optional, the listener will respond to events of the currently specified event type and inherited subclass types).
 	 */
-	public void addListener(T type, L listener, int priority, Class<? extends E> filterEventClass) {
+	public final void addListener(T type, L listener, int priority, Class<? extends E> filterEventClass) {
 		if (type == null || listener == null) return;
 		BaseListenerContainer<T, E, L> context = map.get(type);
 		if (context == null) {
@@ -183,7 +183,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param type The event type (required, not null).
 	 * @return Returns true if the event type has been found; otherwise, returns false.
 	 */
-	public boolean containsType(T type) {
+	public final boolean containsType(T type) {
 		return map.containsKey(type);
 	}
 
@@ -193,7 +193,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param listener The event listener object (required, not null).
 	 * @return Returns true if the event type and the listener has been found; otherwise, returns false.
 	 */
-	public boolean containsListener(T type, L listener) {
+	public final boolean containsListener(T type, L listener) {
 		if (type == null || listener == null) return false;
 		BaseListenerContainer<T, E, L> context = map.get(type);
 		return context == null ? false : context.contains(listener);
@@ -204,7 +204,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param type The event type (required, not null).
 	 * @return Event listeners to process the event data after receiving the event.
 	 */
-	public L[] getListeners(T type) {
+	public final L[] getListeners(T type) {
 		BaseListenerObject<T, E, L>[] objs = getTypeListeners(type);
 		if (objs == null || objs.length == 0) return null;
 		@SuppressWarnings("unchecked")
@@ -222,7 +222,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param listener The event listener object to be removed (required, not null).
 	 * @return Returns true if the listener has been found and removed; otherwise, returns false.
 	 */
-	public boolean removeListener(T type, L listener) {
+	public final boolean removeListener(T type, L listener) {
 		if (type == null || listener == null) return false;
 		BaseListenerContainer<T, E, L> context = map.get(type);
 		return context == null ? false : context.remove(listener);
@@ -232,7 +232,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * Remove listeners by specified event type.
 	 * @param type The event type (required, not null).
 	 */
-	public void removeListeners(T type) {
+	public final void removeListeners(T type) {
 		if (type == null) return;
 		synchronized (lock) {
 			map.remove(type);
@@ -242,7 +242,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	/**
 	 * Clear all listeners in publisher.
 	 */
-	public void clearListeners() {
+	public final void clearListeners() {
 		if (map.size() == 0) return;
 		synchronized (lock) {
 			map.clear();
@@ -279,7 +279,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param type The event type.
 	 * @return Listeners array.
 	 */
-	protected BaseListenerObject<T, E, L>[] getTypeListeners(T type) {
+	protected final BaseListenerObject<T, E, L>[] getTypeListeners(T type) {
 		if (type == null) return null;
 		BaseListenerContainer<T, E, L> context = map.get(type);
 		return context == null ? null : context.getListeners();
@@ -290,7 +290,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 * @param type The class event type.
 	 * @return Listeners list.
 	 */
-	protected List<BaseListenerObject<T, E, L>> getClassListeners(Class<?> type) {
+	protected final List<BaseListenerObject<T, E, L>> getClassListeners(Class<?> type) {
 		List<BaseListenerObject<T, E, L>> list = new ArrayList<>();
 		int typesCount = 0;
 		while (type != null) {

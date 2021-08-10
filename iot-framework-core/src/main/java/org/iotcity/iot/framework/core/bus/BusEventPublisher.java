@@ -15,7 +15,7 @@ import org.iotcity.iot.framework.core.event.BaseListenerObject;
 public final class BusEventPublisher extends BaseEventPublisher<Class<?>, BusEvent, BusEventListener, BusEventListenerFactory> {
 
 	@Override
-	public BusEventListener getListenerInstanceFromFactory(Class<?> type) {
+	public final BusEventListener getListenerInstanceFromFactory(Class<?> type) {
 		final BusEventListenerFactory factory = this.getListenerFactory();
 		if (type == null) {
 			return null;
@@ -32,7 +32,7 @@ public final class BusEventPublisher extends BaseEventPublisher<Class<?>, BusEve
 	}
 
 	@Override
-	public BusEvent publish(BusEvent event) throws IllegalArgumentException {
+	public final BusEvent publish(BusEvent event) throws IllegalArgumentException {
 		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
 		Class<?> eventClass = event.getClass();
 		List<BaseListenerObject<Class<?>, BusEvent, BusEventListener>> listeners = getClassListeners(event.getEventType());

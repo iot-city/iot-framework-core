@@ -36,7 +36,7 @@ public class AnnotationPackages {
 	 * Get all packages that need to be parsed
 	 * @return String[] The package array
 	 */
-	public String[] getParsePackages() {
+	public final String[] getParsePackages() {
 		return this.parsePackages.toArray(new String[this.parsePackages.size()]);
 	}
 
@@ -45,7 +45,7 @@ public class AnnotationPackages {
 	 * @param pkgName The package name or class file name (e.g. "org.iotcity.iot.framework.actor.test")
 	 * @return boolean If returns true, the package is ignored, otherwise will be parsed
 	 */
-	public boolean isIgnoredPackage(String pkgName) {
+	public final boolean isIgnoredPackage(String pkgName) {
 		if (pkgName == null || pkgName.length() == 0 || ignorePackages.size() == 0) return false;
 		if (ignorePackages.contains(pkgName)) return true;
 		if (changed) {
@@ -64,7 +64,7 @@ public class AnnotationPackages {
 	 * @param parsePackages Packages that need to be parsed
 	 * @param ignorePackages Ignore packages, analyzer will skip parse these packages
 	 */
-	public void addAllPackages(String[] parsePackages, String[] ignorePackages) {
+	public final void addAllPackages(String[] parsePackages, String[] ignorePackages) {
 		if (parsePackages != null && parsePackages.length > 0) {
 			for (String pkg : parsePackages) {
 				if (StringHelper.isEmpty(pkg)) continue;
@@ -84,7 +84,7 @@ public class AnnotationPackages {
 	 * Add a package that need to be parsed
 	 * @param pkgName The package full name (e.g. "org.iotcity.iot.framework.actor.test")
 	 */
-	public void addParsePackage(String pkgName) {
+	public final void addParsePackage(String pkgName) {
 		parsePackages.add(pkgName);
 	}
 
@@ -92,14 +92,14 @@ public class AnnotationPackages {
 	 * Remove a package that has been added to parse
 	 * @param pkgName The package full name (e.g. "org.iotcity.iot.framework.actor.test")
 	 */
-	public void removeParsePackage(String pkgName) {
+	public final void removeParsePackage(String pkgName) {
 		parsePackages.remove(pkgName);
 	}
 
 	/**
 	 * Clear all packages that has been added to parse
 	 */
-	public void clearParsePackage() {
+	public final void clearParsePackage() {
 		parsePackages.clear();
 	}
 
@@ -107,7 +107,7 @@ public class AnnotationPackages {
 	 * Add a ignore package, analyzer will skip parse this package
 	 * @param pkgName The package full name (e.g. "org.iotcity.iot.framework.actor.test")
 	 */
-	public void addIgnorePackage(String pkgName) {
+	public final void addIgnorePackage(String pkgName) {
 		ignorePackages.add(pkgName);
 		if (!changed) changed = true;
 	}
@@ -116,7 +116,7 @@ public class AnnotationPackages {
 	 * Remove a ignore package
 	 * @param pkgName The package full name (e.g. "org.iotcity.iot.framework.actor.test")
 	 */
-	public void removeIgnorePackage(String pkgName) {
+	public final void removeIgnorePackage(String pkgName) {
 		ignorePackages.remove(pkgName);
 		if (!changed) changed = true;
 	}
@@ -124,7 +124,7 @@ public class AnnotationPackages {
 	/**
 	 * Clear all ignore packages
 	 */
-	public void clearIgnorePackage() {
+	public final void clearIgnorePackage() {
 		ignorePackages.clear();
 		if (!changed) changed = true;
 	}

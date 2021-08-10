@@ -63,7 +63,7 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	 * Add annotation parser object to analyzer.
 	 * @param parser Annotation parser.
 	 */
-	public void addParser(AnnotationParser parser) {
+	public final void addParser(AnnotationParser parser) {
 		this.parsers.add(parser);
 	}
 
@@ -71,7 +71,7 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	 * Start analyze.
 	 * @throws Exception Throw an exception when an error is encountered.
 	 */
-	public void start() throws Exception {
+	public final void start() throws Exception {
 		if (this.parsers.size() == 0) return;
 		String[] packages = this.getParsePackages();
 		if (packages == null || packages.length == 0) return;
@@ -91,7 +91,7 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	 * @param pkg package name (e.g. "org.iotcity.iot.framework.actor.test").
 	 * @throws Exception Throw an exception when an error is encountered.
 	 */
-	private void analyzePackage(String pkg) throws Exception {
+	private final void analyzePackage(String pkg) throws Exception {
 		// Load resource from file
 		ClassLoader loader = Thread.currentThread().getContextClassLoader();
 		String pkgPath = pkg.replaceAll("\\.", "/");
@@ -130,7 +130,7 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	 * @param startsPackage The start package to analyze.
 	 * @throws Exception Throw an exception when an error is encountered.
 	 */
-	private void analyzeFileClasses(String pkgName, File[] files, String startsPackage) throws Exception {
+	private final void analyzeFileClasses(String pkgName, File[] files, String startsPackage) throws Exception {
 		if (files == null || files.length == 0 || this.isIgnoredPackage(pkgName)) return;
 		for (File f : files) {
 			String fileName = f.getName();
@@ -163,7 +163,7 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	 * @param jar JAR file.
 	 * @throws Exception Throw an exception when an error is encountered.
 	 */
-	private void analyzeJarClasses(String pkgPath, JarFile jar) throws Exception {
+	private final void analyzeJarClasses(String pkgPath, JarFile jar) throws Exception {
 		if (jar == null) return;
 		try {
 			Enumeration<JarEntry> entries = jar.entries();
@@ -192,7 +192,7 @@ public final class AnnotationAnalyzer extends AnnotationPackages {
 	 * @param className Class path name.
 	 * @throws Exception Throw an exception when an error is encountered.
 	 */
-	private void analyzeClass(String className) throws Exception {
+	private final void analyzeClass(String className) throws Exception {
 		if (this.isIgnoredPackage(className)) return;
 		if (this.parseFiles.contains(className)) return;
 		this.parseFiles.add(className);

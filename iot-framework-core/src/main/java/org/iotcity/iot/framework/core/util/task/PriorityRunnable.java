@@ -23,6 +23,13 @@ public abstract class PriorityRunnable implements Comparable<PriorityRunnable>, 
 	private int priority;
 
 	/**
+	 * Constructor for priority supported runnable (0 priority by default).<br/>
+	 */
+	public PriorityRunnable() {
+		this(0);
+	}
+
+	/**
 	 * Constructor for priority supported runnable.
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 */

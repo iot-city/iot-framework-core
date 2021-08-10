@@ -17,13 +17,15 @@ public class PriorityTaskTest extends TestCase {
 	private final Logger logger = FrameworkCore.getLogger();
 	private final Object lock = new Object();
 
-	public void testPriority1() {
-
+	static {
 		IoTFramework.init();
+	}
+
+	public void testPriority1() {
 
 		System.out.println("-------------------- TEST TASK PRIORITY 1 --------------------");
 
-		TaskHandler handler = new TaskHandler("PRIORITY-TEST", 1, 2, 60, 10);
+		TaskHandler handler = TaskHandler.getDefaultHandler();
 
 		AtomicInteger total = new AtomicInteger();
 		AtomicInteger fails = new AtomicInteger();
@@ -68,8 +70,6 @@ public class PriorityTaskTest extends TestCase {
 	}
 
 	public void testPriority2() {
-
-		IoTFramework.init();
 
 		System.out.println("-------------------- TEST TASK PRIORITY 2 --------------------");
 
@@ -118,8 +118,6 @@ public class PriorityTaskTest extends TestCase {
 	}
 
 	public void testNoPriority() {
-
-		IoTFramework.init();
 
 		System.out.println("-------------------- TEST TASK NO PRIORITY --------------------");
 

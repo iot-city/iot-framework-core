@@ -55,7 +55,7 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	/**
 	 * Gets the listener size.
 	 */
-	int size() {
+	final int size() {
 		return map.size();
 	}
 
@@ -65,7 +65,7 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	 * @param priority The execution order priority for the listener (optional, the priority with the highest value is called first, 0 by default).
 	 * @param filterEventClass Specifies the class type of event to listen on (optional, the listener will respond to events of the currently specified event type and inherited subclass types).
 	 */
-	void add(L listener, int priority, Class<? extends E> filterEventClass) {
+	final void add(L listener, int priority, Class<? extends E> filterEventClass) {
 		synchronized (lock) {
 			map.put(listener, new BaseListenerObject<T, E, L>(listener, priority, filterEventClass));
 			if (!modified) modified = true;
@@ -77,7 +77,7 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	 * @param listener Event listener instance to be tested (not null).
 	 * @return Returns true if the data has been found; otherwise, returns false.
 	 */
-	boolean contains(L listener) {
+	final boolean contains(L listener) {
 		return map.containsKey(listener);
 	}
 
@@ -86,7 +86,7 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	 * @param listener Event listener instance to be removed (not null).
 	 * @return Returns true if the data has been found and removed; otherwise, returns false.
 	 */
-	boolean remove(L listener) {
+	final boolean remove(L listener) {
 		synchronized (lock) {
 			if (map.remove(listener) != null) {
 				if (!modified) modified = true;
@@ -100,7 +100,7 @@ final class BaseListenerContainer<T, E extends Event<T>, L extends EventListener
 	/**
 	 * Gets listeners from container (returns null if there is no listener).
 	 */
-	BaseListenerObject<T, E, L>[] getListeners() {
+	final BaseListenerObject<T, E, L>[] getListeners() {
 		if (modified) {
 			synchronized (lock) {
 				if (modified) {

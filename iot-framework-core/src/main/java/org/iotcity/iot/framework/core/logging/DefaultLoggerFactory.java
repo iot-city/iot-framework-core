@@ -1,28 +1,12 @@
 package org.iotcity.iot.framework.core.logging;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import org.iotcity.iot.framework.core.util.config.PropertiesMap;
-import org.iotcity.iot.framework.core.util.helper.StringHelper;
 
 /**
  * Default logger factory using console to output information.
  * @author Ardon
  */
-public class DefaultLoggerFactory implements LoggerFactory {
-
-	// --------------------------- Private fields ----------------------------
-
-	/**
-	 * Root logger object.
-	 */
-	private Logger root;
-	/**
-	 * The loggers of current factory, the key is name, the value is the logger object.
-	 */
-	private final Map<String, Logger> loggers = new HashMap<>();
+public final class DefaultLoggerFactory extends BaseLoggerFactory {
 
 	// --------------------------- Constructor ----------------------------
 
@@ -31,151 +15,42 @@ public class DefaultLoggerFactory implements LoggerFactory {
 	 * <b>This constructor will automatically create the root logger object.</b>
 	 */
 	public DefaultLoggerFactory() {
-		this(true);
+		super(true);
 	}
 
-	/**
-	 * Constructor for default logger factory.
-	 * @param createRoot Specify whether the root logger object needs to be created. If it is set to false, it will not be created. If it is set to true, it will be created automatically.
-	 */
-	public DefaultLoggerFactory(boolean createRoot) {
-		if (!createRoot) return;
-		DefaultLogger logger = new DefaultLogger("ROOT", true, null, 0, null);
-		logger.config(LogLevel.getDefaultLevels(), false);
-		setRootLogger(logger);
+	// --------------------------- Inner methods ----------------------------
+
+	@Override
+	protected final Logger createLogger(String name, boolean colorful, Class<?> clazz, int callerDepth, Map<String, LogLevel> levels) {
+		return new DefaultLogger(name, colorful, clazz, callerDepth, levels);
 	}
 
-	// --------------------------- Public methods ----------------------------
+	// --------------------------- Default logger class ----------------------------
 
 	/**
-	 * Set the root logger object.
-	 * @param logger Logger object (required, not null).
+	 * The default logger using console to output information.<br/>
+	 * Use System.out.println() and System.err.println() to log messages.
+	 * @author Ardon
 	 */
-	public void setRootLogger(Logger logger) {
-		if (logger == null) return;
-		this.root = logger;
-	}
+	final class DefaultLogger extends BaseLogger {
 
-	/**
-	 * Gets the root logger object.
-	 * @return Logger object.
-	 */
-	public Logger getRootLogger() {
-		return root;
-	}
-
-	/**
-	 * Gets loggers size in factory (excluding root logger).
-	 * @return Loggers size.
-	 */
-	public int size() {
-		return this.loggers.size();
-	}
-
-	/**
-	 * Add a logger to factory.
-	 * @param name Logger name (required, not null or empty).
-	 * @param logger Logger object (required, not null).
-	 */
-	public void addLogger(String name, Logger logger) {
-		if (logger == null || StringHelper.isEmpty(name)) return;
-		synchronized (loggers) {
-			loggers.put(name.toUpperCase(), logger);
+		/**
+		 * Constructor for default logger.
+		 * @param name Logger name.
+		 * @param colorful Whether to use multiple colors to display log information.
+		 * @param clazz The Class whose name should be used in message. If null it will default to the calling class.
+		 * @param callerDepth The depth from get logger method to the logging message method (0 by default).
+		 * @param levels The configure map for all levels, the key is level name with upper case, the value is level configure (required, not null).
+		 */
+		DefaultLogger(String name, boolean colorful, Class<?> clazz, int callerDepth, Map<String, LogLevel> levels) {
+			super(name, colorful, clazz, callerDepth, levels);
 		}
-	}
 
-	/**
-	 * Returns true if this factory contains the logger name.
-	 * @param name Logger name (required, not null or empty).
-	 * @return Returns true if this factor contains the logger name; otherwise, returns false.
-	 */
-	public boolean containsLogger(String name) {
-		if (StringHelper.isEmpty(name)) return false;
-		return loggers.containsKey(name);
-	}
-
-	/**
-	 * Remove a logger from factory.
-	 * @param name Logger name (required, not null or empty).
-	 * @return Logger object (returns null if not exists).
-	 */
-	public Logger removeLogger(String name) {
-		if (StringHelper.isEmpty(name)) return null;
-		synchronized (loggers) {
-			return loggers.remove(name.toUpperCase());
+		@Override
+		public final Logger newInstance(String name, Class<?> clazz, int callerDepth) {
+			return new DefaultLogger(name, colorful, clazz, callerDepth, levels);
 		}
-	}
 
-	/**
-	 * Clear all loggers (excluding root logger).
-	 */
-	public void clearLoggers() {
-		synchronized (loggers) {
-			loggers.clear();
-		}
-	}
-
-	// --------------------------- Override methods ----------------------------
-
-	@Override
-	public boolean config(LoggerConfig[] data, boolean reset) {
-		if (data == null) return false;
-		if (reset) this.clearLoggers();
-		// Traverse all configures
-		for (LoggerConfig config : data) {
-			if (config == null || StringHelper.isEmpty(config.name)) continue;
-			// Get config info
-			PropertiesMap<LoggerConfigLevel> map = config.levels;
-			if (map == null || map.size() == 0) continue;
-			// Create map
-			Map<String, LogLevel> levels = new HashMap<>();
-			// Check for all
-			if (map.containsKey("all") || map.containsKey("ALL")) {
-				LogLevel[] lvs = LogLevel.getDefaultLevels();
-				for (LogLevel level : lvs) {
-					levels.put(level.name.toUpperCase(), level);
-				}
-			}
-			// Check for others
-			for (Entry<String, LoggerConfigLevel> kv : map.entrySet()) {
-				String name = kv.getKey();
-				if ("all".equalsIgnoreCase(name)) continue;
-				LogLevel level = LogLevel.getLogLevel(name, kv.getValue());
-				if (level == null) continue;
-				levels.put(name.toUpperCase(), level);
-			}
-			// Create logger
-			DefaultLogger logger = new DefaultLogger(config.name, config.colorful, null, 0, levels);
-			if (config.forRoot) {
-				this.setRootLogger(logger);
-			} else {
-				this.addLogger(config.name, logger);
-			}
-		}
-		return true;
-	}
-
-	@Override
-	public Logger getLogger() {
-		return this.root.newInstance("", null, 0);
-	}
-
-	@Override
-	public Logger getLogger(String name) {
-		return this.getLogger(name, null, 0);
-	}
-
-	@Override
-	public Logger getLogger(String name, Class<?> clazz) {
-		return this.getLogger(name, clazz, 0);
-	}
-
-	@Override
-	public Logger getLogger(String name, Class<?> clazz, int callerDepth) {
-		if (StringHelper.isEmpty(name)) return root.newInstance(name, clazz, callerDepth);
-		Logger logger = loggers.get(name.toUpperCase());
-		if (logger == null) return root.newInstance(name, clazz, callerDepth);
-		return logger.newInstance(name, clazz, callerDepth);
 	}
 
 }

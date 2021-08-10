@@ -45,7 +45,7 @@ public class ClassEventPublisher extends BaseEventPublisher<Class<?>, ClassEvent
 	}
 
 	@Override
-	public ClassEvent publish(ClassEvent event) throws IllegalArgumentException {
+	public final ClassEvent publish(ClassEvent event) throws IllegalArgumentException {
 		if (superClassEvents) {
 			if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
 			Class<?> eventClass = event.getClass();

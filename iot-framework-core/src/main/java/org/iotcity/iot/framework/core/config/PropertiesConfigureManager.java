@@ -43,7 +43,7 @@ public class PropertiesConfigureManager implements ConfigureManager {
 	 * @param file The properties configure file object used to specify the source of the properties file.
 	 * @param reset Whether reset the data of the current configurable object before configuration.
 	 */
-	protected <T> void addInternal(PropertiesConfigure<T> configure, Configurable<T> configurable, PropertiesConfigFile file, boolean reset) {
+	protected final <T> void addInternal(PropertiesConfigure<T> configure, Configurable<T> configurable, PropertiesConfigFile file, boolean reset) {
 		String prefix = configure.getPrefixKey();
 		if (StringHelper.isEmpty(prefix)) return;
 		internal.put(prefix, new ConfigureData<T>(configure, configurable, file, reset));
@@ -56,7 +56,7 @@ public class PropertiesConfigureManager implements ConfigureManager {
 	 * @param configurable Configurable object for automatic configuration.
 	 * @param reset Whether reset the data of the current configurable object before configuration.
 	 */
-	protected <T> void addExternal(PropertiesConfigure<T> configure, Configurable<T> configurable, boolean reset) {
+	protected final <T> void addExternal(PropertiesConfigure<T> configure, Configurable<T> configurable, boolean reset) {
 		String prefix = configure.getPrefixKey();
 		if (StringHelper.isEmpty(prefix)) return;
 		external.put(prefix, new ConfigureData<T>(configure, configurable, configure.getDefaultExternalFile(), reset));
@@ -68,7 +68,7 @@ public class PropertiesConfigureManager implements ConfigureManager {
 	 * Gets the external prefix keys to generate properties configure files information.
 	 * @return The file prefix keys.
 	 */
-	public String[] getExternalKeys() {
+	public final String[] getExternalKeys() {
 		return external.keySet().toArray(new String[external.size()]);
 	}
 
@@ -77,7 +77,7 @@ public class PropertiesConfigureManager implements ConfigureManager {
 	 * @param prefixKey The prefix key of configuration object.
 	 * @param file The properties configure file object.
 	 */
-	public void setExternalFile(String prefixKey, PropertiesConfigFile file) {
+	public final void setExternalFile(String prefixKey, PropertiesConfigFile file) {
 		if (file == null || StringHelper.isEmpty(file.file) || StringHelper.isEmpty(prefixKey)) return;
 		ConfigureData<?> data = external.get(prefixKey);
 		if (data == null) return;
@@ -85,7 +85,7 @@ public class PropertiesConfigureManager implements ConfigureManager {
 	}
 
 	@Override
-	public boolean perform() {
+	public final boolean perform() {
 		boolean succeed = true;
 		// Configure all internal configurations first
 		for (ConfigureData<?> data : internal.values()) {
@@ -109,7 +109,7 @@ public class PropertiesConfigureManager implements ConfigureManager {
 	 * @author Ardon
 	 * @date 2021-04-25
 	 */
-	class ConfigureData<T> {
+	final class ConfigureData<T> {
 
 		/**
 		 * Automatic properties configuration object.
@@ -146,7 +146,8 @@ public class PropertiesConfigureManager implements ConfigureManager {
 		 * Do configuration.
 		 * @return Returns true if configuration is successful; otherwise, returns false.
 		 */
-		boolean config() {
+		final boolean config() {
+			if (file == null) return true;
 			if (!file.fromPackage) {
 				// Output message
 				JavaHelper.log("External file: " + configure.getPrefixKey() + " >> " + file.file);

@@ -23,14 +23,15 @@ public class CoreConfigureManager extends PropertiesConfigureManager {
 		file.file = "org/iotcity/iot/framework/core/resources/i18n-core-config.properties";
 		file.fromPackage = true;
 		this.addInternal(new LocaleConfigure(), IoTFramework.getLocaleFactory(), file, false);
-		// For external i18n locale configure
-		this.addExternal(new LocaleConfigure(), IoTFramework.getLocaleFactory(), false);
 
 		// For internal logging configure
 		file = new PropertiesConfigFile();
 		file.file = "org/iotcity/iot/framework/core/resources/logging-core-config.properties";
 		file.fromPackage = true;
 		this.addInternal(new LoggerConfigure(), IoTFramework.getLoggerFactory(), file, false);
+
+		// For external i18n locale configure
+		this.addExternal(new LocaleConfigure(), IoTFramework.getLocaleFactory(), false);
 		// For external logging configure
 		this.addExternal(new LoggerConfigure(), IoTFramework.getLoggerFactory(), false);
 

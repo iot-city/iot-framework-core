@@ -11,6 +11,7 @@ import org.iotcity.iot.framework.core.config.PropertiesConfigFile;
 import org.iotcity.iot.framework.core.config.PropertiesConfigureManager;
 import org.iotcity.iot.framework.core.logging.Logger;
 import org.iotcity.iot.framework.core.util.config.PropertiesLoader;
+import org.iotcity.iot.framework.core.util.helper.ConvertHelper;
 import org.iotcity.iot.framework.core.util.helper.FileHelper;
 import org.iotcity.iot.framework.core.util.helper.JavaHelper;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
@@ -22,12 +23,56 @@ import org.iotcity.iot.framework.core.util.helper.StringHelper;
  */
 public final class ConfigureHandler {
 
-	// --------------------------- Private static fields ----------------------------
+	// --------------------------- Static field ----------------------------
 
 	/**
-	 * The framework configure root file.
+	 * The configuration properties.
 	 */
-	private static final String CONFIG_FILE = "framework.properties";
+	private static final Properties frameworkProps = loadFrameworkConfiguration();
+
+	// --------------------------- Static method ----------------------------
+
+	/**
+	 * Load the framework configuration properties (returns not null).
+	 */
+	private static final Properties loadFrameworkConfiguration() {
+
+		// Get the framework configuration file name.
+		String configFile = System.getProperty("framework.file", "framework.properties");
+		if (StringHelper.isEmpty(configFile)) configFile = "framework.properties";
+		// Get the framework file encoding.
+		String encoding = System.getProperty("framework.file.encoding", "UTF-8");
+		// Get the framework file package option.
+		boolean fromPackage = ConvertHelper.toBoolean(System.getProperty("framework.file.fromPackage"), false);
+
+		// The properties object.
+		Properties props;
+		// Gets the configure file
+		PropertiesConfigFile file = new PropertiesConfigFile(configFile, encoding, fromPackage);
+		if (file.fromPackage) {
+			// Load properties from package
+			props = PropertiesLoader.loadProperties(file);
+		} else {
+			// Ignore configuration files that do not exist
+			String filePathName = FileHelper.toLocalDirectory(file.file, false);
+			if (FileHelper.exists(filePathName)) {
+				// Load properties from directory
+				props = PropertiesLoader.loadProperties(file);
+			} else {
+				props = null;
+			}
+		}
+
+		// Return object.
+		return props == null ? new Properties() : props;
+	}
+
+	/**
+	 * Gets the framework configuration properties (returns not null).
+	 */
+	public static final Properties getFrameworkConfiguration() {
+		return frameworkProps;
+	}
 
 	// --------------------------- Private fields ----------------------------
 
@@ -43,10 +88,6 @@ public final class ConfigureHandler {
 	 * Configuration classes waiting for execution.
 	 */
 	private final Set<Class<? extends ConfigureManager>> managers = new HashSet<>();
-	/**
-	 * The configuration properties.
-	 */
-	private Properties props = null;
 
 	// --------------------------- Initialize method ----------------------------
 
@@ -54,36 +95,13 @@ public final class ConfigureHandler {
 	 * Initialize configure managers.
 	 * @param options Framework startup options data object.
 	 */
-	void init(FrameworkOptions options) {
+	final void init(FrameworkOptions options) {
 
 		// Output messages
 		JavaHelper.log("========================================== LOADING FRAMEWORK RESOURCES ==========================================");
 
-		// -------------------- Load configure file --------------------
-
-		// Gets the configure file
-		PropertiesConfigFile file;
-		if (options == null || options.frameworkFile == null || StringHelper.isEmpty(options.frameworkFile.file)) {
-			file = new PropertiesConfigFile(CONFIG_FILE, "UTF-8", false);
-		} else {
-			file = options.frameworkFile;
-		}
-		if (file.fromPackage) {
-			// Load properties from package
-			props = PropertiesLoader.loadProperties(file);
-		} else {
-			// Ignore configuration files that do not exist
-			String filePathName = FileHelper.toLocalDirectory(file.file, false);
-			if (FileHelper.exists(filePathName)) {
-				// Load properties from directory
-				props = PropertiesLoader.loadProperties(file);
-			}
-		}
-
 		// Initialize core configure manager
 		this.perform(CoreConfigureManager.class);
-
-		// -------------------- Search configure manager --------------------
 
 		// Search for configure manager class and events
 		AnnotationAnalyzer analyzer = new AnnotationAnalyzer();
@@ -128,7 +146,7 @@ public final class ConfigureHandler {
 	 * Add a configure manager class to handler.
 	 * @param managerClass Configure manager class.
 	 */
-	public <T extends ConfigureManager> void addManager(Class<T> managerClass) {
+	public final <T extends ConfigureManager> void addManager(Class<T> managerClass) {
 		if (managerClass == null || executed.contains(managerClass) || managers.contains(managerClass)) return;
 		synchronized (lock) {
 			if (executed.contains(managerClass) || managers.contains(managerClass)) return;
@@ -140,7 +158,7 @@ public final class ConfigureHandler {
 	 * Perform all configuration managers immediately.
 	 * @return Returns true if configurations are successful; otherwise, returns false.
 	 */
-	public boolean performAll() {
+	public final boolean performAll() {
 		boolean succeed = true;
 		synchronized (lock) {
 			// Check size
@@ -160,7 +178,7 @@ public final class ConfigureHandler {
 	 * @param managerClass Configure manager class.
 	 * @return Returns true if configuration is successful; otherwise, returns false.
 	 */
-	public boolean perform(Class<? extends ConfigureManager> managerClass) {
+	public final boolean perform(Class<? extends ConfigureManager> managerClass) {
 		if (managerClass == null) return false;
 		synchronized (lock) {
 			if (executed.contains(managerClass)) return true;
@@ -169,7 +187,10 @@ public final class ConfigureHandler {
 				if (PropertiesConfigureManager.class.isAssignableFrom(managerClass)) {
 					// Set configure file to configure manager
 					PropertiesConfigureManager pm = IoTFramework.getInstance(managerClass);
-					if (props != null) {
+					// Get the framework files configuration.
+					Properties props = getFrameworkConfiguration();
+					// Check the size.
+					if (props.size() > 0) {
 						PropertiesConfigFile file;
 						String[] keys = pm.getExternalKeys();
 						if (keys != null && keys.length > 0) {

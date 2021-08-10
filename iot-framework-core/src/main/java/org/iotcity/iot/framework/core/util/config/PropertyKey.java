@@ -22,7 +22,7 @@ final class PropertyKey {
 	 * @param prefix The prefix string of current configure key.
 	 */
 	PropertyKey(String key, String prefix) {
-		int pos = key.lastIndexOf('.');
+		int pos = key.indexOf('.');
 		if (pos == -1) {
 			this.key = key;
 			this.prefix = prefix + "." + key;

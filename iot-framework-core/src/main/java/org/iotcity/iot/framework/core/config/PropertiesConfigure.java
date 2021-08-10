@@ -32,7 +32,7 @@ public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 	 * @param configFile The configure properties file information to load (required, not null).
 	 * @return Returns true if the configuration file is loaded successfully; otherwise, returns false.
 	 */
-	public boolean load(PropertiesConfigFile configFile) throws IllegalArgumentException {
+	public final boolean load(PropertiesConfigFile configFile) throws IllegalArgumentException {
 		if (configFile == null || StringHelper.isEmpty(configFile.file)) return false;
 		this.props = PropertiesLoader.loadProperties(configFile.file, configFile.encoding, configFile.fromPackage);
 		return this.props != null;
@@ -44,7 +44,7 @@ public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 	 * Gets the properties object that has been loaded (null when file is not loaded).
 	 * @return The properties object.
 	 */
-	public Properties getProperties() {
+	public final Properties getProperties() {
 		return props;
 	}
 
@@ -56,7 +56,7 @@ public abstract class PropertiesConfigure<T> implements AutoConfigure<T> {
 	 * @param reset Whether reset the data of the current configurable object.
 	 * @return Returns true if configuration is successful; otherwise, returns false.
 	 */
-	public boolean config(PropertiesConfigFile configFile, Configurable<T> configurable, boolean reset) {
+	public final boolean config(PropertiesConfigFile configFile, Configurable<T> configurable, boolean reset) {
 		return this.load(configFile) && this.config(configurable, reset);
 	}
 

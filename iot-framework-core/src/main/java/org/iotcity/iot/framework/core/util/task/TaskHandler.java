@@ -6,8 +6,10 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.iotcity.iot.framework.ConfigureHandler;
 import org.iotcity.iot.framework.core.beans.ThreadLocalPostman;
 import org.iotcity.iot.framework.core.beans.ThreadPoolSupport;
+import org.iotcity.iot.framework.core.util.config.PropertiesLoader;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
 import org.iotcity.iot.framework.core.util.helper.SystemHelper;
 
@@ -114,7 +116,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Gets a default global task handler instance object (returns not null).<br/>
-	 * Use parameters below:<br/>
+	 * Use parameters below or use the framework configuration parameters:<br/>
 	 * <b>corePoolSize: 8, maximumPoolSize: 8, keepAliveTime: 60s, queueCapacity: 1000</b>
 	 * @return Task handler object.
 	 */
@@ -122,7 +124,14 @@ public final class TaskHandler implements ThreadPoolSupport {
 		if (instance != null) return instance;
 		synchronized (instanceLock) {
 			if (instance != null) return instance;
-			instance = new TaskHandler("Default");
+			// Gets the global configuration.
+			TaskThreadPoolConfig config = PropertiesLoader.getConfigBean(TaskThreadPoolConfig.class, ConfigureHandler.getFrameworkConfiguration(), "iot.framework.global.task.pool");
+			// Create instance.
+			if (config == null) {
+				instance = new TaskHandler("Default", 8, 8, 60, 1600);
+			} else {
+				instance = new TaskHandler("Default", config.corePoolSize, config.maximumPoolSize, config.keepAliveTime, config.capacity);
+			}
 		}
 		return instance;
 	}

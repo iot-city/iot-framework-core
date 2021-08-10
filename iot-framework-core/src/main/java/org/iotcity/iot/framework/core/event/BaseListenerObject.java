@@ -5,7 +5,7 @@ package org.iotcity.iot.framework.core.event;
  * @author ardon
  * @date 2021-05-12
  */
-public class BaseListenerObject<T, E extends Event<T>, L extends EventListener<T, E>> {
+public final class BaseListenerObject<T, E extends Event<T>, L extends EventListener<T, E>> {
 
 	/**
 	 * Event listener instance (not null).

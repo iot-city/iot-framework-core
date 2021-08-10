@@ -24,7 +24,7 @@ public final class BusDataListenerParser implements AnnotationParser {
 	}
 
 	@Override
-	public void parse(Class<?> clazz) {
+	public final void parse(Class<?> clazz) {
 		// Filtrate the listener class
 		if (clazz.isInterface() || !clazz.isAnnotationPresent(BusDataListener.class)) return;
 		if (!BusEventListener.class.isAssignableFrom(clazz)) {

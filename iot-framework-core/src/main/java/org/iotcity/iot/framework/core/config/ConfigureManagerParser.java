@@ -25,7 +25,7 @@ public final class ConfigureManagerParser implements AnnotationParser {
 	}
 
 	@Override
-	public void parse(Class<?> clazz) {
+	public final void parse(Class<?> clazz) {
 		// Filtrate the manager class
 		if (clazz.isInterface() || !clazz.isAnnotationPresent(AutoConfigureManager.class)) return;
 		if (!ConfigureManager.class.isAssignableFrom(clazz)) {
