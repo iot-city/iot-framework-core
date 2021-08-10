@@ -6,10 +6,10 @@ import java.util.Map;
  * Default locale factory.
  * @author Ardon
  */
-public class DefaultLocaleFacotry extends BaseLocaleFacotry {
+public final class DefaultLocaleFacotry extends BaseLocaleFacotry {
 
 	@Override
-	protected LocaleText createLocaleText(String name, String lang, Map<Object, Object> texts) {
+	protected final LocaleText createLocaleText(String name, String lang, Map<Object, Object> texts) {
 		return new BaseLocaleText(name, lang, texts);
 	}
 
