@@ -14,9 +14,9 @@ public class LocaleConfig {
 	 */
 	public String name;
 	/**
-	 * Whether enable this configuration.
+	 * Whether enable this configuration (true by default)..
 	 */
-	public boolean enabled;
+	public boolean enabled = true;
 	/**
 	 * Default language key for this locale (e.g. "en_US").
 	 */

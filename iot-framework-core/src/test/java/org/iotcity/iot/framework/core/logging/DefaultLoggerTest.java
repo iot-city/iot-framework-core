@@ -31,7 +31,7 @@ public class DefaultLoggerTest extends TestCase {
 
 		LoggerConfigure configure = new LoggerConfigure();
 		PropertiesConfigFile file = new PropertiesConfigFile();
-		file.file = "org/iotcity/iot/framework/core/logging/iot-logger-template.properties";
+		file.file = "org/iotcity/iot/framework/core/logging/framework-logging-test.properties";
 		file.fromPackage = true;
 		configure.config(file, factory, true);
 

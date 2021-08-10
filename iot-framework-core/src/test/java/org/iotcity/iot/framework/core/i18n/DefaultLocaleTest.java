@@ -27,7 +27,7 @@ public class DefaultLocaleTest extends TestCase {
 
 		LocaleConfigure configure = new LocaleConfigure();
 		PropertiesConfigFile file = new PropertiesConfigFile();
-		file.file = "org/iotcity/iot/framework/core/i18n/iot-i18n-template.properties";
+		file.file = "org/iotcity/iot/framework/core/i18n/framework-i18n-test.properties";
 		file.fromPackage = true;
 		configure.config(file, factory, true);
 
