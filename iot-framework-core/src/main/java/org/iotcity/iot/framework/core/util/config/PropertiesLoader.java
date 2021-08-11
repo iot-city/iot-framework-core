@@ -397,13 +397,13 @@ public final class PropertiesLoader {
 			for (int i = 0, c = values.length; i < c; i++) {
 				String k = values[i];
 				if (StringHelper.isEmpty(k)) continue;
-				PropertyKey pkey = new PropertyKey(k, prefix);
-				String enabled = props.getProperty(pkey.prefix);
+				String keyPrefix = getArrayPrefix(k, prefix);
+				String enabled = props.getProperty(keyPrefix);
 				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
 				try {
 					Object v = IoTFramework.getInstance(beanClass);
 					Array.set(array, i, v);
-					fillConfigBean(beanClass, v, props, pkey.prefix + ".");
+					fillConfigBean(beanClass, v, props, keyPrefix + ".");
 				} catch (Exception e) {
 					JavaHelper.err("Gets an array configured from properties error: " + e.getMessage());
 					e.printStackTrace();
@@ -460,13 +460,13 @@ public final class PropertiesLoader {
 			for (int i = 0, c = values.length; i < c; i++) {
 				String k = values[i];
 				if (StringHelper.isEmpty(k)) continue;
-				PropertyKey pkey = new PropertyKey(k, prefix);
-				String enabled = props.getProperty(pkey.prefix);
+				String keyPrefix = getArrayPrefix(k, prefix);
+				String enabled = props.getProperty(keyPrefix);
 				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
 				try {
 					T v = IoTFramework.getInstance(beanClass);
 					list.add(v);
-					fillConfigBean(beanClass, v, props, pkey.prefix + ".");
+					fillConfigBean(beanClass, v, props, keyPrefix + ".");
 				} catch (Exception e) {
 					JavaHelper.err("Gets a list configured from properties error: " + e.getMessage());
 					e.printStackTrace();
@@ -512,10 +512,13 @@ public final class PropertiesLoader {
 			for (int i = 0, c = values.length; i < c; i++) {
 				String k = values[i];
 				if (StringHelper.isEmpty(k)) continue;
-				PropertyKey pkey = new PropertyKey(k, prefix);
-				@SuppressWarnings("unchecked")
-				T v = (T) ConvertHelper.convertTo(beanClass, props.get(pkey.prefix), defaultValue);
-				map.put(pkey.key, v);
+				// Gets the map keys.
+				PropertiesMapKey[] keys = getMapKeys(props, k, prefix);
+				for (PropertiesMapKey mkey : keys) {
+					@SuppressWarnings("unchecked")
+					T v = (T) ConvertHelper.convertTo(beanClass, props.get(mkey.prefix), defaultValue);
+					map.put(mkey.key, v);
+				}
 			}
 		} else {
 			// Convert to a custom data object by section defined
@@ -523,17 +526,22 @@ public final class PropertiesLoader {
 			for (int i = 0, c = values.length; i < c; i++) {
 				String k = values[i];
 				if (StringHelper.isEmpty(k)) continue;
-				PropertyKey pkey = new PropertyKey(k, prefix);
-				String enabled = props.getProperty(pkey.prefix);
-				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
-				try {
-					T v = IoTFramework.getInstance(beanClass);
-					map.put(pkey.key, v);
-					fillConfigBean(beanClass, v, props, pkey.prefix + ".");
-				} catch (Exception e) {
-					JavaHelper.err("Gets a properties map configured from properties error: " + e.getMessage());
-					e.printStackTrace();
-					return false;
+				// Gets the map keys.
+				PropertiesMapKey[] keys = getMapKeys(props, k, prefix);
+				for (PropertiesMapKey mkey : keys) {
+					// Check bean enabled options.
+					String enabled = props.getProperty(mkey.prefix);
+					if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
+					try {
+						// Create the bean.
+						T v = IoTFramework.getInstance(beanClass);
+						map.put(mkey.key, v);
+						fillConfigBean(beanClass, v, props, mkey.prefix + ".");
+					} catch (Exception e) {
+						JavaHelper.err("Gets a properties map configured from properties error: " + e.getMessage());
+						e.printStackTrace();
+						return false;
+					}
 				}
 			}
 		}
@@ -543,11 +551,70 @@ public final class PropertiesLoader {
 	// --------------------------------- Fill configure bean methods ---------------------------------
 
 	/**
+	 * Gets the array or list prefix by configuration key.
+	 * @param key The configuration key.
+	 * @param prefix The prefix string of current configure key.
+	 * @return The prefix string for key.
+	 */
+	private static final String getArrayPrefix(String key, String prefix) {
+		int pos = key.indexOf('.');
+		if (pos == -1) {
+			return prefix + "." + key;
+		} else {
+			return key;
+		}
+	}
+
+	/**
+	 * Gets the map prefix and key configuration array.
+	 * @param props The properties object.
+	 * @param key The configuration key.
+	 * @param prefix The prefix string of current configure key.
+	 * @return The map key information array.
+	 */
+	private static final PropertiesMapKey[] getMapKeys(Properties props, String key, String prefix) {
+		// Use the fuzzy matching pattern to search properties key.
+		if (key.endsWith("*")) {
+			// Get the starts key.
+			int startsLen = key.length() - 1;
+			if (startsLen == 0) return new PropertiesMapKey[0];
+			String startsKey = key.substring(0, startsLen);
+			List<PropertiesMapKey> pkeys = new ArrayList<>();
+			// Traverses the keys set.
+			for (Object pkey : props.keySet()) {
+				// Find the properties keys that starts with the specified key.
+				String propKey = pkey.toString();
+				if (propKey.startsWith(startsKey)) {
+					String mapKey = propKey.substring(startsLen);
+					pkeys.add(new PropertiesMapKey(mapKey, propKey));
+				}
+			}
+			// Return the map key information.
+			return pkeys.toArray(new PropertiesMapKey[pkeys.size()]);
+		} else {
+			// Search the dot.
+			int pos = key.indexOf('.');
+			if (pos == -1) {
+				// No dot in the key.
+				return new PropertiesMapKey[] {
+					new PropertiesMapKey(key, prefix + "." + key)
+				};
+			} else {
+				// Has dot in the key.
+				return new PropertiesMapKey[] {
+					new PropertiesMapKey(key.substring(pos + 1), key)
+				};
+			}
+		}
+	}
+
+	/**
 	 * Split the string into arrays.
 	 * @param str The source string.
 	 * @return String array.
 	 */
 	private static final String[] separateToArray(String str) {
+		if (str.indexOf("\\") == -1) return str.split("\\s*[,;]\\s*");
 		String fixed = str.replaceAll("\\\\,", "\\\\C\r").replaceAll("\\\\;", "\\\\D\r");
 		String[] array = fixed.split("[,;]");
 		for (int i = 0, c = array.length; i < c; i++) {

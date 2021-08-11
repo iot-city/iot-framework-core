@@ -549,7 +549,7 @@ public final class ConvertHelper {
 	 * @return Returns true if supports data conversion; otherwise, returns false.
 	 */
 	public final static boolean isConvertible(Class<?> type) {
-		return type == String.class || JavaHelper.isPrimitive(type) || type == Date.class;
+		return type == String.class || JavaHelper.isPrimitive(type) || type == Date.class || type == Object.class;
 	}
 
 	/**
