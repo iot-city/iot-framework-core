@@ -92,7 +92,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * @param queueCapacity The capacity of blocking queue to cache tasks in thread pool executor (when set to 0, the synchronous queue {@link SynchronousQueue } is used; when set to greater than 0, the bounded priority blocking queue {@link PriorityLimitedBlockingQueue } is used; when set to less than 0, the unbounded priority blocking queue {@link PriorityBlockingQueue } is used).
 	 */
 	public TaskHandler(String name, int corePoolSize, int maximumPoolSize, long keepAliveTime, int queueCapacity) {
-		this(name, createExecutor(corePoolSize, maximumPoolSize, keepAliveTime, queueCapacity), queueCapacity);
+		this(name, createExecutor(name, corePoolSize, maximumPoolSize, keepAliveTime, queueCapacity), queueCapacity);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 */
 	public TaskHandler(String name, ThreadPoolExecutor executor, int queueCapacity) {
 		// Set handler name
-		this.name = StringHelper.isEmpty(name) ? "TaskHandler" : "TaskHandler-" + name;
+		this.name = StringHelper.isEmpty(name) ? "Task-Handler" : "Task-" + name;
 		// Create task queue and timer loop thread
 		this.queue = new TimerTaskQueue(this.name);
 		this.thread = new TimerTaskThread(this.name, this, queue);
@@ -141,13 +141,14 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * <b>NOTE:</b><br/>
 	 * When the <b>corePoolSize</b> equals to the <b>maximumPoolSize</b> and the <b>keepAliveTime</b> greater than 0, <br/>
 	 * the thread pool executor with allow the core threads timeout automatically.
+	 * @param name The handler name used for the loop thread.
 	 * @param corePoolSize The number of threads to keep in the pool.
 	 * @param maximumPoolSize The maximum number of threads to allow in the pool.
 	 * @param keepAliveTime The maximum seconds that excess idle threads will wait for new tasks before terminating.
 	 * @param queueCapacity The capacity of blocking queue to cache tasks in thread pool executor (when set to 0, the synchronous queue {@link SynchronousQueue } is used; when set to greater than 0, the bounded priority blocking queue {@link PriorityLimitedBlockingQueue } is used; when set to less than 0, the unbounded priority blocking queue {@link PriorityBlockingQueue } is used).
 	 * @return A new thread pool executor.
 	 */
-	private static final ThreadPoolExecutor createExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, int queueCapacity) {
+	private static final ThreadPoolExecutor createExecutor(String name, int corePoolSize, int maximumPoolSize, long keepAliveTime, int queueCapacity) {
 		// Define the blocking queue.
 		BlockingQueue<Runnable> queue;
 		// Check queue capacity.
@@ -161,8 +162,10 @@ public final class TaskHandler implements ThreadPoolSupport {
 			// Create a bounded priority blocking queue.
 			queue = new PriorityBlockingQueue<Runnable>();
 		}
+		// Create thread factory.
+		NamedThreadFactory factory = new NamedThreadFactory(StringHelper.isEmpty(name) ? "Task-Handler" : "Task-" + name);
 		// Create the executor.
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, queue, new ThreadPoolExecutor.AbortPolicy());
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, queue, factory, new ThreadPoolExecutor.AbortPolicy());
 		// Check the core pool size and maximum pool size.
 		if (corePoolSize == maximumPoolSize && keepAliveTime > 0) {
 			// Set up a core thread pool that automatically increases or decreases.
