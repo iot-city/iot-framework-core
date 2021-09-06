@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.iotcity.iot.framework.IoTFramework;
 import org.iotcity.iot.framework.core.FrameworkCore;
@@ -44,9 +45,21 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 */
 	private final Object lock = new Object();
 	/**
-	 * The listener container map (the key is the event type, the value is the listener container).
+	 * The listener map (the key is the event type, the value is the listener container).
 	 */
 	private final Map<T, BaseListenerContainer<T, E, L>> map = new HashMap<>();
+	/**
+	 * Lock for listener caches.
+	 */
+	private final Object cachesLock = new Object();
+	/**
+	 * The listener caches (the key is the event type, the value is the listener container).
+	 */
+	private final Map<Class<?>, BaseListenerObject<T, E, L>[]> caches = new HashMap<>();
+	/**
+	 * Indicates whether the cache needs to be updated.
+	 */
+	private AtomicBoolean cachesUpdates = new AtomicBoolean();
 	/**
 	 * The event listener to create an event listener (optional, it can be set to null when using {@link IoTFramework }.getGlobalInstanceFactory() to create an instance).
 	 */
@@ -176,6 +189,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 			}
 		}
 		context.add(listener, priority, filterEventClass);
+		cachesUpdates.compareAndSet(false, true);
 	}
 
 	/**
@@ -225,7 +239,10 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	public final boolean removeListener(T type, L listener) {
 		if (type == null || listener == null) return false;
 		BaseListenerContainer<T, E, L> context = map.get(type);
-		return context == null ? false : context.remove(listener);
+		if (context == null) return false;
+		boolean ret = context.remove(listener);
+		if (ret) cachesUpdates.compareAndSet(false, true);
+		return ret;
 	}
 
 	/**
@@ -234,9 +251,11 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	 */
 	public final void removeListeners(T type) {
 		if (type == null) return;
+		boolean success = false;
 		synchronized (lock) {
-			map.remove(type);
+			success = map.remove(type) != null;
 		}
+		if (success) cachesUpdates.compareAndSet(false, true);
 	}
 
 	/**
@@ -247,6 +266,7 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 		synchronized (lock) {
 			map.clear();
 		}
+		cachesUpdates.compareAndSet(false, true);
 	}
 
 	@Override
@@ -288,24 +308,53 @@ public abstract class BaseEventPublisher<T, E extends Event<T>, L extends EventL
 	/**
 	 * Get class event listeners by type (returns including super class listeners, not null).
 	 * @param type The class event type.
-	 * @return Listeners list.
+	 * @return Listeners array.
 	 */
-	protected final List<BaseListenerObject<T, E, L>> getClassListeners(Class<?> type) {
-		List<BaseListenerObject<T, E, L>> list = new ArrayList<>();
-		int typesCount = 0;
-		while (type != null) {
-			BaseListenerContainer<T, E, L> context = map.get(type);
-			if (context != null) {
-				BaseListenerObject<T, E, L>[] listeners = context.getListeners();
-				if (listeners != null && listeners.length > 0) {
-					typesCount++;
-					list.addAll(Arrays.asList(listeners));
-				}
+	protected final BaseListenerObject<T, E, L>[] getClassListeners(Class<?> type) {
+
+		// Check for cache updating.
+		if (cachesUpdates.get() && cachesUpdates.getAndSet(false)) {
+			// Lock for updating.
+			synchronized (cachesLock) {
+				// Clear caches.
+				caches.clear();
 			}
-			type = type.getSuperclass();
 		}
-		if (typesCount > 1) list.sort(COMPARATOR);
-		return list;
+
+		// Gets the listeners from caches.
+		BaseListenerObject<T, E, L>[] ret = caches.get(type);
+		if (ret != null) return ret;
+		// Lock for caches.
+		synchronized (cachesLock) {
+			// Get from caches again.
+			ret = caches.get(type);
+			if (ret != null) return ret;
+
+			// Gets listeners for the class type.
+			List<BaseListenerObject<T, E, L>> list = new ArrayList<>();
+			int typesCount = 0;
+			Class<?> stype = type;
+			while (stype != null) {
+				BaseListenerContainer<T, E, L> context = map.get(stype);
+				if (context != null) {
+					BaseListenerObject<T, E, L>[] listeners = context.getListeners();
+					if (listeners != null && listeners.length > 0) {
+						typesCount++;
+						list.addAll(Arrays.asList(listeners));
+					}
+				}
+				stype = stype.getSuperclass();
+			}
+			if (typesCount > 1) list.sort(COMPARATOR);
+			@SuppressWarnings("unchecked")
+			BaseListenerObject<T, E, L>[] values = (BaseListenerObject<T, E, L>[]) Array.newInstance(BaseListenerObject.class, list.size());
+			values = list.toArray(values);
+			// Set to the map.
+			caches.put(type, values);
+
+			// Return the array.
+			return values;
+		}
 	}
 
 }

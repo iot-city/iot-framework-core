@@ -37,9 +37,9 @@ public final class SystemHelper {
 	// --------------------------- Private fields ----------------------------
 
 	/**
-	 * Local IP address.
+	 * Local address.
 	 */
-	private static String localIP = null;
+	private static InetAddress localAddress = null;
 	/**
 	 * The lock for IP.
 	 */
@@ -57,7 +57,7 @@ public final class SystemHelper {
 	}
 
 	/**
-	 * Test whether the string is local address (return true if IP is null).
+	 * Test whether the string is local address like "127.0.0.1", "localhost", "0.0.0.0", "0.0.0.0.0.0" (return true if IP is null).
 	 * @param ip IP address string.
 	 * @return boolean Whether is the local IP address.
 	 */
@@ -71,21 +71,58 @@ public final class SystemHelper {
 	}
 
 	/**
-	 * Gets the local IP address from OS.
+	 * Gets the local IP address from OS (returns null if an error is encountered.).
 	 * @param force Whether force re acquisition.
 	 * @return String The local IP address.
-	 * @throws Exception Throw an exception when an error is encountered.
 	 */
-	public final static String getLocalIP(boolean force) throws Exception {
-		if (localIP == null || force) {
+	public final static String getLocalIP(boolean force) {
+		if (localAddress == null || force) {
 			synchronized (lock) {
-				if (localIP == null || force) {
-					InetAddress ip = getLocalAddress();
-					if (ip != null) localIP = ip.getHostAddress();
+				if (localAddress == null || force) {
+					try {
+						localAddress = getLocalAddress();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
-		return localIP;
+		return localAddress == null ? null : localAddress.getHostAddress();
+	}
+
+	/**
+	 * Gets the local MAC from OS (returns null if an error is encountered.).
+	 * @param force Whether force re acquisition.
+	 * @return String The local MAC.
+	 */
+	public final static String getLocalMac(boolean force) {
+		if (localAddress == null || force) {
+			synchronized (lock) {
+				if (localAddress == null || force) {
+					try {
+						localAddress = getLocalAddress();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		if (localAddress == null) return null;
+		try {
+			// Gets MAC bytes.
+			byte[] mac = NetworkInterface.getByInetAddress(localAddress).getHardwareAddress();
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < mac.length; i++) {
+				if (i != 0) sb.append("-");
+				String s = Integer.toHexString(mac[i] & 0xFF);
+				sb.append(s.length() == 1 ? "0" + s : s);
+			}
+			// Return MAC string as: D0-27-88-1F-89-51
+			return sb.toString().toUpperCase();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**

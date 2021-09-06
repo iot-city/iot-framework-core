@@ -30,7 +30,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * The instance lock.
 	 */
-	private static Object instanceLock = new Object();
+	private static final Object instanceLock = new Object();
 
 	// --------------------------- Private fields ----------------------------
 

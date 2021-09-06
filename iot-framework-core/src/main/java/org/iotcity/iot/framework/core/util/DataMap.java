@@ -3,10 +3,12 @@ package org.iotcity.iot.framework.core.util;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.iotcity.iot.framework.core.util.helper.ConvertHelper;
 
 /**
+ * Data map that supports data type conversion.
  * @author ardon
  * @date 2021-05-26
  */
@@ -16,6 +18,43 @@ public class DataMap extends HashMap<String, Object> {
 	 * Version ID for serialized form.
 	 */
 	private static final long serialVersionUID = 1L;
+
+	// --------------------------- Constructors ----------------------------
+
+	/**
+	 * Constructs an empty <tt>DataMap</tt> with the default initial capacity (16) and the default load factor (0.75).
+	 */
+	public DataMap() {
+		super();
+	}
+
+	/**
+	 * Constructs an empty <tt>DataMap</tt> with the specified initial capacity and the default load factor (0.75).
+	 * @param initialCapacity the initial capacity.
+	 * @throws IllegalArgumentException if the initial capacity is negative.
+	 */
+	public DataMap(int initialCapacity) {
+		super(initialCapacity);
+	}
+
+	/**
+	 * Constructs an empty <tt>DataMap</tt> with the specified initial capacity and load factor.
+	 * @param initialCapacity the initial capacity.
+	 * @param loadFactor the load factor.
+	 * @throws IllegalArgumentException if the initial capacity is negative or the load factor is non positive.
+	 */
+	public DataMap(int initialCapacity, float loadFactor) {
+		super(initialCapacity, loadFactor);
+	}
+
+	/**
+	 * Constructs a new <tt>DataMap</tt> with the same mappings as the specified <tt>Map</tt>. The <tt>DataMap</tt> is created with default load factor (0.75) and an initial capacity sufficient to hold the mappings in the specified <tt>Map</tt>.
+	 * @param m the map whose mappings are to be placed in this map.
+	 * @throws NullPointerException if the specified map is null.
+	 */
+	public DataMap(Map<? extends String, ? extends Object> m) {
+		super(m);
+	}
 
 	// --------------------------- Public methods ----------------------------
 

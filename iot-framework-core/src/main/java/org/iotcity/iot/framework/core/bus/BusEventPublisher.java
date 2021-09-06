@@ -1,7 +1,5 @@
 package org.iotcity.iot.framework.core.bus;
 
-import java.util.List;
-
 import org.iotcity.iot.framework.IoTFramework;
 import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.event.BaseEventPublisher;
@@ -35,7 +33,7 @@ public final class BusEventPublisher extends BaseEventPublisher<Class<?>, BusEve
 	public final BusEvent publish(BusEvent event) throws IllegalArgumentException {
 		if (event == null) throw new IllegalArgumentException("Parameter event can not be null!");
 		Class<?> eventClass = event.getClass();
-		List<BaseListenerObject<Class<?>, BusEvent, BusEventListener>> listeners = getClassListeners(event.getEventType());
+		BaseListenerObject<Class<?>, BusEvent, BusEventListener>[] listeners = getClassListeners(event.getEventType());
 		for (BaseListenerObject<Class<?>, BusEvent, BusEventListener> object : listeners) {
 			if (event.isStopped()) break;
 			if (object.filterEventClass != null && !object.filterEventClass.isAssignableFrom(eventClass)) {

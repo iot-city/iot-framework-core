@@ -551,6 +551,21 @@ public final class PropertiesLoader {
 	// --------------------------------- Fill configure bean methods ---------------------------------
 
 	/**
+	 * Split the string into arrays.
+	 * @param str The source string.
+	 * @return String array.
+	 */
+	public static final String[] separateToArray(String str) {
+		if (str.indexOf("\\") == -1) return str.split("\\s*[,;]\\s*");
+		String fixed = str.replaceAll("\\\\,", "\\\\C\r").replaceAll("\\\\;", "\\\\D\r");
+		String[] array = fixed.split("[,;]");
+		for (int i = 0, c = array.length; i < c; i++) {
+			array[i] = array[i].replaceAll("\\\\C\r", ",").replaceAll("\\\\D\r", ";").trim();
+		}
+		return array;
+	}
+
+	/**
 	 * Gets the array or list prefix by configuration key.
 	 * @param key The configuration key.
 	 * @param prefix The prefix string of current configure key.
@@ -606,21 +621,6 @@ public final class PropertiesLoader {
 				};
 			}
 		}
-	}
-
-	/**
-	 * Split the string into arrays.
-	 * @param str The source string.
-	 * @return String array.
-	 */
-	private static final String[] separateToArray(String str) {
-		if (str.indexOf("\\") == -1) return str.split("\\s*[,;]\\s*");
-		String fixed = str.replaceAll("\\\\,", "\\\\C\r").replaceAll("\\\\;", "\\\\D\r");
-		String[] array = fixed.split("[,;]");
-		for (int i = 0, c = array.length; i < c; i++) {
-			array[i] = array[i].replaceAll("\\\\C\r", ",").replaceAll("\\\\D\r", ";").trim();
-		}
-		return array;
 	}
 
 	/**
