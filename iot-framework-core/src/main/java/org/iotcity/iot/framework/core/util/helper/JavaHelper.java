@@ -249,11 +249,7 @@ public final class JavaHelper {
 			} else if (type == Date.class) {
 				sb.append("\"").append(ConvertHelper.formatDate((Date) data)).append("\"");
 			} else {
-				if (withPreSimpleName) {
-					sb.append("Object");
-				} else {
-					sb.append("Object(").append(type.getSimpleName()).append(")");
-				}
+				sb.append(data);
 			}
 		}
 	}
