@@ -377,13 +377,14 @@ public final class PropertiesLoader {
 		String value = props.getProperty(prefix);
 		if (StringHelper.isEmptyWithTrim(value)) return null;
 		String[] values = separateToArray(value);
-		if (values.length == 0) return null;
-		Object array = Array.newInstance(beanClass, values.length);
+		int len = values.length;
+		if (len == 0) return null;
+		Object array = Array.newInstance(beanClass, len);
 		if (ConvertHelper.isConvertible(beanClass)) {
 			// Convert convertible data to array
 			// e.g. iot.framework.actor.apps.app1.packages=actors.app1.async, actors.app1.sync
 			Object defaultValue = JavaHelper.getTypeDefaultValue(beanClass);
-			for (int i = 0, c = values.length; i < c; i++) {
+			for (int i = 0; i < len; i++) {
 				String v = values[i];
 				if (beanClass == String.class) {
 					Array.set(array, i, v);
@@ -393,8 +394,9 @@ public final class PropertiesLoader {
 			}
 		} else {
 			// Convert to a custom data object by section defined
+			int pos = 0;
 			// e.g. iot.framework.actor.apps=app1, app2
-			for (int i = 0, c = values.length; i < c; i++) {
+			for (int i = 0; i < len; i++) {
 				String k = values[i];
 				if (StringHelper.isEmpty(k)) continue;
 				String keyPrefix = getArrayPrefix(k, prefix);
@@ -402,12 +404,18 @@ public final class PropertiesLoader {
 				if (!StringHelper.isEmpty(enabled) && !ConvertHelper.toBoolean(enabled, false)) continue;
 				try {
 					Object v = IoTFramework.getInstance(beanClass);
-					Array.set(array, i, v);
+					Array.set(array, pos++, v);
 					fillConfigBean(beanClass, v, props, keyPrefix + ".");
 				} catch (Exception e) {
 					JavaHelper.err("Gets an array configured from properties error: " + e.getMessage());
 					e.printStackTrace();
 				}
+			}
+			// Fix null value element in array.
+			if (pos < len) {
+				Object copy = Array.newInstance(beanClass, pos);
+				System.arraycopy(array, 0, copy, 0, pos);
+				array = copy;
 			}
 		}
 		@SuppressWarnings("unchecked")
@@ -640,7 +648,6 @@ public final class PropertiesLoader {
 	 * Get a data value from props and set it to the field.
 	 */
 	private static final void fillConfigField(Field field, Class<?> type, Object bean, Properties props, String key) throws Exception {
-		if (!props.containsKey(key)) return;
 		field.setAccessible(true);
 		if (ConvertHelper.isConvertible(type)) {
 

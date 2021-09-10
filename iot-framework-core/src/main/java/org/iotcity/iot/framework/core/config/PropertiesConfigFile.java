@@ -44,4 +44,17 @@ public final class PropertiesConfigFile {
 		this.fromPackage = fromPackage;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{file=\"");
+		sb.append(file);
+		sb.append("\", encoding=\"");
+		sb.append(encoding.toString());
+		sb.append("\", fromPackage=");
+		sb.append(fromPackage);
+		sb.append("}");
+		return sb.toString();
+	}
+
 }

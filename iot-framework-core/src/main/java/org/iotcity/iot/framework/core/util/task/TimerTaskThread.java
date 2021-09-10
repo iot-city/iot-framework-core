@@ -1,6 +1,8 @@
 package org.iotcity.iot.framework.core.util.task;
 
 import java.util.Date;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.i18n.LocaleText;
@@ -92,7 +94,7 @@ final class TimerTaskThread extends Thread {
 		// Check started status
 		if (!started) return;
 		// Logs start
-		this.logger.info(this.locale.text("core.util.task.thread.start", this.getName()));
+		// this.logger.info(this.locale.text("core.util.task.thread.start", this.getName()));
 		try {
 			// Do main loop
 			mainLoop();
@@ -166,12 +168,12 @@ final class TimerTaskThread extends Thread {
 			// Check for notify
 			if (waitTimeOnNotify >= 0 && waitTimeOnNotify < waitTime) {
 
-				// Has been notified
-				String end = ConvertHelper.formatDate(new Date(endTime), TIME_FORMAT);
-				String now = ConvertHelper.formatDate(new Date(currentTime), TIME_FORMAT);
-				// Logs message
-				// core.util.task.task.notify=The execution waiting lock has been released in the task handler: "{0}", time before waiting: {1}, current time: {2}, previous wait time: {3} ms, current wait time: {4} ms.
-				logger.trace(locale.text("core.util.task.task.notify", this.getName(), end, now, waitTime, waitTimeOnNotify));
+				// // Has been notified
+				// String end = ConvertHelper.formatDate(new Date(endTime), TIME_FORMAT);
+				// String now = ConvertHelper.formatDate(new Date(currentTime), TIME_FORMAT);
+				// // Logs message
+				// // core.util.task.task.notify=The execution waiting lock has been released in the task handler: "{0}", time before waiting: {1}, current time: {2}, previous wait time: {3} ms, current wait time: {4} ms.
+				// logger.debug(locale.text("core.util.task.task.notify", this.getName(), end, now, waitTime, waitTimeOnNotify));
 
 				// Set actual wait time
 				waitTime = waitTimeOnNotify;
@@ -233,10 +235,21 @@ final class TimerTaskThread extends Thread {
 	}
 
 	/**
+	 * Logs task information.
+	 */
+	void outputTaskInfo() {
+		// Gets the executor.
+		ThreadPoolExecutor executor = handler.getThreadPoolExecutor();
+		// Logs message
+		logger.info(locale.text("core.util.task.info", handler.getName(), executor.getCorePoolSize(), executor.getMaximumPoolSize(), executor.getKeepAliveTime(TimeUnit.SECONDS), handler.getQueueCapacity()));
+	}
+
+	/**
 	 * Logs statistic message.
 	 */
 	void outputStatistic() {
-		// Logs message
+		// Logs task information.
+		outputTaskInfo();
 		// core.util.task.task.stat=------------------ TIMER TASK EXECUTION STATISTIC INFORMATION ------------------
 		logger.info(locale.text("core.util.task.task.stat"));
 		// core.util.task.task.stat.info=Task handler "{0}" statistic of main loop, current tasks: {1}; loop count: {2}; latest records: {3}; execution time: {4} ms(max), {5} ms(min), {6} ms(avg); wait time: {7} ms(avg).

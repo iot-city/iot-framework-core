@@ -55,6 +55,10 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 */
 	private final Object executionLock = new Object();
 	/**
+	 * The capacity of blocking queue to cache tasks in thread pool executor.
+	 */
+	private final int queueCapacity;
+	/**
 	 * Whether has been destroyed.
 	 */
 	private boolean destroyed = false;
@@ -108,8 +112,16 @@ public final class TaskHandler implements ThreadPoolSupport {
 		this.queue = new TimerTaskQueue(this.name);
 		this.thread = new TimerTaskThread(this.name, this, queue);
 		this.executor = executor;
-		// Logs message
-		this.thread.logger.info(thread.locale.text("core.util.task.start", this.name, executor.getCorePoolSize(), executor.getMaximumPoolSize(), executor.getKeepAliveTime(TimeUnit.SECONDS), queueCapacity));
+		this.queueCapacity = queueCapacity;
+		// Output task information.
+		this.addDelayTask(new Runnable() {
+
+			@Override
+			public void run() {
+				thread.outputTaskInfo();
+			}
+
+		}, 1000);
 	}
 
 	// --------------------------- Static methods ----------------------------
@@ -478,6 +490,13 @@ public final class TaskHandler implements ThreadPoolSupport {
 	}
 
 	// --------------------------- Other public methods ----------------------------
+
+	/**
+	 * Gets the capacity of blocking queue to cache tasks in thread pool executor.
+	 */
+	public int getQueueCapacity() {
+		return queueCapacity;
+	}
 
 	/**
 	 * Gets the size of tasks in handler.
