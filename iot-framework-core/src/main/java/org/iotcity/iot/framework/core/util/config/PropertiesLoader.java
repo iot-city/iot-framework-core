@@ -414,7 +414,7 @@ public final class PropertiesLoader {
 			// Fix null value element in array.
 			if (pos < len) {
 				Object copy = Array.newInstance(beanClass, pos);
-				System.arraycopy(array, 0, copy, 0, pos);
+				if (pos > 0) System.arraycopy(array, 0, copy, 0, pos);
 				array = copy;
 			}
 		}

@@ -13,10 +13,14 @@ import org.iotcity.iot.framework.core.logging.LoggerFactory;
  * 
  * <pre>
  * The configuration file of the framework ("framework.properties" by default) can be configured according to the following parameters:<br/>
- * 1. Full parameter configuration:
- * java -jar xxx.jar -Dframework.file=framework.properties -Dframework.file.encoding=UTF-8 -Dframework.file.fromPackage=false<br/>
+ * 1. Full VM parameters configuration:
+ * java -jar xxx.jar 
+ * 		-Dframework.file=framework.properties 
+ * 		-Dframework.file.encoding=UTF-8 
+ * 		-Dframework.file.fromPackage=false 
+ * 		-Dframework.console.colorful=true 
  * 
- * 2. Simple parameter configuration:
+ * 2. Simple VM parameter configuration:
  * java -jar xxx.jar -Dframework.file=framework.properties
  * </pre>
  * 

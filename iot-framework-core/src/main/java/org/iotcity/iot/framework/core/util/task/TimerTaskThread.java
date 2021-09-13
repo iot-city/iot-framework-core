@@ -207,7 +207,7 @@ final class TimerTaskThread extends Thread {
 				String now = ConvertHelper.formatDate(new Date(currentTime), TIME_FORMAT);
 				// Logs message
 				// core.util.task.time.changed=The system time has changed, task handler: "{0}"; execution start time: {1}; execution end (waiting) time: {2}; current time: {3}; wait time: {4} ms; time changes: {5} ({6} ms).
-				logger.warn(locale.text("core.util.task.time.changed", this.getName(), start, end, now, waitTime, ConvertHelper.formatMilliseconds(changes, true), changes));
+				logger.warn(locale.text("core.util.task.time.changed", this.getName(), start, end, now, waitTime, ConvertHelper.formatMilliseconds(changes), changes));
 
 			}
 
@@ -257,13 +257,13 @@ final class TimerTaskThread extends Thread {
 		// Logs statistic message
 		TimerTaskStatistic stat = queue.getStatistic();
 		// core.util.task.task.stat.run=Task handler "{0}" statistic of all tasks, accumulative total tasks: {1}, total execution times: {2}; total run times: {3}; task running: {4}; task finished: {5}; total elapsed time: {6} ({7} ms); elapsed time per run: {8} ({9} ms).
-		logger.info(locale.text("core.util.task.task.stat.run", this.getName(), queue.getLastTaskID(), stat.totalExecuteCount, stat.totalRunTimes, stat.runningTasks, stat.totalFinished, ConvertHelper.formatMilliseconds(stat.totalElapsedTime, true), stat.totalElapsedTime, ConvertHelper.formatMilliseconds(stat.avgElapsedTImePerRun, true), stat.avgElapsedTImePerRun));
+		logger.info(locale.text("core.util.task.task.stat.run", this.getName(), queue.getLastTaskID(), stat.totalExecuteCount, stat.totalRunTimes, stat.runningTasks, stat.totalFinished, ConvertHelper.formatMilliseconds(stat.totalElapsedTime), stat.totalElapsedTime, ConvertHelper.formatMilliseconds(stat.avgElapsedTImePerRun), stat.avgElapsedTImePerRun));
 		// Get busy tasks
 		TimerTaskStatus[] busies = queue.getBusyTaskStatus(3);
 		// Logs task status
 		for (TimerTaskStatus status : busies) {
 			// core.util.task.task.stat.task=Current take a long time task of handler "{0}", task id: {1}; name: {2}; execution times: {3}; run times: {4}; running: {5}; finished: {6}; total elapsed time: {7} ({8} ms); elapsed time per run: {9} ({10} ms); next execution time: {11}.
-			logger.info(locale.text("core.util.task.task.stat.task", this.getName(), status.id, status.name, status.executeCount, status.runTimes, status.running, status.finished, ConvertHelper.formatMilliseconds(status.runElapsedTime, true), status.runElapsedTime, ConvertHelper.formatMilliseconds(status.avgElapsedTImePerRun, true), status.avgElapsedTImePerRun, ConvertHelper.formatDate(new Date(status.nextRunTime), TIME_FORMAT)));
+			logger.info(locale.text("core.util.task.task.stat.task", this.getName(), status.id, status.name, status.executeCount, status.runTimes, status.running, status.finished, ConvertHelper.formatMilliseconds(status.runElapsedTime), status.runElapsedTime, ConvertHelper.formatMilliseconds(status.avgElapsedTImePerRun), status.avgElapsedTImePerRun, ConvertHelper.formatDate(new Date(status.nextRunTime), TIME_FORMAT)));
 		}
 		// core.util.task.task.stat.end=------------------------------------------------------------------------------------
 		logger.info(locale.text("core.util.task.task.stat.end"));

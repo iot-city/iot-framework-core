@@ -21,7 +21,15 @@ public abstract class BaseLoggerFactory implements LoggerFactory {
 	/**
 	 * Indicates whether the log is printed in color (this is a global option for all loggers in this factory).
 	 */
-	private static final boolean loggingColorful = ConvertHelper.toBoolean(ConfigureHandler.getFrameworkConfiguration().getProperty("iot.framework.global.logging.colorful"), false);
+	private static final boolean loggingColorful = getLoggingColorful();
+
+	/**
+	 * Gets the logging colorful configuration.
+	 */
+	private static final boolean getLoggingColorful() {
+		boolean colorful = ConvertHelper.toBoolean(System.getProperty("framework.console.colorful"), false);
+		return ConvertHelper.toBoolean(ConfigureHandler.getFrameworkConfiguration().getProperty("iot.framework.global.console.colorful"), colorful);
+	}
 
 	// --------------------------- Private fields ----------------------------
 

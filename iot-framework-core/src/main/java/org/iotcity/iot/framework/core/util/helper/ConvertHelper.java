@@ -668,12 +668,34 @@ public final class ConvertHelper {
 	}
 
 	/**
-	 * Format milliseconds to "D HH:mm:ss:SSS" format (e.g. format 4834853 milliseconds to "0D 01:20:34.853").
+	 * Format milliseconds to "D HH:mm:ss:SSS" format and return the skip zero prefix value (e.g. format 1234853 milliseconds to "20:34.853").
 	 * @param ms The milliseconds begins from midnight (00:00:00.000).
-	 * @param skipZeroFields Whether ignore the leading data segment with a value of 0 (e.g. Returns "10:24.532" when this data is set to true).
-	 * @return Formated string (e.g. "0D 01:20:34.853").
+	 * @param dayFormat The day character string (optional, "D" by default).
+	 * @return Formated string (e.g. "20:34.853").
 	 */
-	public final static String formatMilliseconds(long ms, boolean skipZeroFields) {
+	public final static String formatMilliseconds(long ms) {
+		return formatMilliseconds(ms, "D", true);
+	}
+
+	/**
+	 * Format milliseconds to "D HH:mm:ss:SSS" format and return the skip zero prefix value (e.g. format 1234853 milliseconds to "20:34.853").
+	 * @param ms The milliseconds begins from midnight (00:00:00.000).
+	 * @param dayFormat The day character string (optional, "D" by default).
+	 * @return Formated string (e.g. "20:34.853").
+	 */
+	public final static String formatMilliseconds(long ms, String dayFormat) {
+		return formatMilliseconds(ms, dayFormat, true);
+	}
+
+	/**
+	 * Format milliseconds to "D HH:mm:ss:SSS" format (e.g. format 1234853 milliseconds to "0D 00:20:34.853").
+	 * @param ms The milliseconds begins from midnight (00:00:00.000).
+	 * @param dayFormat The day character string (optional, "D" by default).
+	 * @param skipZeroPrefix Whether ignore the leading data segment with a value of zero (e.g. Returns "20:34.853" when this data is set to true).
+	 * @return Formated string (e.g. "0D 00:20:34.853").
+	 */
+	public final static String formatMilliseconds(long ms, String dayFormat, boolean skipZeroPrefix) {
+		if (dayFormat == null) dayFormat = "D";
 		boolean isNegative = (ms < 0);
 		if (isNegative) ms = Math.abs(ms);
 		long milliseconds = ms % 1000;
@@ -685,16 +707,16 @@ public final class ConvertHelper {
 		long hours = ms % 24;
 		ms = (ms - hours) / 24;
 		long day = ms;
-		if (skipZeroFields) {
+		if (skipZeroPrefix) {
 			StringBuilder sb = new StringBuilder(isNegative ? "-" : "");
-			if (day > 0) sb.append(day).append("D ");
+			if (day > 0) sb.append(day).append(dayFormat).append(" ");
 			if (hours > 0 || day > 0) sb.append(hours < 10 ? "0" + hours : hours).append(":");
 			if (minites > 0 || hours > 0 || day > 0) sb.append(minites < 10 ? "0" + minites : minites).append(":");
 			if (seconds > 0 || minites > 0 || hours > 0 || day > 0) sb.append(seconds < 10 ? "0" + seconds : seconds).append(".");
 			sb.append(String.format("%03d", milliseconds));
 			return sb.toString();
 		} else {
-			String format = isNegative ? "-%dD %02d:%02d:%02d.%03d" : "%dD %02d:%02d:%02d.%03d";
+			String format = isNegative ? "-%d" + dayFormat + " %02d:%02d:%02d.%03d" : "%d" + dayFormat + " %02d:%02d:%02d.%03d";
 			return String.format(format, day, hours, minites, seconds, milliseconds);
 		}
 	}
