@@ -32,7 +32,7 @@ public final class ConvertHelper {
 	 * @param arrays Arrays object.
 	 * @return Merge result array.
 	 */
-	public static <T> T[] mergeArrays(final T[][] arrays) {
+	public final static <T> T[] mergeArrays(final T[][] arrays) {
 		if (arrays == null || arrays.length == 0) return null;
 		int length = 0;
 		for (T[] ts : arrays) {
@@ -47,6 +47,45 @@ public final class ConvertHelper {
 			System.arraycopy(arrays[i], 0, results, startIndex, arrays[i].length);
 		}
 		return results;
+	}
+
+	/**
+	 * Merge all byte arrays (returns null when arrays is null or zero length).
+	 * @param arrays The byte arrays.
+	 * @return Merge result array.
+	 */
+	public final static byte[] margeBytes(byte[]... arrays) {
+		if (arrays == null || arrays.length == 0) return null;
+		int len = 0;
+		for (byte[] ts : arrays) {
+			len += ts.length;
+		}
+		int pos = 0;
+		final byte[] results = new byte[len];
+		for (int i = 0; i < arrays.length; i++) {
+			if (i > 0) pos += arrays[i - 1].length;
+			System.arraycopy(arrays[i], 0, results, pos, arrays[i].length);
+		}
+		return results;
+	}
+
+	/**
+	 * Returns a new byte array that is a sub-array of this source array.<br/>
+	 * The sub-array begins at the specified beginIndex and extends to the byte at index endIndex-1.<br/>
+	 * Thus the length of the sub-array is endIndex-beginIndex.
+	 * @param bs the source byte array.
+	 * @param beginIndex The starting position in the bytes data (inclusive).
+	 * @param endIndex The ending position of array to be copied (exclusive).
+	 * @return The new byte array (returns null if the source array is null).
+	 */
+	public final static byte[] subBytes(byte[] bs, int beginIndex, int endIndex) {
+		if (bs == null) return null;
+		if (bs.length == 0) return bs;
+		int len = endIndex - beginIndex;
+		if (len <= 0) return new byte[0];
+		byte[] rets = new byte[len];
+		System.arraycopy(bs, beginIndex, rets, 0, len);
+		return rets;
 	}
 
 	// --------------------------- Public methods for HEX ----------------------------
