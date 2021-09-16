@@ -12,4 +12,9 @@ public interface ThreadLocalPostman {
 	 */
 	void storeToCurrentThread();
 
+	/**
+	 * Remove all variables of postman in current thread local.
+	 */
+	void removeAll();
+
 }

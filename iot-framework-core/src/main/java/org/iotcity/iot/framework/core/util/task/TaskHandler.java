@@ -232,13 +232,20 @@ public final class TaskHandler implements ThreadPoolSupport {
 		// Check parameter and status.
 		if (runnable == null || destroyed) return false;
 
+		// Check priority runnable object.
+		boolean isPriority = runnable instanceof PriorityRunnable;
+		// Fix priority.
+		if (priority == 0 && isPriority) {
+			priority = ((PriorityRunnable) runnable).getPriority();
+		}
+
 		// Define the runner.
 		Runnable runner;
 		// Check for postman objects
 		if (postmen != null && postmen.length > 0) {
 			// Create the postman runnable object.
 			runner = new PostmanRunnableTask(runnable, priority, postmen);
-		} else if (priority == 0 && (runnable instanceof PriorityRunnable)) {
+		} else if (isPriority) {
 			// Set as runner.
 			runner = runnable;
 		} else {
@@ -334,7 +341,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Add a delay task to be executed after the specified delay time, the task will be executed only once.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
@@ -344,7 +351,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Add a delay task to be executed after the specified delay time, the task will be executed only once.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
@@ -356,7 +363,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * Add a delay task to be executed after the specified delay time, the task will be executed only once.
 	 * @param name Task name, will be used for logging.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
 	 */
@@ -367,7 +374,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * Add a delay task to be executed after the specified delay time, the task will be executed only once.
 	 * @param name Task name, will be used for logging.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
@@ -380,7 +387,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Add an interval task to be executed after the specified delay time, and then execute according to each specified interval.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
@@ -391,7 +398,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 
 	/**
 	 * Add a interval task to be executed after the specified delay time, and then execute according to each specified interval.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
@@ -404,7 +411,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * Add a interval task to be executed after the specified delay time, and then execute according to each specified interval.
 	 * @param name Task name, will be used for logging.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @return When the addition is successful, the task sequence number greater than 0 will be returned, returns 0 if it fails.
@@ -416,7 +423,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * Add a interval task to be executed after the specified delay time, and then execute according to each specified interval.
 	 * @param name Task name, will be used for logging.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
@@ -431,7 +438,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified interval.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
@@ -444,7 +451,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	/**
 	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified interval.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
@@ -459,7 +466,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified interval.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
 	 * @param name Task name, will be used for logging.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
@@ -473,7 +480,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 	 * Add a execution task to be executed after the specified delay time, and then execute according to each specified interval.<br/>
 	 * The maximum number of times the task runs does not exceed the number of executions.
 	 * @param name Task name, will be used for logging.
-	 * @param task Task to be execute, this task will be executed in single thread mode within the thread pool.
+	 * @param task Task to be execute, an instance of {@link Runnable }, this task will be executed in single thread mode within the thread pool.
 	 * @param delay Delay in milliseconds before task is to be executed (greater than 0).
 	 * @param interval Time in milliseconds between successive task executions (greater than 0).
 	 * @param executions Maximum number of tasks executed (greater than 0).
@@ -485,6 +492,10 @@ public final class TaskHandler implements ThreadPoolSupport {
 		if (destroyed || task == null || delay < 0 || interval == 0 || interval < -1 || executions == 0 || executions < -1) return 0;
 		// Start timer thread
 		thread.startLoop();
+		// Fix the priority.
+		if (priority == 0 && task instanceof PriorityRunnable) {
+			priority = ((PriorityRunnable) task).getPriority();
+		}
 		// Add a task to queue
 		return queue.add(name, task, delay, interval, executions, priority);
 	}

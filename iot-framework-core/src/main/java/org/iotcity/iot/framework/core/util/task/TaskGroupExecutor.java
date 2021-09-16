@@ -163,7 +163,7 @@ public class TaskGroupExecutor {
 		// Check the total timeout of the execution task group
 		if (groupTimeout > 0) {
 			// Add stop method task.
-			timeoutID = TaskHandler.getDefaultHandler().addDelayTask(new PriorityRunnable(0) {
+			timeoutID = TaskHandler.getDefaultHandler().addDelayTask(new Runnable() {
 
 				@Override
 				public void run() {

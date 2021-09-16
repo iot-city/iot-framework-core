@@ -7,7 +7,7 @@ import org.iotcity.iot.framework.core.FrameworkCore;
  * @author ardon
  * @date 2021-07-01
  */
-public class TaskGroupRunnableTask<T> extends PriorityRunnable {
+final class TaskGroupRunnableTask<T> extends PriorityRunnable {
 
 	/**
 	 * The task group waiting to be executed using multithreading.
@@ -34,7 +34,7 @@ public class TaskGroupRunnableTask<T> extends PriorityRunnable {
 	 * @param callback The task execution callback object.
 	 * @param priority The runnable execution priority.
 	 */
-	public TaskGroupRunnableTask(TaskGroupDataContext<T> group, int index, T data, TaskGroupTaskCallback callback, int priority) {
+	TaskGroupRunnableTask(TaskGroupDataContext<T> group, int index, T data, TaskGroupTaskCallback callback, int priority) {
 		super(priority);
 		this.group = group;
 		this.index = index;

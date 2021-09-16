@@ -58,7 +58,7 @@ public abstract class TaskGroupDataContext<T> {
 	 * Set the next index of group task data array.
 	 * @param index The index of the next task in the array.
 	 */
-	public void setNextIndex(int index) {
+	void setNextIndex(int index) {
 		if (index < 0) index = 0;
 		this.nextIndex = index;
 	}
@@ -66,7 +66,7 @@ public abstract class TaskGroupDataContext<T> {
 	/**
 	 * Determines whether there is next task data.
 	 */
-	public boolean hasNext() {
+	boolean hasNext() {
 		return nextIndex < length;
 	}
 
@@ -75,7 +75,7 @@ public abstract class TaskGroupDataContext<T> {
 	 * @param callback The task execution callback object.
 	 * @return The task object of this group.
 	 */
-	public PriorityRunnable nextTask(TaskGroupTaskCallback callback) {
+	PriorityRunnable nextTask(TaskGroupTaskCallback callback) {
 		// Check the array index.
 		if (!hasNext()) return null;
 		// Get next data index.

@@ -5,7 +5,7 @@ package org.iotcity.iot.framework.core.util.task;
  * @author ardon
  * @date 2021-06-30
  */
-public class PriorityRunnableTask extends PriorityRunnable {
+final class PriorityRunnableTask extends PriorityRunnable {
 
 	/**
 	 * The runnable object.
@@ -17,7 +17,7 @@ public class PriorityRunnableTask extends PriorityRunnable {
 	 * @param runnable The runnable object to be executed (required, not null).
 	 * @param priority The runnable execution priority (0 by default, the higher the value, the higher the priority, the higher value will be executed first).
 	 */
-	public PriorityRunnableTask(Runnable runnable, int priority) {
+	PriorityRunnableTask(Runnable runnable, int priority) {
 		super(priority);
 		this.runnable = runnable;
 	}
