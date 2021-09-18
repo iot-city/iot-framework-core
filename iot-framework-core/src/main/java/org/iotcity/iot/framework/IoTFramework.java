@@ -3,6 +3,7 @@ package org.iotcity.iot.framework;
 import org.iotcity.iot.framework.core.beans.ClassInstanceFactory;
 import org.iotcity.iot.framework.core.beans.DefaultClassInstanceFactory;
 import org.iotcity.iot.framework.core.bus.BusEventPublisher;
+import org.iotcity.iot.framework.core.hook.HookManager;
 import org.iotcity.iot.framework.core.i18n.DefaultLocaleFacotry;
 import org.iotcity.iot.framework.core.i18n.LocaleFactory;
 import org.iotcity.iot.framework.core.logging.DefaultLoggerFactory;
@@ -53,6 +54,10 @@ public final class IoTFramework {
 	 * The synchronized lock.
 	 */
 	private static final Object lock = new Object();
+	/**
+	 * The system shutdown hook manager.
+	 */
+	private static final HookManager hookManager = new HookManager();
 	/**
 	 * Configure manager handler of framework.
 	 */
@@ -134,7 +139,14 @@ public final class IoTFramework {
 	// --------------------------- Public object methods ----------------------------
 
 	/**
-	 * Gets the configure manager handler of the framework (returns not null).
+	 * Gets the system shutdown hook manager (never null).
+	 */
+	public static final HookManager getHookmanager() {
+		return hookManager;
+	}
+
+	/**
+	 * Gets the configure manager handler of the framework (never null).
 	 * @return The configure manager handler.
 	 */
 	public static final ConfigureHandler getConfigureHandler() {
@@ -142,7 +154,7 @@ public final class IoTFramework {
 	}
 
 	/**
-	 * Gets the bus event publisher of the framework (returns not null).
+	 * Gets the bus event publisher of the framework (never null).
 	 * @return Bus event publisher.
 	 */
 	public static final BusEventPublisher getBusEventPublisher() {
@@ -150,7 +162,7 @@ public final class IoTFramework {
 	}
 
 	/**
-	 * Gets the global class instance factory to create or get an instance of specified class (returns not null).<br/>
+	 * Gets the global class instance factory to create or get an instance of specified class (never null).<br/>
 	 * The framework uses {@link DefaultClassInstanceFactory } by default.
 	 * @return A class instance factory.
 	 */
@@ -159,7 +171,7 @@ public final class IoTFramework {
 	}
 
 	/**
-	 * Gets the logger factory used in the framework (returns not null).<br/>
+	 * Gets the logger factory used in the framework (never null).<br/>
 	 * (the default instance object be created with {@link DefaultLoggerFactory }, it can be changed by using init(options) method).
 	 * @return Logger factory object.
 	 */
@@ -168,7 +180,7 @@ public final class IoTFramework {
 	}
 
 	/**
-	 * Gets the locale factory used in the framework (returns not null).<br/>
+	 * Gets the locale factory used in the framework (never null).<br/>
 	 * (the default instance object be created with {@link DefaultLocaleFacotry }, it can be changed by using init(options) method).
 	 * @return Locale factory object.
 	 */
