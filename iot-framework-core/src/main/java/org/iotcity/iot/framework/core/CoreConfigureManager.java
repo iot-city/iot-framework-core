@@ -37,4 +37,8 @@ public class CoreConfigureManager extends PropertiesConfigureManager {
 
 	}
 
+	@Override
+	protected void onPerformed() {
+	}
+
 }

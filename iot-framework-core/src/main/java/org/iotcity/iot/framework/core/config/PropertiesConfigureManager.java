@@ -12,7 +12,7 @@ import org.iotcity.iot.framework.core.util.helper.StringHelper;
  * @author Ardon
  * @date 2021-04-25
  */
-public class PropertiesConfigureManager implements ConfigureManager {
+public abstract class PropertiesConfigureManager implements ConfigureManager {
 
 	// --------------------------- Protected fields ----------------------------
 
@@ -99,8 +99,14 @@ public class PropertiesConfigureManager implements ConfigureManager {
 				if (succeed) succeed = false;
 			}
 		}
+		this.onPerformed();
 		return succeed;
 	}
+
+	/**
+	 * This method is called after execution of configuration.
+	 */
+	protected abstract void onPerformed();
 
 	// --------------------------- Inner class ----------------------------
 
