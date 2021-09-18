@@ -28,7 +28,7 @@ public final class ConfigureHandler {
 	/**
 	 * The configuration properties.
 	 */
-	private static final Properties frameworkProps = loadFrameworkConfiguration();
+	private static Properties frameworkProps = loadFrameworkConfiguration();
 
 	// --------------------------- Static method ----------------------------
 
@@ -74,6 +74,15 @@ public final class ConfigureHandler {
 		return frameworkProps;
 	}
 
+	/**
+	 * Set the framework configuration properties before calling {@link IoTFramework#init()}.<br/>
+	 * See: "framework.properties" file to get option fields.
+	 * @param props The framework configuration properties (required, can not be null).
+	 */
+	public static final void setFrameworkConfiguration(Properties props) {
+		if (props != null) frameworkProps = props;
+	}
+
 	// --------------------------- Private fields ----------------------------
 
 	/**
@@ -93,9 +102,8 @@ public final class ConfigureHandler {
 
 	/**
 	 * Initialize configure managers.
-	 * @param options Framework startup options data object.
 	 */
-	final void init(FrameworkOptions options) {
+	final void init() {
 
 		// Output messages
 		JavaHelper.log("========================================== LOADING FRAMEWORK RESOURCES ==========================================");

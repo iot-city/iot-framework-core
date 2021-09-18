@@ -104,8 +104,8 @@ public final class IoTFramework {
 			if (options.loggerFactory != null) loggerFactory = options.loggerFactory;
 			if (options.localeFactory != null) localeFactory = options.localeFactory;
 		}
-		// Initialize all configure managers
-		configHandler.init(options);
+		// Initialize all configuration managers.
+		configHandler.init();
 	}
 
 	// --------------------------- Instance methods ----------------------------
