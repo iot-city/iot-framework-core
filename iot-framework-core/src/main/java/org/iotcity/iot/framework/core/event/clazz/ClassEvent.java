@@ -1,6 +1,7 @@
 package org.iotcity.iot.framework.core.event.clazz;
 
 import org.iotcity.iot.framework.core.event.BaseEvent;
+import org.iotcity.iot.framework.core.util.helper.JavaHelper;
 
 /**
  * Class event object, used to provide the class event support.
@@ -23,6 +24,19 @@ public class ClassEvent extends BaseEvent<Class<?>> {
 	 */
 	public ClassEvent(Object source, Object data, boolean cancelable) throws IllegalArgumentException {
 		super(source, data == null ? null : data.getClass(), data, cancelable);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{source=");
+		sb.append(source.getClass().getSimpleName());
+		sb.append(", type=");
+		sb.append(type.getSimpleName());
+		sb.append(", data=");
+		JavaHelper.getDataPreview(data, sb);
+		sb.append("}");
+		return sb.toString();
 	}
 
 }

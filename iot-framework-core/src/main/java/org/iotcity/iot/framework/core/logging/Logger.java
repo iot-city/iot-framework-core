@@ -23,6 +23,11 @@ public interface Logger extends Configurable<LogLevel[]> {
 	Logger newInstance(String name, Class<?> clazz, int callerDepth);
 
 	/**
+	 * Flush the logger buffer immediately.
+	 */
+	void flush();
+
+	/**
 	 * Logs a message with the <b>LOG</b> level.
 	 * @param message The message object to log.
 	 */

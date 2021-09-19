@@ -1,6 +1,7 @@
 package org.iotcity.iot.framework.core.bus;
 
 import org.iotcity.iot.framework.core.event.BaseEvent;
+import org.iotcity.iot.framework.core.util.helper.JavaHelper;
 
 /**
  * Bus event object, used to provide the bus event support.
@@ -23,6 +24,19 @@ public class BusEvent extends BaseEvent<Class<?>> {
 	 */
 	public BusEvent(Object source, Object data, boolean cancelable) throws IllegalArgumentException {
 		super(source, data == null ? null : data.getClass(), data, cancelable);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{source=");
+		sb.append(source.getClass().getSimpleName());
+		sb.append(", type=");
+		sb.append(type.getSimpleName());
+		sb.append(", data=");
+		JavaHelper.getDataPreview(data, sb);
+		sb.append("}");
+		return sb.toString();
 	}
 
 }

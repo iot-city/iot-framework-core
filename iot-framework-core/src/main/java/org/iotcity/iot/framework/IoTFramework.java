@@ -61,7 +61,7 @@ public final class IoTFramework {
 	/**
 	 * Configure manager handler of framework.
 	 */
-	private static final ConfigureHandler configHandler = new ConfigureHandler();
+	private static final FrameworkConfiguration configHandler = new FrameworkConfiguration();
 	/**
 	 * Bus event publisher is used to publish bus event data processing.
 	 */
@@ -149,7 +149,7 @@ public final class IoTFramework {
 	 * Gets the configure manager handler of the framework (never null).
 	 * @return The configure manager handler.
 	 */
-	public static final ConfigureHandler getConfigureHandler() {
+	public static final FrameworkConfiguration getConfigureHandler() {
 		return configHandler;
 	}
 

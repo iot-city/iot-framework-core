@@ -1,5 +1,6 @@
 package org.iotcity.iot.framework.core.event.clazz;
 
+import org.iotcity.iot.framework.IoTFramework;
 import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.config.PropertiesConfigFile;
 import org.iotcity.iot.framework.core.logging.Logger;
@@ -12,7 +13,12 @@ import junit.framework.TestCase;
  */
 public class ClassEventTest extends TestCase {
 
-	private final Logger logger = FrameworkCore.getLogger();
+	private final Logger logger;
+
+	public ClassEventTest() {
+		IoTFramework.init();
+		logger = FrameworkCore.getLogger();
+	}
 
 	public void testEventPublisher() {
 

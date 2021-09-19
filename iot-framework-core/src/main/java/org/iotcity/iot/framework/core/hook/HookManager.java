@@ -5,9 +5,14 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.iotcity.iot.framework.IoTFramework;
 import org.iotcity.iot.framework.core.FrameworkCore;
+import org.iotcity.iot.framework.core.bus.BusEvent;
+import org.iotcity.iot.framework.core.bus.BusEventPublisher;
 import org.iotcity.iot.framework.core.i18n.LocaleText;
 import org.iotcity.iot.framework.core.logging.Logger;
+import org.iotcity.iot.framework.event.FrameworkEventData;
+import org.iotcity.iot.framework.event.FrameworkState;
 
 /**
  * The system shutdown hook manager.
@@ -25,6 +30,8 @@ public final class HookManager {
 	 * Constructor for system shutdown hook manager.
 	 */
 	public HookManager() {
+		// Gets the hook manager.
+		final HookManager hook = this;
 		// Add a shutdown hook.
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 
@@ -35,6 +42,11 @@ public final class HookManager {
 				LocaleText locale = FrameworkCore.getLocale();
 				// Logs a message.
 				logger.info(locale.text("core.hook.shuttingdown"));
+
+				// Publish a shutting down event.
+				BusEventPublisher publisher = IoTFramework.getBusEventPublisher();
+				publisher.publish(new BusEvent(hook, new FrameworkEventData(FrameworkState.SHUTTINGDOWN), false));
+
 				// Gets the listener objects.
 				HookListenerObject[] objs = listeners.values().toArray(new HookListenerObject[listeners.size()]);
 				// Array sort.
@@ -47,6 +59,7 @@ public final class HookManager {
 					}
 
 				});
+
 				// Execute listeners.
 				for (HookListenerObject obj : objs) {
 					// Execute object.
@@ -56,13 +69,21 @@ public final class HookManager {
 						e.printStackTrace();
 					}
 				}
+
+				// Publish an exit event.
+				publisher.publish(new BusEvent(hook, new FrameworkEventData(FrameworkState.EXIT), false));
+
 				// Sleep for 1s.
 				try {
 					Thread.sleep(1000);
 				} catch (Exception e) {
 				}
+
 				// Logs a message.
 				logger.info(locale.text("core.hook.shutteddown"));
+				// Flush logger buffer.
+				logger.flush();
+
 			}
 
 		});

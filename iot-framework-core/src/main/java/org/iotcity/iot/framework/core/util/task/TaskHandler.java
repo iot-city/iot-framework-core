@@ -6,7 +6,7 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.iotcity.iot.framework.ConfigureHandler;
+import org.iotcity.iot.framework.FrameworkConfiguration;
 import org.iotcity.iot.framework.core.beans.ThreadLocalPostman;
 import org.iotcity.iot.framework.core.beans.ThreadPoolSupport;
 import org.iotcity.iot.framework.core.util.config.PropertiesLoader;
@@ -137,7 +137,7 @@ public final class TaskHandler implements ThreadPoolSupport {
 		synchronized (instanceLock) {
 			if (instance != null) return instance;
 			// Gets the global configuration.
-			TaskThreadPoolConfig config = PropertiesLoader.getConfigBean(TaskThreadPoolConfig.class, ConfigureHandler.getFrameworkConfiguration(), "iot.framework.global.task.pool");
+			TaskThreadPoolConfig config = PropertiesLoader.getConfigBean(TaskThreadPoolConfig.class, FrameworkConfiguration.getFrameworkConfiguration(), "iot.framework.global.task.pool");
 			// Create instance.
 			if (config == null) {
 				instance = new TaskHandler("Default", 8, 8, 60, 1600);

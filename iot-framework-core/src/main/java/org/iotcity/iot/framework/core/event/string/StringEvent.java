@@ -1,6 +1,7 @@
 package org.iotcity.iot.framework.core.event.string;
 
 import org.iotcity.iot.framework.core.event.BaseEvent;
+import org.iotcity.iot.framework.core.util.helper.JavaHelper;
 
 /**
  * String event object, used to provide the string event support.
@@ -35,6 +36,19 @@ public class StringEvent extends BaseEvent<String> {
 	 */
 	public StringEvent(Object source, String type, Object data, boolean cancelable) throws IllegalArgumentException {
 		super(source, type, data, cancelable);
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{source=");
+		sb.append(source.getClass().getSimpleName());
+		sb.append(", type=");
+		JavaHelper.getDataPreview(type, sb);
+		sb.append(", data=");
+		JavaHelper.getDataPreview(data, sb);
+		sb.append("}");
+		return sb.toString();
 	}
 
 }

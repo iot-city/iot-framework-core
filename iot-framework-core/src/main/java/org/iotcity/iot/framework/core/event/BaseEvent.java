@@ -19,16 +19,19 @@ public class BaseEvent<T> extends EventObject implements Event<T> {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	// --------------------------- Private object fields ----------------------------
+	// --------------------------- Protected object fields ----------------------------
 
 	/**
 	 * The type data of the current event.
 	 */
-	private final T type;
+	protected final T type;
 	/**
 	 * The data of this event object (optional, it can be null value when not needed).
 	 */
-	private final Object data;
+	protected final Object data;
+
+	// --------------------------- Private object fields ----------------------------
+
 	/**
 	 * The exception list.
 	 */

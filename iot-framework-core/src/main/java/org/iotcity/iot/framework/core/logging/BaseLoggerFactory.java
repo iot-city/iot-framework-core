@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.iotcity.iot.framework.ConfigureHandler;
+import org.iotcity.iot.framework.FrameworkConfiguration;
 import org.iotcity.iot.framework.core.util.config.PropertiesMap;
 import org.iotcity.iot.framework.core.util.helper.ConvertHelper;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
@@ -28,7 +28,7 @@ public abstract class BaseLoggerFactory implements LoggerFactory {
 	 */
 	private static final boolean getLoggingColorful() {
 		boolean colorful = ConvertHelper.toBoolean(System.getProperty("framework.console.colorful"), false);
-		return ConvertHelper.toBoolean(ConfigureHandler.getFrameworkConfiguration().getProperty("iot.framework.global.console.colorful"), colorful);
+		return ConvertHelper.toBoolean(FrameworkConfiguration.getFrameworkConfiguration().getProperty("iot.framework.global.console.colorful"), colorful);
 	}
 
 	// --------------------------- Private fields ----------------------------

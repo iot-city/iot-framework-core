@@ -51,6 +51,10 @@ public final class DefaultLoggerFactory extends BaseLoggerFactory {
 			return new DefaultLogger(name, colorful, clazz, callerDepth, levels);
 		}
 
+		@Override
+		public void flush() {
+		}
+
 	}
 
 }

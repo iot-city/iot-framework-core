@@ -1,6 +1,6 @@
 package org.iotcity.iot.framework.core.config;
 
-import org.iotcity.iot.framework.ConfigureHandler;
+import org.iotcity.iot.framework.FrameworkConfiguration;
 import org.iotcity.iot.framework.core.FrameworkCore;
 import org.iotcity.iot.framework.core.annotation.AnnotationParser;
 
@@ -14,13 +14,13 @@ public final class ConfigureManagerParser implements AnnotationParser {
 	/**
 	 * The configure manager handler of framework.
 	 */
-	private final ConfigureHandler handler;
+	private final FrameworkConfiguration handler;
 
 	/**
 	 * Constructor for configure manager parser.
 	 * @param handler The configure manager handler (required, can not be null).
 	 */
-	public ConfigureManagerParser(ConfigureHandler handler) {
+	public ConfigureManagerParser(FrameworkConfiguration handler) {
 		this.handler = handler;
 	}
 

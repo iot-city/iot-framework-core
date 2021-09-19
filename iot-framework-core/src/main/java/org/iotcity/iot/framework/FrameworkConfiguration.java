@@ -6,6 +6,8 @@ import java.util.Set;
 
 import org.iotcity.iot.framework.core.CoreConfigureManager;
 import org.iotcity.iot.framework.core.annotation.AnnotationAnalyzer;
+import org.iotcity.iot.framework.core.bus.BusEvent;
+import org.iotcity.iot.framework.core.bus.BusEventPublisher;
 import org.iotcity.iot.framework.core.config.ConfigureManager;
 import org.iotcity.iot.framework.core.config.PropertiesConfigFile;
 import org.iotcity.iot.framework.core.config.PropertiesConfigureManager;
@@ -15,13 +17,15 @@ import org.iotcity.iot.framework.core.util.helper.ConvertHelper;
 import org.iotcity.iot.framework.core.util.helper.FileHelper;
 import org.iotcity.iot.framework.core.util.helper.JavaHelper;
 import org.iotcity.iot.framework.core.util.helper.StringHelper;
+import org.iotcity.iot.framework.event.FrameworkEventData;
+import org.iotcity.iot.framework.event.FrameworkState;
 
 /**
  * Configure manager handler of framework.
  * @author Ardon
  * @date 2021-04-26
  */
-public final class ConfigureHandler {
+public final class FrameworkConfiguration {
 
 	// --------------------------- Static field ----------------------------
 
@@ -145,6 +149,10 @@ public final class ConfigureHandler {
 
 		// Clear caches
 		PropertiesLoader.clearCaches();
+
+		// Publish an initializing event.
+		BusEventPublisher publisher = IoTFramework.getBusEventPublisher();
+		publisher.publish(new BusEvent(this, new FrameworkEventData(FrameworkState.INITIALIZED), false));
 
 	}
 
