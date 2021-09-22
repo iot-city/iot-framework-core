@@ -1,0 +1,87 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>org.iot-city.iot-framework</groupId>
+	<artifactId>iot-framework-core-parent</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+
+	<name>iot-framework-core-parent</name>
+	<url>http://maven.iot-city.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+		<!-- The custom versions for dependencies -->
+		<framework.core.version>1.0.0</framework.core.version>
+		<framework.actor.version>1.0.0</framework.actor.version>
+		<framework.database.version>1.0.0</framework.database.version>
+		<framework.logger.version>1.0.0</framework.logger.version>
+		<framework.net.version>1.0.0</framework.net.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- ==================== FOR NET JSON SERIALIZATION ==================== -->
+
+			<!-- ALIBABA FASTJSON -->
+			<dependency>
+				<groupId>com.alibaba</groupId>
+				<artifactId>fastjson</artifactId>
+				<version>1.2.76</version>
+			</dependency>
+
+			<!-- GOOGLE GSON -->
+			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>2.8.8</version>
+			</dependency>
+
+			<!-- ==================== FOR NET BYTES SERIALIZATION ==================== -->
+
+			<!-- FAST-SERIALIZATION -->
+			<dependency>
+				<groupId>de.ruedigermoeller</groupId>
+				<artifactId>fst</artifactId>
+				<version>2.56</version>
+			</dependency>
+
+			<!-- KRYO-SERIALIZATION -->
+			<dependency>
+				<groupId>com.esotericsoftware</groupId>
+				<artifactId>kryo</artifactId>
+				<version>5.2.0</version>
+			</dependency>
+
+			<!-- ==================== FOR NET KAFKA SERVICE ==================== -->
+
+			<!-- NET KAFKA -->
+			<dependency>
+				<groupId>org.apache.kafka</groupId>
+				<artifactId>kafka-clients</artifactId>
+				<version>2.8.0</version>
+			</dependency>
+
+			<!-- FOR KAFKA TEST -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-simple</artifactId>
+				<version>1.7.25</version>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+</project>
